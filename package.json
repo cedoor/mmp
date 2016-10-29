@@ -1,0 +1,34 @@
+{
+  "name": "mmap",
+  "version": "0.0.1",
+  "description": "Electron app to draw original mind maps",
+  "author": "Omar Desogus <omardesogus9@gmail.com>",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cedoor/mmap.git"
+  },
+  "homepage": "https://github.com/cedoor/mmap#readme",
+  "license": "MIT",
+  "dependencies": {
+    "connect": "~3.4.1",
+    "serve-static": "~1.11.1"
+  },
+  "devDependencies": {
+    "cz-conventional-changelog": "^1.2.0",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

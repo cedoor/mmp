@@ -1,0 +1,13 @@
+{
+  "name": "mmap",
+  "description": "Electron app to draw original mind maps",
+  "main": "server.js",
+  "authors": [
+    "Omar Desogus"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/cedoor/mmap",
+  "dependencies": {
+    "d3": "^4.3.0"
+  }
+}

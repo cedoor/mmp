@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Mmap</title>
+        <meta name="description" content="Electron app to draw original mind maps">
+        <link rel="icon" type="image/svg+xml" href="test/img/favicon.svg">
+        <link href="test/test.css" rel="stylesheet">
+    </head>
+    <body>
+
+        <div class="container">
+            <div class="nav">
+                <h3>Mmap</h3>
+                <table>
+                    <tr>
+                        <td class="btn" onclick="test.test()">
+                            <img src="test/img/material-icons/add.svg">
+                        </td>
+                        <td class="btn" onclick="">
+                            <img src="test/img/material-icons/remove.svg">
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td class="btn" onclick="">Test</td>
+                    </tr>
+                    <tr>
+                        <td class="btn" onclick="">Test</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="mmap"></div>
+        </div>
+
+        <script src="bower_components/d3/d3.min.js"></script>
+        <script src="dist/mmap.min.js"></script>
+        <script src="test/test.js"></script>
+    </body>
+</html>
