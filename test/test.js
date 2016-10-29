@@ -6,22 +6,26 @@
  * Tests of mmap library
  *
  */
- /*jshint esversion: 6 */
 (function( window, document, mmap ) {
 
-    const dom = {};
+    /** Init **/
 
-    mmap.init('.mmap');
+    mmap.init('.mmap',{
 
-    /** Tests **/
+    });
 
-    function test() {
-        console.log('ok');
-    }
+    /** Nodes **/
 
+    mmap.createNode({
+        x : 1000,
+        y : 1000 - 100,
+        fill : '#c7b6a5'
+    });
 
-    window.test = {
-        test : test,
-    };
+    mmap.createNode({
+        x : 1000,
+        y : 1000 + 100,
+        fill : '#a5b4c7'
+    });
 
 })( this, document, mmap );

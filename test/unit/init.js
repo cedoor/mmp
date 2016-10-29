@@ -1,0 +1,5 @@
+    /** Init **/
+
+    mmap.init('.mmap',{
+
+    });

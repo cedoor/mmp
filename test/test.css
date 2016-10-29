@@ -1,72 +1,9 @@
-html, body, .container, .nav, .cgraph {
+html, body, .mmap {
     height: 100%;
-    margin: 0;
-    padding: 0;
 }
 
 body {
-    overflow: hidden;
-}
-
-table {
-    width: 100%;
-    padding: 5px;
-}
-
-table>tbody>tr>td,
-table>tbody>tr>th {
-    padding: 5px;
-}
-
-input, select {
-    color: #4d4d4d;
-    width: 100%;
-}
-
-.nav {
-    float: left;
-	width: 270px;
-	background-color: #f7f7f7;
-    border: 1px solid #dddddd;
-    font: 14px sans-serif;
-    color: #595959;
-    overflow-y: auto;
-}
-
-.nav>h3 {
+    background-color: #eeeeee;
     margin: 0;
-    padding: 12px 0;
-    background-color: #e8e5e1;
-    color: #717171;
-    border-bottom: 1px solid #dedcdc;
-    text-align: center;
-}
-
-.nav>table {
-    border-bottom: 1px solid #e2e2e2;
-}
-
-.nav>table:last-child {
-    border-bottom: 0;
-}
-
-.btn:active {
-    position: relative;
-    top: 1px;
-}
-
-.btn:hover {
-    background-color: #d7ddcf;
-}
-
-.btn {
-    background-color: #e0e4da;
-    height: 25px;
-    cursor: pointer;
-    text-align: center;
-}
-
-.mmap {
-    margin-left: 272px;
-    height: 100%;
+    padding: 0;
 }

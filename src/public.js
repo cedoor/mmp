@@ -2,7 +2,7 @@
 
     function createNode( opt ) {
 
-        mmp.nodes.push( mmp.sheet.append('ellipse')
+        mmp.nodes.push( mmp.mmap.append('ellipse')
             .attr('cx', opt.x )
             .attr('cy', opt.y )
             .attr('rx', 40 )

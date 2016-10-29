@@ -28,8 +28,8 @@
 
         // Option settings
         if ( options ) {
-            mmp.width = options.width;
-            mmp.height = options.height;
+            mmp.width = options.width || 2000;
+            mmp.height = options.height || 2000;
         } else {
             mmp.width = 2000;
             mmp.height = 2000;
@@ -38,7 +38,7 @@
         mmp.nodes = [];
 
         mmp.container = d3.select( selector ).style('overflow', 'auto');
-        mmp.sheet = mmp.container.append('svg')
+        mmp.mmap = mmp.container.append('svg')
             .attr('width', mmp.width )
             .attr('height', mmp.height );
 
@@ -63,7 +63,7 @@
 
     function createNode( opt ) {
 
-        mmp.nodes.push( mmp.sheet.append('ellipse')
+        mmp.nodes.push( mmp.mmap.append('ellipse')
             .attr('cx', opt.x )
             .attr('cy', opt.y )
             .attr('rx', 40 )
@@ -79,7 +79,8 @@
      *
      */
     window.mmap = {
-        init : init
+        init : init,
+        createNode : createNode,
     };
 
 }(this, window.d3));

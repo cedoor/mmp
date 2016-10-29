@@ -19,8 +19,8 @@
 
         // Option settings
         if ( options ) {
-            mmp.width = options.width;
-            mmp.height = options.height;
+            mmp.width = options.width || 2000;
+            mmp.height = options.height || 2000;
         } else {
             mmp.width = 2000;
             mmp.height = 2000;
@@ -29,7 +29,7 @@
         mmp.nodes = [];
 
         mmp.container = d3.select( selector ).style('overflow', 'auto');
-        mmp.sheet = mmp.container.append('svg')
+        mmp.mmap = mmp.container.append('svg')
             .attr('width', mmp.width )
             .attr('height', mmp.height );
 
