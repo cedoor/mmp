@@ -1,7 +1,7 @@
 {
   "name": "mmap",
   "version": "0.0.1",
-  "description": "Electron app to draw original mind maps",
+  "description": "Small library to create mind maps",
   "author": "Omar Desogus <omardesogus9@gmail.com>",
   "main": "server.js",
   "scripts": {

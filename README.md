@@ -1,4 +1,4 @@
 ##### Work in progress
 
 # mmap
-Electron app to draw original mind maps
+Small library to create mind maps
