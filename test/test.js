@@ -17,15 +17,17 @@
     /** Nodes **/
 
     mmap.createNode({
-        x : 1000,
-        y : 1000 - 100,
-        fill : '#c7b6a5'
+        x : 100, y : 100,
+        bgColor : '#8f7b78', textColor : '#e3e3e3',
+        fontSize : 15, text : 'Node 2'
     });
 
-    mmap.createNode({
-        x : 1000,
-        y : 1000 + 100,
-        fill : '#a5b4c7'
-    });
+    setTimeout(function(){
+        mmap.createNode({
+            x : 600, y : 100,
+            bgColor : '#78878f', textColor : '#e3e3e3',
+            fontSize : 17, text : 'Node 3'
+        });
+    }, 2000);
 
 })( this, document, mmap );

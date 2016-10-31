@@ -1,13 +1,10 @@
     /****** Public functions ******/
 
     function createNode( opt ) {
-
-        mmp.nodes.push( mmp.mmap.append('ellipse')
-            .attr('cx', opt.x )
-            .attr('cy', opt.y )
-            .attr('rx', 40 )
-            .attr('ry', 20 )
-            .attr('fill', opt.fill || '#b9c7a5')
-        );
-
+        g.nodes.push({
+            x : opt.x, y : opt.y,
+            bgColor : opt.bgColor, textColor : opt.textColor,
+            fontSize : opt.fontSize, text : opt.text
+        });
+        updateNodes();
     }

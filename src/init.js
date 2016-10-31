@@ -1,11 +1,11 @@
     /**
-     * @name mmp
+     * @name g
      * @description
-     * Dictionary that will contain all the properties of the
+     * Global dictionary that will contain all the properties of the
      * map shared by all functions within the module.
      *
      */
-    const mmp = {};
+    const g = {};
 
     /**
      * @name init
@@ -13,32 +13,34 @@
      * ...
      *
      * @param {string} selector The selector in which to draw
-     * @param {Object} options Additional options for the graph
+     * @param {Object} opt Additional options for the map
      */
-    function init( selector, options ) {
+    function init( selector, opt ) {
 
         // Option settings
-        if ( options ) {
-            mmp.width = options.width || 2000;
-            mmp.height = options.height || 2000;
-        } else {
-            mmp.width = 2000;
-            mmp.height = 2000;
-        }
+        if ( opt ) {} else {}
 
-        mmp.nodes = [];
+        g.width = 900;
+        g.height = 600;
 
-        mmp.container = d3.select( selector ).style('overflow', 'auto');
-        mmp.mmap = mmp.container.append('svg')
-            .attr('width', mmp.width )
-            .attr('height', mmp.height );
+        g.nodes = [{
+            x : g.width/2, y : g.height/2,
+            bgColor : '#868f78', textColor : '#e3e3e3',
+            fontSize : 19, text : 'Map name'
+        }];
 
-        centerSheet();
+        g.dom = {};
 
-        createNode({
-            x : mmp.width/2,
-            y : mmp.width/2,
-            fill : '#b9c7a5'
-        });
+        const svg = d3.select( selector ).append('svg')
+            .attr('width', g.width )
+            .attr('height', g.height )
+            .append('g').call( zoom );
 
+        svg.append("rect")
+            .attr("width", g.width)
+            .attr("height", g.height)
+            .attr("fill", "#ececec")
+            .attr("pointer-events", "all");
+
+        g.dom.mmap = svg.append('g');
     }

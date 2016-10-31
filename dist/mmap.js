@@ -8,13 +8,13 @@
 (function( window, d3 ) {
 
     /**
-     * @name mmp
+     * @name g
      * @description
-     * Dictionary that will contain all the properties of the
+     * Global dictionary that will contain all the properties of the
      * map shared by all functions within the module.
      *
      */
-    const mmp = {};
+    const g = {};
 
     /**
      * @name init
@@ -22,55 +22,101 @@
      * ...
      *
      * @param {string} selector The selector in which to draw
-     * @param {Object} options Additional options for the graph
+     * @param {Object} opt Additional options for the map
      */
-    function init( selector, options ) {
+    function init( selector, opt ) {
 
         // Option settings
-        if ( options ) {
-            mmp.width = options.width || 2000;
-            mmp.height = options.height || 2000;
-        } else {
-            mmp.width = 2000;
-            mmp.height = 2000;
-        }
+        if ( opt ) {} else {}
 
-        mmp.nodes = [];
+        g.width = 900;
+        g.height = 600;
 
-        mmp.container = d3.select( selector ).style('overflow', 'auto');
-        mmp.mmap = mmp.container.append('svg')
-            .attr('width', mmp.width )
-            .attr('height', mmp.height );
+        g.nodes = [{
+            x : g.width/2, y : g.height/2,
+            bgColor : '#868f78', textColor : '#e3e3e3',
+            fontSize : 19, text : 'Map name'
+        }];
 
-        centerSheet();
+        g.dom = {};
 
-        createNode({
-            x : mmp.width/2,
-            y : mmp.width/2,
-            fill : '#b9c7a5'
-        });
+        const svg = d3.select( selector ).append('svg')
+            .attr('width', g.width )
+            .attr('height', g.height )
+            .append('g').call( zoom );
 
+        svg.append("rect")
+            .attr("width", g.width)
+            .attr("height", g.height)
+            .attr("fill", "#ececec")
+            .attr("pointer-events", "all");
+
+        g.dom.mmap = svg.append('g');
     }
 
     /****** Utils functions  ******/
 
-    function centerSheet() {
-        mmp.container.node().scrollTop = 600;
-        mmp.container.node().scrollLeft = 500;
+    function updateNodes() {
+
+        const a = g.dom.mmap.selectAll('g').data( g.nodes ).enter().append('g')
+            .attr('transform', function( n ) { return 'translate('+ n.x +','+ n.y +')'; } )
+            .attr('cursor', 'pointer')
+            .call( drag );
+
+        const ellipse = a.append('ellipse').attr('fill', function( n ) { return n.bgColor; } );
+
+        const text = a.append('text').text( function( n ) { return n.text; } )
+            .attr('font-family', 'sans-serif')
+            .attr('font-size', function( n ) { return n.fontSize; } )
+            .attr('text-anchor', 'middle')
+            .attr('fill', function( n ) { return n.textColor; } );
+
+        ellipse.attr('rx', parseInt( text.style('width') )/2 + 25 );
+        ellipse.attr('ry', parseInt( text.style('height') )/2 + 16 );
+        text.attr('dy', parseInt( text.style('height') )/2 - 5 );
+
     }
+
+    // function centerSheet() {
+    //     mmp.container.node().scrollTop = ( mmp.height - window.innerHeight )/2;
+    //     mmp.container.node().scrollLeft = ( mmp.width - window.innerWidth )/2;
+    // }
+
+    function zoomed() {
+        g.dom.mmap.attr("transform", "translate(" + d3.event.transform.x + ',' + d3.event.transform.y + ")scale(" + d3.event.transform.k + ")");
+    }
+
+    function dragstarted() {
+      d3.event.sourceEvent.stopPropagation();
+      d3.select(this).classed("dragging", true);
+    }
+
+    function dragged(n) {
+      d3.select(this).attr('transform', 'translate('+ (n.x = d3.event.x) +','+ (n.y = d3.event.y) +')');
+    }
+
+    function dragended() {
+      d3.select(this).classed("dragging", false);
+    }
+
+    const zoom = d3.zoom()
+        .scaleExtent([0.5, 10])
+        .on("zoom", zoomed);
+
+    const drag = d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended);
 
     /****** Public functions ******/
 
     function createNode( opt ) {
-
-        mmp.nodes.push( mmp.mmap.append('ellipse')
-            .attr('cx', opt.x )
-            .attr('cy', opt.y )
-            .attr('rx', 40 )
-            .attr('ry', 20 )
-            .attr('fill', opt.fill || '#b9c7a5')
-        );
-
+        g.nodes.push({
+            x : opt.x, y : opt.y,
+            bgColor : opt.bgColor, textColor : opt.textColor,
+            fontSize : opt.fontSize, text : opt.text
+        });
+        updateNodes();
     }
 
     /**
