@@ -25,62 +25,49 @@
      * @param {Object} opt Additional options for the map
      */
     function init( selector, opt ) {
-
-        // Option settings
-        if ( opt ) {} else {}
-
-        g.width = 900;
-        g.height = 600;
-
-        g.nodes = [{
-            x : g.width/2, y : g.height/2,
-            bgColor : '#868f78', textColor : '#e3e3e3',
-            fontSize : 19, text : 'Map name'
-        }];
-
+        // Dom elements
         g.dom = {};
+        // Properties of nodes
+        g.nodes = {
+            list : [],
+            selected : 0,
+            style : {
+                bgColor : '#f0f0f0',
+                textColor : '#787878',
+                fontSize : 15,
+                text : 'Node'
+            }
+        };
+        // Option settings
+        if ( opt ) {
 
-        const svg = d3.select( selector ).append('svg')
-            .attr('width', g.width )
-            .attr('height', g.height )
+        }
+
+        const container = d3.select( selector ).style('overflow', 'hidden');
+
+        const svg = container.append('svg')
+            .attr('width', '100%')
+            .attr('height', '100%')
             .append('g').call( zoom );
 
         svg.append("rect")
-            .attr("width", g.width)
-            .attr("height", g.height)
-            .attr("fill", "#ececec")
+            .attr("width", '100%')
+            .attr("height", '100%')
+            .attr("fill", "transparent")
             .attr("pointer-events", "all");
 
         g.dom.mmap = svg.append('g');
+
+        // Creation of the root node
+        createNode({
+            x : parseInt(container.style('width'))/2,
+            y : parseInt(container.style('height'))/2,
+            bgColor : '#868f78', textColor : '#e3e3e3',
+            fontSize : 19, text : 'Map name'
+        });
     }
 
     /****** Utils functions  ******/
-
-    function updateNodes() {
-
-        const a = g.dom.mmap.selectAll('g').data( g.nodes ).enter().append('g')
-            .attr('transform', function( n ) { return 'translate('+ n.x +','+ n.y +')'; } )
-            .attr('cursor', 'pointer')
-            .call( drag );
-
-        const ellipse = a.append('ellipse').attr('fill', function( n ) { return n.bgColor; } );
-
-        const text = a.append('text').text( function( n ) { return n.text; } )
-            .attr('font-family', 'sans-serif')
-            .attr('font-size', function( n ) { return n.fontSize; } )
-            .attr('text-anchor', 'middle')
-            .attr('fill', function( n ) { return n.textColor; } );
-
-        ellipse.attr('rx', parseInt( text.style('width') )/2 + 25 );
-        ellipse.attr('ry', parseInt( text.style('height') )/2 + 16 );
-        text.attr('dy', parseInt( text.style('height') )/2 - 5 );
-
-    }
-
-    // function centerSheet() {
-    //     mmp.container.node().scrollTop = ( mmp.height - window.innerHeight )/2;
-    //     mmp.container.node().scrollLeft = ( mmp.width - window.innerWidth )/2;
-    // }
 
     function zoomed() {
         g.dom.mmap.attr("transform", "translate(" + d3.event.transform.x + ',' + d3.event.transform.y + ")scale(" + d3.event.transform.k + ")");
@@ -111,12 +98,37 @@
     /****** Public functions ******/
 
     function createNode( opt ) {
-        g.nodes.push({
+        const defaultStyle = g.nodes.style;
+        const n = {
+            x : opt.x, y : opt.y,
+            bgColor : opt.bgColor || defaultStyle.bgColor,
+            textColor : opt.textColor || defaultStyle.textColor,
+            fontSize : opt.fontSize || defaultStyle.fontSize,
+            text : opt.text || defaultStyle.text
+        };
+
+        const a = g.dom.mmap.append('g')
+            .attr('transform', 'translate('+ n.x +','+ n.y +')')
+            .attr('cursor', 'pointer')
+            .call( drag );
+
+        const ellipse = a.append('ellipse').attr('fill', function( n ) { return n.bgColor; } );
+
+        const text = a.append('text').text( function( n ) { return n.text; } )
+            .attr('font-family', 'sans-serif')
+            .attr('font-size', function( n ) { return n.fontSize; } )
+            .attr('text-anchor', 'middle')
+            .attr('fill', function( n ) { return n.textColor; } );
+
+        ellipse.attr('rx', parseInt( text.style('width') )/2 + 25 );
+        ellipse.attr('ry', parseInt( text.style('height') )/2 + 16 );
+        text.attr('dy', parseInt( text.style('height') )/2 - 5 );
+
+        g.nodes.list.push({
             x : opt.x, y : opt.y,
             bgColor : opt.bgColor, textColor : opt.textColor,
             fontSize : opt.fontSize, text : opt.text
         });
-        updateNodes();
     }
 
     /**

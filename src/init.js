@@ -16,31 +16,44 @@
      * @param {Object} opt Additional options for the map
      */
     function init( selector, opt ) {
-
-        // Option settings
-        if ( opt ) {} else {}
-
-        g.width = 900;
-        g.height = 600;
-
-        g.nodes = [{
-            x : g.width/2, y : g.height/2,
-            bgColor : '#868f78', textColor : '#e3e3e3',
-            fontSize : 19, text : 'Map name'
-        }];
-
+        // Dom elements
         g.dom = {};
+        // Properties of nodes
+        g.nodes = {
+            list : [],
+            selected : 0,
+            style : {
+                bgColor : '#f0f0f0',
+                textColor : '#787878',
+                fontSize : 15,
+                text : 'Node'
+            }
+        };
+        // Option settings
+        if ( opt ) {
 
-        const svg = d3.select( selector ).append('svg')
-            .attr('width', g.width )
-            .attr('height', g.height )
+        }
+
+        const container = d3.select( selector ).style('overflow', 'hidden');
+
+        const svg = container.append('svg')
+            .attr('width', '100%')
+            .attr('height', '100%')
             .append('g').call( zoom );
 
         svg.append("rect")
-            .attr("width", g.width)
-            .attr("height", g.height)
-            .attr("fill", "#ececec")
+            .attr("width", '100%')
+            .attr("height", '100%')
+            .attr("fill", "transparent")
             .attr("pointer-events", "all");
 
         g.dom.mmap = svg.append('g');
+
+        // Creation of the root node
+        createNode({
+            x : parseInt(container.style('width'))/2,
+            y : parseInt(container.style('height'))/2,
+            bgColor : '#868f78', textColor : '#e3e3e3',
+            fontSize : 19, text : 'Map name'
+        });
     }
