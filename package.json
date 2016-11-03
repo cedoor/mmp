@@ -24,7 +24,9 @@
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^2.0.0"
+    "gulp-uglify": "^2.0.0",
+    "pump": "^1.0.1",
+    "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony"
   },
   "config": {
     "commitizen": {
