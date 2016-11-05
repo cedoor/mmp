@@ -1,11 +1,11 @@
     /**
-     * @name g
+     * @name global
      * @description
      * Global dictionary that will contain all the properties of the
      * map shared by all functions within the module.
      *
      */
-    const g = {};
+    const global = {};
 
     /**
      * @name init
@@ -16,27 +16,10 @@
      * @param {Object} opt Additional options for the map
      */
     function init( selector, opt ) {
-        // Dom elements
-        g.dom = {};
-        // Properties of nodes
-        g.nodes = {
-            list : [],
-            selected : 0,
-            style : {
-                bgColor : '#f0f0f0',
-                textColor : '#787878',
-                fontSize : 15,
-                text : 'Node'
-            }
-        };
-        // Option settings
-        if ( opt ) {
 
-        }
+        const frame = d3.select( selector ).style('overflow', 'hidden');
 
-        const container = d3.select( selector ).style('overflow', 'hidden');
-
-        const svg = container.append('svg')
+        const svg = frame.append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
             .append('g').call( zoom );
@@ -47,13 +30,18 @@
             .attr("fill", "transparent")
             .attr("pointer-events", "all");
 
-        g.dom.mmap = svg.append('g');
+        global.mmap = svg.append('g').attr('class', 'mmap');
 
-        // Creation of the root node
-        createNode({
-            x : parseInt(container.style('width'))/2,
-            y : parseInt(container.style('height'))/2,
-            bgColor : '#868f78', textColor : '#e3e3e3',
-            fontSize : 19, text : 'Map name'
-        });
+        global.nodes = d3.map([{
+            id : 'node0',
+            x : parseInt( frame.style('width') )/2,
+            y : parseInt( frame.style('height') )/2,
+            background : '#f5f5f5', color : '#8d9f8e',
+            font : 18, name : 'Root node'
+        }], n => n.id );
+
+        global.selected = 'node0';
+
+        update();
+
     }

@@ -4,8 +4,7 @@
      *
      */
     window.mmap = {
-        init : init,
-        createNode : createNode,
+        init : init
     };
 
 }(this, window.d3));

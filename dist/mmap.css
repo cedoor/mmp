@@ -1,0 +1,24 @@
+
+.mmap:active {
+    cursor: move;
+}
+
+.node {
+    cursor: pointer;
+}
+
+.node ellipse {
+    fill: #e6e6e6;
+}
+
+.node text {
+    font: 15px sans-serif;
+    text-anchor: middle;
+    fill: #6f6f6f;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
+}

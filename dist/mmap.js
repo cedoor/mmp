@@ -8,13 +8,13 @@
 (function( window, d3 ) {
 
     /**
-     * @name g
+     * @name global
      * @description
      * Global dictionary that will contain all the properties of the
      * map shared by all functions within the module.
      *
      */
-    const g = {};
+    const global = {};
 
     /**
      * @name init
@@ -25,27 +25,10 @@
      * @param {Object} opt Additional options for the map
      */
     function init( selector, opt ) {
-        // Dom elements
-        g.dom = {};
-        // Properties of nodes
-        g.nodes = {
-            list : [],
-            selected : 0,
-            style : {
-                bgColor : '#f0f0f0',
-                textColor : '#787878',
-                fontSize : 15,
-                text : 'Node'
-            }
-        };
-        // Option settings
-        if ( opt ) {
 
-        }
+        const frame = d3.select( selector ).style('overflow', 'hidden');
 
-        const container = d3.select( selector ).style('overflow', 'hidden');
-
-        const svg = container.append('svg')
+        const svg = frame.append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
             .append('g').call( zoom );
@@ -56,79 +39,89 @@
             .attr("fill", "transparent")
             .attr("pointer-events", "all");
 
-        g.dom.mmap = svg.append('g');
+        global.mmap = svg.append('g').attr('class', 'mmap');
 
-        // Creation of the root node
-        createNode({
-            x : parseInt(container.style('width'))/2,
-            y : parseInt(container.style('height'))/2,
-            bgColor : '#868f78', textColor : '#e3e3e3',
-            fontSize : 19, text : 'Map name'
-        });
+        global.nodes = d3.map([{
+            id : 'node0',
+            x : parseInt( frame.style('width') )/2,
+            y : parseInt( frame.style('height') )/2,
+            background : '#f5f5f5', color : '#8d9f8e',
+            font : 18, name : 'Root node'
+        }], n => n.id );
+
+        global.selected = 'node0';
+
+        update();
+
     }
 
     /****** Utils functions  ******/
 
-    function zoomed() {
-        g.dom.mmap.attr("transform", "translate(" + d3.event.transform.x + ',' + d3.event.transform.y + ")scale(" + d3.event.transform.k + ")");
-    }
+    const zoom = d3.zoom().scaleExtent([0.5, 5]).on('zoom', zoomed);
+    const drag = d3.drag().on('drag', dragged ).on('start', selectNode);
 
-    function dragstarted() {
-      d3.event.sourceEvent.stopPropagation();
-      d3.select(this).classed("dragging", true);
+    function zoomed() {
+        global.mmap.attr('transform',
+            'translate(' + d3.event.transform.x + ',' + d3.event.transform.y + ')' +
+            'scale(' + d3.event.transform.k + ')');
     }
 
     function dragged(n) {
-      d3.select(this).attr('transform', 'translate('+ (n.x = d3.event.x) +','+ (n.y = d3.event.y) +')');
+        const self = d3.select(this);
+        self.attr('transform', 'translate('+ (n.x = d3.event.x) +','+ (n.y = d3.event.y) +')');
     }
 
-    function dragended() {
-      d3.select(this).classed("dragging", false);
+    function selectNode(n) {
+        global.selected = n.id;
     }
 
-    const zoom = d3.zoom()
-        .scaleExtent([0.5, 10])
-        .on("zoom", zoomed);
+    // Creates a curved (diagonal) path from parent to the child nodes
+    function diagonal(s, d) {
+        path = `M ${s.x} ${s.y}
+              C ${(s.x + d.x) / 2} ${s.y},
+                ${(s.x + d.x) / 2} ${d.y},
+                ${d.x} ${d.y}`;
+        return path;
+    }
 
-    const drag = d3.drag()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended);
+    function update() {
 
-    /****** Public functions ******/
+        const nodes = global.nodes.values();
 
-    function createNode( opt ) {
-        const defaultStyle = g.nodes.style;
-        const n = {
-            x : opt.x, y : opt.y,
-            bgColor : opt.bgColor || defaultStyle.bgColor,
-            textColor : opt.textColor || defaultStyle.textColor,
-            fontSize : opt.fontSize || defaultStyle.fontSize,
-            text : opt.text || defaultStyle.text
-        };
+        const node = global.mmap.selectAll('.node').data( nodes );
 
-        const a = g.dom.mmap.append('g')
-            .attr('transform', 'translate('+ n.x +','+ n.y +')')
-            .attr('cursor', 'pointer')
+        const nodeContainer = node.enter().append('g')
+            .attr('class', 'node')
+            .attr('transform', n => 'translate(' + n.x + ',' + n.y + ')')
             .call( drag );
 
-        const ellipse = a.append('ellipse').attr('fill', function( n ) { return n.bgColor; } );
+        const ellipse = nodeContainer.append('ellipse').style('fill', n => n.background );
 
-        const text = a.append('text').text( function( n ) { return n.text; } )
-            .attr('font-family', 'sans-serif')
-            .attr('font-size', function( n ) { return n.fontSize; } )
-            .attr('text-anchor', 'middle')
-            .attr('fill', function( n ) { return n.textColor; } );
+        const text = nodeContainer.append('text').text( n => n.name )
+            .style('fill', n => n.color )
+            .style('font-size', n => n.font );
 
         ellipse.attr('rx', parseInt( text.style('width') )/2 + 25 );
         ellipse.attr('ry', parseInt( text.style('height') )/2 + 16 );
         text.attr('dy', parseInt( text.style('height') )/2 - 5 );
 
-        g.nodes.list.push({
-            x : opt.x, y : opt.y,
-            bgColor : opt.bgColor, textColor : opt.textColor,
-            fontSize : opt.fontSize, text : opt.text
-        });
+        node.exit().remove();
+
+        const link = global.mmap.selectAll('.link').data( nodes.slice(1) );
+
+        link.enter().insert('path', 'g')
+            .attr('class', 'link')
+            .style('stroke', n => n.color )
+            .attr('d', n => diagonal(n, n.parent) );
+
+        link.exit().remove();
+    }
+
+    /****** Public functions ******/
+
+    function createNode( opt ) {
+        global.nodes.set( opt );
+        update();
     }
 
     /**
@@ -137,8 +130,7 @@
      *
      */
     window.mmap = {
-        init : init,
-        createNode : createNode,
+        init : init
     };
 
 }(this, window.d3));
