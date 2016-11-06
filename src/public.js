@@ -14,3 +14,11 @@
             update();
         }
     }
+
+    function getNodes() {
+        return global.nodes.values();
+    }
+
+    function selectNode(n) {
+        global.selected = n;
+    }

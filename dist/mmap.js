@@ -73,24 +73,19 @@
     function dragged(n) {
         const self = d3.select(this);
         self.attr('transform', 'translate('+ (n.x = d3.event.x) +','+ (n.y = d3.event.y) +')');
-        d3.selectAll('.link').attr('d', n => diagonal(n, n.parent) );
-    }
-
-    function selectNode(n) {
-        global.selected = n;
+        d3.selectAll('.link').attr('d', n => diagonal( n ) );
     }
 
     // Creates a curved (diagonal) path from parent to the child nodes
-    function diagonal(s, d) {
-        return `M ${s.x} ${s.y}
-              C ${(s.x + d.x) / 2} ${s.y},
-                ${(s.x + d.x) / 2} ${d.y},
-                ${d.x} ${d.y}`;
+    function diagonal( n ) {
+        return `M ${n.parent.x} ${n.parent.y}
+            C ${(n.parent.x + n.x) / 2} ${n.parent.y},
+              ${(n.parent.x + n.x) / 2} ${n.y},
+              ${n.x - 50} ${n.y + 50}
+            C ${(n.x + n.parent.x) / 2 + 10} ${n.y},
+              ${(n.x + n.parent.x) / 2 + 10} ${n.parent.y},
+              ${n.parent.x + 10} ${n.parent.y + 10}`;
     }
-
-    var linevar = d3.line()
-                .x( n => n.x ).y( n => n.y )
-                .curve(d3.curveCatmullRom.alpha(0.5));
 
     function update() {
 
@@ -119,8 +114,9 @@
 
         link.enter().insert('path', 'g')
             .attr('class', 'link')
+            .style('fill', n => n.color )
             .style('stroke', n => n.color )
-            .attr('d', n => diagonal(n, n.parent) );
+            .attr('d', n => diagonal( n ) );
 
         link.exit().remove();
     }
@@ -142,6 +138,14 @@
         }
     }
 
+    function getNodes() {
+        return global.nodes.values();
+    }
+
+    function selectNode(n) {
+        global.selected = n;
+    }
+
     /**
      * @description
      * Make visible public functions outside
@@ -149,7 +153,9 @@
      */
     window.mmap = {
         init : init,
-        createNode : createNode
+        createNode : createNode,
+        getNodes : getNodes,
+        selectNode : selectNode
     };
 
 }(this, window.d3));

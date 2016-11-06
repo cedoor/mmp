@@ -5,7 +5,9 @@
      */
     window.mmap = {
         init : init,
-        createNode : createNode
+        createNode : createNode,
+        getNodes : getNodes,
+        selectNode : selectNode
     };
 
 }(this, window.d3));

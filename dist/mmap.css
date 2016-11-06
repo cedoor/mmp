@@ -8,12 +8,6 @@
 }
 
 .node text {
-    font: 15px sans-serif;
+    font-family: sans-serif;
     text-anchor: middle;
-}
-
-.link {
-    fill: none;
-    stroke: #ccc;
-    stroke-width: 2px;
 }
