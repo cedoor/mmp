@@ -12,7 +12,7 @@ gulp.task('compileSrc', function(cb) {
     return gulp.src([
         'src/start.js',
         'src/init.js',
-        'src/utils.js',
+        'src/core.js',
         'src/public.js',
         'src/end.js'
     ])

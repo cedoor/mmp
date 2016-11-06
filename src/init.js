@@ -32,15 +32,19 @@
 
         global.mmap = svg.append('g').attr('class', 'mmap');
 
-        global.nodes = d3.map([{
-            id : 'node0',
+        global.nodes = d3.map();
+
+        global.counter = 0;
+
+        // Root node creation
+        global.nodes.set('node' + global.counter ,{
             x : parseInt( frame.style('width') )/2,
             y : parseInt( frame.style('height') )/2,
             background : '#f5f5f5', color : '#8d9f8e',
             font : 18, name : 'Root node'
-        }], n => n.id );
+        });
 
-        global.selected = 'node0';
+        global.selected = global.nodes.get('node0');
 
         update();
 

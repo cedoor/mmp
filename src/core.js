@@ -12,20 +12,24 @@
     function dragged(n) {
         const self = d3.select(this);
         self.attr('transform', 'translate('+ (n.x = d3.event.x) +','+ (n.y = d3.event.y) +')');
+        d3.selectAll('.link').attr('d', n => diagonal(n, n.parent) );
     }
 
     function selectNode(n) {
-        global.selected = n.id;
+        global.selected = n;
     }
 
     // Creates a curved (diagonal) path from parent to the child nodes
     function diagonal(s, d) {
-        path = `M ${s.x} ${s.y}
+        return `M ${s.x} ${s.y}
               C ${(s.x + d.x) / 2} ${s.y},
                 ${(s.x + d.x) / 2} ${d.y},
                 ${d.x} ${d.y}`;
-        return path;
     }
+
+    var linevar = d3.line()
+                .x( n => n.x ).y( n => n.y )
+                .curve(d3.curveCatmullRom.alpha(0.5));
 
     function update() {
 

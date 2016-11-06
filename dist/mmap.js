@@ -41,15 +41,19 @@
 
         global.mmap = svg.append('g').attr('class', 'mmap');
 
-        global.nodes = d3.map([{
-            id : 'node0',
+        global.nodes = d3.map();
+
+        global.counter = 0;
+
+        // Root node creation
+        global.nodes.set('node' + global.counter ,{
             x : parseInt( frame.style('width') )/2,
             y : parseInt( frame.style('height') )/2,
             background : '#f5f5f5', color : '#8d9f8e',
             font : 18, name : 'Root node'
-        }], n => n.id );
+        });
 
-        global.selected = 'node0';
+        global.selected = global.nodes.get('node0');
 
         update();
 
@@ -69,20 +73,24 @@
     function dragged(n) {
         const self = d3.select(this);
         self.attr('transform', 'translate('+ (n.x = d3.event.x) +','+ (n.y = d3.event.y) +')');
+        d3.selectAll('.link').attr('d', n => diagonal(n, n.parent) );
     }
 
     function selectNode(n) {
-        global.selected = n.id;
+        global.selected = n;
     }
 
     // Creates a curved (diagonal) path from parent to the child nodes
     function diagonal(s, d) {
-        path = `M ${s.x} ${s.y}
+        return `M ${s.x} ${s.y}
               C ${(s.x + d.x) / 2} ${s.y},
                 ${(s.x + d.x) / 2} ${d.y},
                 ${d.x} ${d.y}`;
-        return path;
     }
+
+    var linevar = d3.line()
+                .x( n => n.x ).y( n => n.y )
+                .curve(d3.curveCatmullRom.alpha(0.5));
 
     function update() {
 
@@ -119,9 +127,19 @@
 
     /****** Public functions ******/
 
-    function createNode( opt ) {
-        global.nodes.set( opt );
-        update();
+    function createNode( prop ) {
+        if ( global.selected && global.selected.name ) {
+            global.nodes.set('node' + ( ++global.counter ),{
+                parent : global.selected,
+                x : global.selected.x + 200,
+                y : global.selected.y + 50,
+                background : prop.background || '#e6e6e6',
+                color : prop.color || '#6f6f6f',
+                font : prop.font || 15,
+                name : prop.name || 'Node'
+            });
+            update();
+        }
     }
 
     /**
@@ -130,7 +148,8 @@
      *
      */
     window.mmap = {
-        init : init
+        init : init,
+        createNode : createNode
     };
 
 }(this, window.d3));
