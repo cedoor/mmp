@@ -2,7 +2,8 @@
 
     function createNode( prop ) {
         if ( global.selected && global.selected.name ) {
-            global.nodes.set('node' + ( ++global.counter ),{
+            global.nodes.push({
+                id : 'node' + ( ++global.counter ),
                 parent : global.selected,
                 x : global.selected.x + 200,
                 y : global.selected.y + 50,
@@ -16,7 +17,7 @@
     }
 
     function getNodes() {
-        return global.nodes.values();
+        return global.nodes;
     }
 
     function selectNode(n) {

@@ -17,7 +17,7 @@
      */
     function init( selector, opt ) {
 
-        const frame = d3.select( selector ).style('overflow', 'hidden');
+        const frame = d3.select( selector );
 
         const svg = frame.append('svg')
             .attr('width', '100%')
@@ -30,22 +30,18 @@
             .attr("fill", "transparent")
             .attr("pointer-events", "all");
 
-        global.mmap = svg.append('g').attr('class', 'mmap');
-
-        global.nodes = d3.map();
-
+        // Set global variables
+        global.mmap = svg.append('g');
         global.counter = 0;
-
-        // Root node creation
-        global.nodes.set('node' + global.counter ,{
+        global.nodes = [{
+            id : 'node' + global.counter,
             x : parseInt( frame.style('width') )/2,
             y : parseInt( frame.style('height') )/2,
             background : '#f5f5f5', color : '#8d9f8e',
             font : 18, name : 'Root node'
-        });
+        }];
 
-        global.selected = global.nodes.get('node0');
-
+        selectNode( global.nodes[0] );
         update();
 
     }

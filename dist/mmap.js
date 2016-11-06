@@ -26,7 +26,7 @@
      */
     function init( selector, opt ) {
 
-        const frame = d3.select( selector ).style('overflow', 'hidden');
+        const frame = d3.select( selector );
 
         const svg = frame.append('svg')
             .attr('width', '100%')
@@ -39,22 +39,18 @@
             .attr("fill", "transparent")
             .attr("pointer-events", "all");
 
-        global.mmap = svg.append('g').attr('class', 'mmap');
-
-        global.nodes = d3.map();
-
+        // Set global variables
+        global.mmap = svg.append('g');
         global.counter = 0;
-
-        // Root node creation
-        global.nodes.set('node' + global.counter ,{
+        global.nodes = [{
+            id : 'node' + global.counter,
             x : parseInt( frame.style('width') )/2,
             y : parseInt( frame.style('height') )/2,
             background : '#f5f5f5', color : '#8d9f8e',
             font : 18, name : 'Root node'
-        });
+        }];
 
-        global.selected = global.nodes.get('node0');
-
+        selectNode( global.nodes[0] );
         update();
 
     }
@@ -62,7 +58,11 @@
     /****** Utils functions  ******/
 
     const zoom = d3.zoom().scaleExtent([0.5, 5]).on('zoom', zoomed);
-    const drag = d3.drag().on('drag', dragged ).on('start', selectNode);
+    const drag = d3.drag().on('drag', dragged ).on('start', function(n) {
+        selectNode(n);
+        d3.selectAll('.node > ellipse').attr('stroke', 'none');
+        d3.select(this).selectAll('ellipse').attr('stroke', '#888888');
+    });
 
     function zoomed() {
         global.mmap.attr('transform',
@@ -78,20 +78,21 @@
 
     // Creates a curved (diagonal) path from parent to the child nodes
     function diagonal( n ) {
-        return `M ${n.parent.x} ${n.parent.y}
+        return `M ${n.parent.x} ${n.parent.y - 5}
             C ${(n.parent.x + n.x) / 2} ${n.parent.y},
               ${(n.parent.x + n.x) / 2} ${n.y},
-              ${n.x - 50} ${n.y + 50}
+              ${n.x - 20} ${n.y + 20}
             C ${(n.x + n.parent.x) / 2 + 10} ${n.y},
               ${(n.x + n.parent.x) / 2 + 10} ${n.parent.y},
-              ${n.parent.x + 10} ${n.parent.y + 10}`;
+              ${n.parent.x} ${n.parent.y + 5}`;
     }
 
     function update() {
 
-        const nodes = global.nodes.values();
+        const nodes = global.nodes;
 
-        const node = global.mmap.selectAll('.node').data( nodes );
+        const node = global.mmap.selectAll('.node').data( nodes )
+            .each( n => n.dom = d3.select(this) );
 
         const nodeContainer = node.enter().append('g')
             .attr('class', 'node')
@@ -125,7 +126,8 @@
 
     function createNode( prop ) {
         if ( global.selected && global.selected.name ) {
-            global.nodes.set('node' + ( ++global.counter ),{
+            global.nodes.push({
+                id : 'node' + ( ++global.counter ),
                 parent : global.selected,
                 x : global.selected.x + 200,
                 y : global.selected.y + 50,
@@ -139,7 +141,7 @@
     }
 
     function getNodes() {
-        return global.nodes.values();
+        return global.nodes;
     }
 
     function selectNode(n) {

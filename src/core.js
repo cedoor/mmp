@@ -1,7 +1,11 @@
     /****** Utils functions  ******/
 
     const zoom = d3.zoom().scaleExtent([0.5, 5]).on('zoom', zoomed);
-    const drag = d3.drag().on('drag', dragged ).on('start', selectNode);
+    const drag = d3.drag().on('drag', dragged ).on('start', function(n) {
+        selectNode(n);
+        d3.selectAll('.node > ellipse').attr('stroke', 'none');
+        d3.select(this).selectAll('ellipse').attr('stroke', '#888888');
+    });
 
     function zoomed() {
         global.mmap.attr('transform',
@@ -17,20 +21,21 @@
 
     // Creates a curved (diagonal) path from parent to the child nodes
     function diagonal( n ) {
-        return `M ${n.parent.x} ${n.parent.y}
+        return `M ${n.parent.x} ${n.parent.y - 5}
             C ${(n.parent.x + n.x) / 2} ${n.parent.y},
               ${(n.parent.x + n.x) / 2} ${n.y},
-              ${n.x - 50} ${n.y + 50}
+              ${n.x - 20} ${n.y + 20}
             C ${(n.x + n.parent.x) / 2 + 10} ${n.y},
               ${(n.x + n.parent.x) / 2 + 10} ${n.parent.y},
-              ${n.parent.x + 10} ${n.parent.y + 10}`;
+              ${n.parent.x} ${n.parent.y + 5}`;
     }
 
     function update() {
 
-        const nodes = global.nodes.values();
+        const nodes = global.nodes;
 
-        const node = global.mmap.selectAll('.node').data( nodes );
+        const node = global.mmap.selectAll('.node').data( nodes )
+            .each( n => n.dom = d3.select(this) );
 
         const nodeContainer = node.enter().append('g')
             .attr('class', 'node')

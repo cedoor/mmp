@@ -1,10 +1,12 @@
 
-.mmap:active {
-    cursor: move;
-}
-
 .node {
     cursor: pointer;
+}
+
+.node ellipse {
+    opacity: .8;
+    stroke-opacity : .2;
+    stroke-width : 3;
 }
 
 .node text {
