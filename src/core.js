@@ -1,16 +1,17 @@
     /****** Utils functions  ******/
 
-    const zoom = d3.zoom().scaleExtent([0.5, 5]).on('zoom', zoomed);
-    const drag = d3.drag().on('drag', dragged ).on('start', function(n) {
-        selectNode(n);
-        d3.selectAll('.node > ellipse').attr('stroke', 'none');
-        d3.select(this).selectAll('ellipse').attr('stroke', '#888888');
-    });
+    const zoom = d3.zoom().scaleExtent([0.5, 2]).on('zoom', zoomed);
+
+    const drag = d3.drag().on('drag', dragged ).on('start', dragStarted );
 
     function zoomed() {
-        global.mmap.attr('transform',
-            'translate(' + d3.event.transform.x + ',' + d3.event.transform.y + ')' +
-            'scale(' + d3.event.transform.k + ')');
+        global.svg.mmap.attr('transform', d3.event.transform.toString() );
+    }
+
+    function dragStarted(n) {
+        d3.selectAll('.node > ellipse').attr('stroke', 'none');
+        d3.select(this).selectAll('ellipse').attr('stroke', '#888888');
+        selectNode(n);
     }
 
     function dragged(n) {
@@ -19,22 +20,34 @@
         d3.selectAll('.link').attr('d', n => diagonal( n ) );
     }
 
+    function deselect() {
+        d3.selectAll('.node > ellipse').attr('stroke', 'none');
+        global.selected = global.nodes[0];
+    }
+
     // Creates a curved (diagonal) path from parent to the child nodes
     function diagonal( n ) {
-        return `M ${n.parent.x} ${n.parent.y - 5}
-            C ${(n.parent.x + n.x) / 2} ${n.parent.y},
-              ${(n.parent.x + n.x) / 2} ${n.y},
-              ${n.x - 20} ${n.y + 20}
-            C ${(n.x + n.parent.x) / 2 + 10} ${n.y},
-              ${(n.x + n.parent.x) / 2 + 10} ${n.parent.y},
-              ${n.parent.x} ${n.parent.y + 5}`;
+        const path = d3.path();
+        path.moveTo( n.parent.x, n.parent.y - 5 );
+        path.bezierCurveTo(
+            (n.parent.x + n.x) / 2, n.parent.y,
+            (n.parent.x + n.x) / 2, n.y,
+            n.x - 20, n.y + 20
+        );
+        path.bezierCurveTo(
+            (n.x + n.parent.x) / 2 + 10, n.y,
+            (n.x + n.parent.x) / 2 + 10, n.parent.y,
+            n.parent.x, n.parent.y + 5
+        );
+        path.closePath();
+        return path;
     }
 
     function update() {
 
         const nodes = global.nodes;
 
-        const node = global.mmap.selectAll('.node').data( nodes )
+        const node = global.svg.mmap.selectAll('.node').data( nodes )
             .each( n => n.dom = d3.select(this) );
 
         const nodeContainer = node.enter().append('g')
@@ -49,12 +62,12 @@
             .style('font-size', n => n.font );
 
         ellipse.attr('rx', parseInt( text.style('width') )/2 + 25 );
-        ellipse.attr('ry', parseInt( text.style('height') )/2 + 16 );
+        ellipse.attr('ry', parseInt( text.style('height') )/2 + 14 );
         text.attr('dy', parseInt( text.style('height') )/2 - 5 );
 
         node.exit().remove();
 
-        const link = global.mmap.selectAll('.link').data( nodes.slice(1) );
+        const link = global.svg.mmap.selectAll('.link').data( nodes.slice(1) );
 
         link.enter().insert('path', 'g')
             .attr('class', 'link')

@@ -16,6 +16,10 @@
         }
     }
 
+    function resetZoom() {
+        global.svg.main.transition().duration(500).call( zoom.transform, d3.zoomIdentity );
+    }
+
     function getNodes() {
         return global.nodes;
     }

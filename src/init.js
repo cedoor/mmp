@@ -19,19 +19,20 @@
 
         const frame = d3.select( selector );
 
-        const svg = frame.append('svg')
+        const g = frame.append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
             .append('g').call( zoom );
 
-        svg.append("rect")
+        g.append("rect")
             .attr("width", '100%')
             .attr("height", '100%')
             .attr("fill", "transparent")
-            .attr("pointer-events", "all");
+            .attr("pointer-events", "all")
+            .on('mousedown', deselect );
 
         // Set global variables
-        global.mmap = svg.append('g');
+        global.svg = { main : g, mmap : g.append('g') };
         global.counter = 0;
         global.nodes = [{
             id : 'node' + global.counter,
