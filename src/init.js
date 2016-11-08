@@ -29,20 +29,21 @@
             .attr("height", '100%')
             .attr("fill", "transparent")
             .attr("pointer-events", "all")
-            .on('mousedown', deselect );
+            .on('mousedown', deselectNodes );
 
         // Set global variables
         global.svg = { main : g, mmap : g.append('g') };
         global.counter = 0;
-        global.nodes = [{
-            id : 'node' + global.counter,
+        global.nodes = d3.map();
+
+        global.nodes.set('node' + global.counter, {
             x : parseInt( frame.style('width') )/2,
             y : parseInt( frame.style('height') )/2,
             background : '#f5f5f5', color : '#8d9f8e',
             font : 18, name : 'Root node'
-        }];
+        });
 
-        selectNode( global.nodes[0] );
+        selectNode('node0');
         update();
 
     }

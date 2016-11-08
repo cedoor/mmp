@@ -7,6 +7,7 @@
         init : init,
         createNode : createNode,
         getNodes : getNodes,
+        deleteNode : deleteNode,
         selectNode : selectNode
     };
 
