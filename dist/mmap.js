@@ -87,16 +87,21 @@
 
     // Creates a curved (diagonal) path from parent to the child nodes
     function diagonal( n ) {
+
+
+
         const path = d3.path();
         path.moveTo( n.parent.x, n.parent.y - 5 );
         path.bezierCurveTo(
-            (n.parent.x + n.x) / 2, n.parent.y,
-            (n.parent.x + n.x) / 2, n.y,
-            n.x - 20, n.y + 20
+            (n.parent.x + n.x - n.width/2) / 2, n.parent.y - 5,
+            (n.parent.x + n.x - n.width/2) / 2, n.y + n.height/2 + 5,
+            n.x - n.width/2, n.y + n.height/2 + 5
         );
+        path.lineTo( n.x, n.y + n.height/2 + 7 );
+        path.lineTo( n.x - n.width/2, n.y + n.height/2 + 10 );
         path.bezierCurveTo(
-            (n.x + n.parent.x) / 2 + 10, n.y,
-            (n.x + n.parent.x) / 2 + 10, n.parent.y,
+            (n.parent.x + n.x - n.width/2) / 2 + 5, n.y + n.height/2 + 10,
+            (n.parent.x + n.x - n.width/2) / 2 + 10, n.parent.y - 5,
             n.parent.x, n.parent.y + 5
         );
         path.closePath();
@@ -130,10 +135,12 @@
 
         nodeContainer.append('ellipse')
             .style('fill', n => n.background )
-            .attr('rx', function() {
-                return this.previousSibling.getBBox().width/2 + 20;
-            }).attr('ry', function() {
-                return this.previousSibling.getBBox().height/2 + 10;
+            .attr('rx', function( n ) {
+                n.width = this.previousSibling.getBBox().width + 40;
+                return n.width/2;
+            }).attr('ry', function( n ) {
+                n.height = this.previousSibling.getBBox().height + 20;
+                return n.height/2;
             });
 
         node.exit().remove();
@@ -143,7 +150,7 @@
         link.enter().insert('path', 'g')
             .attr('class', 'link')
             .style('fill', n => n.color )
-            .style('stroke', n => n.color )
+            .style('stroke', n => 'none' )
             .attr('d', n => diagonal( n ) );
 
         link.exit().remove();
