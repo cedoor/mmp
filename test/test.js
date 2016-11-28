@@ -23,7 +23,7 @@
     }
 
     function removeNode() {
-        // mmap.removeNode()
+        mmap.removeNode();
     }
 
     /** Map **/

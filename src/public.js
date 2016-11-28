@@ -17,18 +17,29 @@
         }
     }
 
-    // To fix
-    function removeNode(){
+    function removeNode() {
         if( global.selected !== 'node0' ) {
             global.nodes.remove( global.selected );
+
+            const clean = function( key ) {
+                global.nodes.each( function( n ) {
+                    if ( n.key !== 'node0' && n.parent.key === key ) {
+                        global.nodes.remove( n.key );
+                        clean( n.key );
+                        return;
+                    }
+                });
+            }
+            clean( global.selected );
+
             deselectNodes();
+            d3.selectAll('.node, .link').remove();
             update();
         }
     }
 
     function centerMap() {
         global.svg.main.transition().duration(500).call( zoom.transform, d3.zoomIdentity );
-        console.log(d3.zoomIdentity);
     }
 
     function getNodes() {
