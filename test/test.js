@@ -16,27 +16,27 @@
 
     /** Nodes **/
 
-    d3.timeout(function(){
+    function createNode() {
         mmap.createNode({
-            background : '#ece0e0', color : '#8d9f8e',
-            font : 15, name : 'Another node'
+            name : 'A casual node'
         });
-        mmap.selectNode('node1');
-    }, 1000);
+    }
 
-    d3.timeout(function(){
-        mmap.createNode({
-            background : '#e2ecdf', color : '#8d9f8e',
-            font : 15, name : 'Another node'
-        });
-        mmap.selectNode('node0');
-    }, 2000);
+    function removeNode() {
+        // mmap.removeNode()
+    }
 
-    d3.timeout(function(){
-        mmap.createNode({
-            background : '#dfe8ec', color : '#8d9f8e',
-            font : 15, name : 'Another node'
-        });
-    }, 3000);
+    /** Map **/
+
+    function centerMap() {
+        mmap.centerMap();
+    }
+
+
+    window.test = {
+        createNode : createNode,
+        removeNode : removeNode,
+        centerMap : centerMap
+    }
 
 })( this, document, mmap );

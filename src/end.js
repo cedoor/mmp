@@ -7,8 +7,9 @@
         init : init,
         createNode : createNode,
         getNodes : getNodes,
-        deleteNode : deleteNode,
-        selectNode : selectNode
+        removeNode : removeNode,
+        selectNode : selectNode,
+        centerMap : centerMap
     };
 
 }(this, window.d3));

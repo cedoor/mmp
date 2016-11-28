@@ -39,7 +39,7 @@
         global.nodes.set('node' + global.counter, {
             x : parseInt( frame.style('width') )/2,
             y : parseInt( frame.style('height') )/2,
-            background : '#f5f5f5', color : '#8d9f8e',
+            background : '#e6e6e6', textColor : '#828c82',
             font : 18, name : 'Root node'
         });
 

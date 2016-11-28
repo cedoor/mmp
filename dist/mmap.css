@@ -4,9 +4,13 @@
 }
 
 .node ellipse {
-    opacity: .8;
     stroke-opacity : .2;
     stroke-width : 3;
+}
+
+.link {
+    stroke-linejoin : round;
+    stroke-width : 2;
 }
 
 .node text {

@@ -48,7 +48,7 @@
         global.nodes.set('node' + global.counter, {
             x : parseInt( frame.style('width') )/2,
             y : parseInt( frame.style('height') )/2,
-            background : '#f5f5f5', color : '#8d9f8e',
+            background : '#e6e6e6', textColor : '#828c82',
             font : 18, name : 'Root node'
         });
 
@@ -76,7 +76,7 @@
     function dragged(n) {
         const x = n.x = d3.event.x;
         const y = n.y = d3.event.y;
-        d3.select(this).attr('transform','translate('+ x +','+ y +')'); // To fix
+        d3.select(this).attr('transform','translate('+ x +','+ y +')');
         d3.selectAll('.link').attr('d', n => diagonal( n ) );
     }
 
@@ -85,26 +85,38 @@
         global.selected = 'node0';
     }
 
+    function nodeLevel( n ) {
+        var p = n.parent, level = 0;
+        while ( p ) {
+            level++;
+            p = p.parent;
+        }
+        return level < 5 ? level : 5;
+    }
+
     // Creates a curved (diagonal) path from parent to the child nodes
     function diagonal( n ) {
 
-
+        const width = 30 - nodeLevel( n ) * 5;
+        const orY = n.parent.y < n.y ? -1 : 1;
+        const orX = n.parent.x > n.x ? -1 : 1;
+        const middleX = ( n.parent.x + n.x ) / 2;
+        const k = n.k = n.k || d3.randomUniform(50)();
 
         const path = d3.path();
-        path.moveTo( n.parent.x, n.parent.y - 5 );
+        path.moveTo( n.parent.x, n.parent.y - width/2 );
         path.bezierCurveTo(
-            (n.parent.x + n.x - n.width/2) / 2, n.parent.y - 5,
-            (n.parent.x + n.x - n.width/2) / 2, n.y + n.height/2 + 5,
-            n.x - n.width/2, n.y + n.height/2 + 5
+            middleX, n.parent.y - width/2,
+            n.parent.x + k*orX, n.y + n.height/2 + 5 + k/10,
+            n.x - ( n.width/4 - k/2 )*orX, n.y + n.height/2 + 5 + k/10
         );
-        path.lineTo( n.x, n.y + n.height/2 + 7 );
-        path.lineTo( n.x - n.width/2, n.y + n.height/2 + 10 );
         path.bezierCurveTo(
-            (n.parent.x + n.x - n.width/2) / 2 + 5, n.y + n.height/2 + 10,
-            (n.parent.x + n.x - n.width/2) / 2 + 10, n.parent.y - 5,
-            n.parent.x, n.parent.y + 5
+            n.parent.x + k*orX + width/2*orY*orX, n.y + n.height/2 + width/2 + 5 + k/10,
+            middleX + width/2*orY*orX, n.parent.y + width/2,
+            n.parent.x, n.parent.y + width/2
         );
         path.closePath();
+
         return path;
     }
 
@@ -129,7 +141,7 @@
             .call( drag );
 
         nodeContainer.append('text').text( n => n.name )
-            .attr('fill', n => n.color )
+            .attr('fill', n => n.textColor )
             .attr('font-size', n => n.font )
             .attr('dy', 5 );
 
@@ -149,8 +161,8 @@
 
         link.enter().insert('path', 'g')
             .attr('class', 'link')
-            .style('fill', n => n.color )
-            .style('stroke', n => 'none' )
+            .style('fill', n => n.linkColor )
+            .style('stroke', n => n.linkColor )
             .attr('d', n => diagonal( n ) );
 
         link.exit().remove();
@@ -169,8 +181,9 @@
                 parent : sel,
                 x : sel.x + 200,
                 y : sel.y + 50,
-                background : prop.background || '#e6e6e6',
-                color : prop.color || '#6f6f6f',
+                background : prop.background || '#f1f1f1',
+                textColor : prop.textColor || '#9a9a9a',
+                linkColor : prop.linkColor || '#9fad9c',
                 font : prop.font || 15,
                 name : prop.name || 'Node'
             });
@@ -179,7 +192,7 @@
     }
 
     // To fix
-    function deleteNode(){
+    function removeNode(){
         if( global.selected !== 'node0' ) {
             global.nodes.remove( global.selected );
             deselectNodes();
@@ -187,8 +200,9 @@
         }
     }
 
-    function resetZoom() {
+    function centerMap() {
         global.svg.main.transition().duration(500).call( zoom.transform, d3.zoomIdentity );
+        console.log(d3.zoomIdentity);
     }
 
     function getNodes() {
@@ -208,8 +222,9 @@
         init : init,
         createNode : createNode,
         getNodes : getNodes,
-        deleteNode : deleteNode,
-        selectNode : selectNode
+        removeNode : removeNode,
+        selectNode : selectNode,
+        centerMap : centerMap
     };
 
 }(this, window.d3));

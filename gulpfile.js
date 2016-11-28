@@ -28,6 +28,7 @@ gulp.task('compileTest', function(cb) {
         'test/unit/start.js',
         'test/unit/init.js',
         'test/unit/nodes.js',
+        'test/unit/map.js',
         'test/unit/end.js'
     ])
     .pipe(concat('test.js'))

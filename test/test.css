@@ -11,3 +11,19 @@ body {
 .mmap {
     overflow: hidden;
 }
+
+.func {
+    position: absolute;
+}
+
+.func>*:hover {
+    background-color: #ebebeb;
+}
+
+.func>* {
+    display: block;
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #b4b4b4;
+    cursor: pointer;
+}

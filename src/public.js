@@ -7,8 +7,9 @@
                 parent : sel,
                 x : sel.x + 200,
                 y : sel.y + 50,
-                background : prop.background || '#e6e6e6',
-                color : prop.color || '#6f6f6f',
+                background : prop.background || '#f1f1f1',
+                textColor : prop.textColor || '#9a9a9a',
+                linkColor : prop.linkColor || '#9fad9c',
                 font : prop.font || 15,
                 name : prop.name || 'Node'
             });
@@ -17,7 +18,7 @@
     }
 
     // To fix
-    function deleteNode(){
+    function removeNode(){
         if( global.selected !== 'node0' ) {
             global.nodes.remove( global.selected );
             deselectNodes();
@@ -25,8 +26,9 @@
         }
     }
 
-    function resetZoom() {
+    function centerMap() {
         global.svg.main.transition().duration(500).call( zoom.transform, d3.zoomIdentity );
+        console.log(d3.zoomIdentity);
     }
 
     function getNodes() {
