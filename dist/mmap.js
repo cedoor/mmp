@@ -177,9 +177,10 @@
     function createNode( prop ) {
         if ( global.selected ) {
             const sel = global.nodes.get( global.selected );
+            const root = global.nodes.get('node0');
             global.nodes.set('node' + ( ++global.counter ), {
                 parent : sel,
-                x : sel.x + 200,
+                x : sel.x + ( sel.x > root.x ? 200 : -200 ),
                 y : sel.y + 50,
                 background : prop.background || '#f1f1f1',
                 textColor : prop.textColor || '#9a9a9a',
