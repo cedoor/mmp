@@ -13,9 +13,8 @@
      * ...
      *
      * @param {string} selector The selector in which to draw
-     * @param {Object} opt Additional options for the map
      */
-    function init( selector, opt ) {
+    function init( selector ) {
 
         const frame = d3.select( selector );
 
@@ -29,7 +28,7 @@
             .attr("height", '100%')
             .attr("fill", "transparent")
             .attr("pointer-events", "all")
-            .on('mousedown', deselectNodes );
+            .on('mousedown', deselectNode );
 
         // Set global variables
         global.svg = { main : g, mmap : g.append('g') };
@@ -43,7 +42,6 @@
             font : 18, name : 'Root node'
         });
 
-        selectNode('node0');
+        global.selected = 'node0';
         update();
-
     }

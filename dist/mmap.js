@@ -22,9 +22,8 @@
      * ...
      *
      * @param {string} selector The selector in which to draw
-     * @param {Object} opt Additional options for the map
      */
-    function init( selector, opt ) {
+    function init( selector ) {
 
         const frame = d3.select( selector );
 
@@ -38,7 +37,7 @@
             .attr("height", '100%')
             .attr("fill", "transparent")
             .attr("pointer-events", "all")
-            .on('mousedown', deselectNodes );
+            .on('mousedown', deselectNode );
 
         // Set global variables
         global.svg = { main : g, mmap : g.append('g') };
@@ -52,9 +51,8 @@
             font : 18, name : 'Root node'
         });
 
-        selectNode('node0');
+        global.selected = 'node0';
         update();
-
     }
 
     /****** Utils functions  ******/
@@ -70,7 +68,7 @@
     function dragStarted(n) {
         d3.selectAll('.node > ellipse').attr('stroke', 'none');
         d3.select(this).selectAll('ellipse').attr('stroke', '#888888');
-        selectNode(n.key);
+        global.selected = n.key;
     }
 
     function dragged(n) {
@@ -80,7 +78,7 @@
         d3.selectAll('.link').attr('d', n => diagonal( n ) );
     }
 
-    function deselectNodes() {
+    function deselectNode() {
         d3.selectAll('.node > ellipse').attr('stroke', 'none');
         global.selected = 'node0';
     }
@@ -172,21 +170,30 @@
         });
     }
 
+    function redraw() {
+        d3.selectAll('.node, .link').remove();
+        update();
+    }
+
+    function selected() {
+        return global.nodes.get( global.selected );
+    }
+
     /****** Public functions ******/
 
-    function createNode( prop ) {
-        if ( global.selected ) {
+    function addNode( prop ) {
+        if( global.selected ) {
             const sel = global.nodes.get( global.selected );
             const root = global.nodes.get('node0');
             global.nodes.set('node' + ( ++global.counter ), {
                 parent : sel,
                 x : sel.x + ( sel.x > root.x ? 200 : -200 ),
                 y : sel.y + 50,
-                background : prop.background || '#f1f1f1',
-                textColor : prop.textColor || '#9a9a9a',
-                linkColor : prop.linkColor || '#9fad9c',
-                font : prop.font || 15,
-                name : prop.name || 'Node'
+                background : prop && prop.background || '#f1f1f1',
+                textColor : prop && prop.textColor || '#9a9a9a',
+                linkColor : prop && prop.linkColor || '#9fad9c',
+                font : prop && prop.font || 15,
+                name : prop && prop.name || 'Node'
             });
             update();
         }
@@ -207,22 +214,21 @@
             }
             clean( global.selected );
 
-            deselectNodes();
-            d3.selectAll('.node, .link').remove();
-            update();
+            global.selected = 'node0';
+            redraw();
         }
     }
 
-    function centerMap() {
+    function center() {
         global.svg.main.transition().duration(500).call( zoom.transform, d3.zoomIdentity );
     }
 
-    function getNodes() {
-        return global.nodes.values();
-    }
-
-    function selectNode(n) {
-        global.selected = n;
+    function updateNode( k, v ) {
+        const sel = global.nodes.get( global.selected );
+        if( k in sel ) {
+            sel[k] = v;
+            redraw();
+        }
     }
 
     /**
@@ -231,12 +237,14 @@
      *
      */
     window.mmap = {
+        // Basic
         init : init,
-        createNode : createNode,
-        getNodes : getNodes,
+        center : center,
+        addNode : addNode,
         removeNode : removeNode,
-        selectNode : selectNode,
-        centerMap : centerMap
+
+        // Advanced
+        updateNode : updateNode,
     };
 
 }(this, window.d3));

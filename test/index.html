@@ -11,9 +11,12 @@
     <body>
 
         <div class="func">
-            <img onclick="test.createNode()" src="img/add.svg">
-            <img onclick="test.removeNode()" src="img/remove.svg">
-            <img onclick="test.centerMap()" src="img/center.svg">
+            <img onclick="mmap.addNode()" src="img/add.svg">
+            <img onclick="mmap.removeNode()" src="img/remove.svg">
+            <img onclick="mmap.center()" src="img/center.svg">
+            <input onchange="mmap.updateNode('background', value)" type="color" name="node" value="#f1f1f1">
+            <input onchange="mmap.updateNode('linkColor', value)" type="color" name="link" value="#9a9a9a">
+            <input onchange="mmap.updateNode('textColor', value)" type="color" name="text" value="#9fad9c">
         </div>
 
         <div class="mmap"></div>
