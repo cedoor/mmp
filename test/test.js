@@ -8,30 +8,6 @@
  */
 (function( window, document, mmap ) {
 
-    /** Init **/
-
-    mmap.init('.mmap',{
-
-    });
-
-    /** Nodes **/
-
-    function createNode() {
-        mmap.createNode({
-            name : 'A casual node'
-        });
-    }
-
-    function removeNode() {
-        mmap.removeNode();
-    }
-
-    /** Map **/
-
-    function centerMap() {
-        mmap.centerMap();
-    }
-
 
     window.test = {
         createNode : createNode,
