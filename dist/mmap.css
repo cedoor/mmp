@@ -6,7 +6,6 @@
 .node ellipse {
     stroke-opacity : .2;
     stroke-width : 3;
-}
 
 .link {
     stroke-linejoin : round;

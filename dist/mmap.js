@@ -127,6 +127,41 @@
         return nodesWithKeys;
     }
 
+    function openTextEditor( n ) {
+        const self = this;
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.style = `
+            position: absolute;
+            top: ${ d3.event.y - 70 }px;
+            left: ${ d3.event.x - 40 }px;
+            padding: 5px;
+            background-color: transparent
+        `;
+        input.value = this.childNodes[1].innerHTML;
+        document.body.appendChild( input ).focus();
+        input.onblur = function() {
+            input.remove();
+        }
+        input.onkeyup = function( e ) {
+            if( e.key === "Enter" ) {
+                input.blur();
+            } else {
+                const text = self.childNodes[1];
+                const ellipse = self.childNodes[0];
+
+                n.name = text.innerHTML = input.value;
+                n.width = text.textLength.baseVal.value + 40;
+
+                ellipse.setAttribute('rx', n.width/2 );
+                ellipse.setAttribute('ry', n.height/2 );
+            }
+        };
+
+        d3.event.stopPropagation();
+    }
+
     function update() {
 
         const nodes = getNodesWithKeys();
@@ -136,7 +171,9 @@
         const nodeContainer = node.enter().append('g')
             .attr('class', 'node')
             .attr('transform', n => 'translate(' + n.x + ',' + n.y + ')')
-            .call( drag );
+            .call( drag )
+            .on("dblclick.zoom", null)
+            .on('dblclick', openTextEditor );
 
         nodeContainer.append('text').text( n => n.name )
             .attr('fill', n => n.textColor )
