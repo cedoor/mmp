@@ -1,8 +1,3 @@
-
-    window.test = {
-        createNode : createNode,
-        removeNode : removeNode,
-        centerMap : centerMap
-    }
+    window.test = {}
 
 })( this, document, mmap );

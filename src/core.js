@@ -11,7 +11,7 @@
     function dragStarted(n) {
         d3.selectAll('.node > ellipse').attr('stroke', 'none');
         d3.select(this).selectAll('ellipse').attr('stroke', '#888888');
-        selectNode(n.key);
+        global.selected = n.key;
     }
 
     function dragged(n) {
@@ -21,7 +21,7 @@
         d3.selectAll('.link').attr('d', n => diagonal( n ) );
     }
 
-    function deselectNodes() {
+    function deselectNode() {
         d3.selectAll('.node > ellipse').attr('stroke', 'none');
         global.selected = 'node0';
     }
@@ -111,4 +111,13 @@
         d3.selectAll('.node > text').each( function() {
             this.parentNode.appendChild(this);
         });
+    }
+
+    function redraw() {
+        d3.selectAll('.node, .link').remove();
+        update();
+    }
+
+    function selected() {
+        return global.nodes.get( global.selected );
     }

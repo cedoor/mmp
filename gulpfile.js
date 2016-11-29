@@ -26,9 +26,6 @@ gulp.task('compileSrc', function(cb) {
 gulp.task('compileTest', function(cb) {
     return gulp.src([
         'test/unit/start.js',
-        'test/unit/init.js',
-        'test/unit/nodes.js',
-        'test/unit/map.js',
         'test/unit/end.js'
     ])
     .pipe(concat('test.js'))

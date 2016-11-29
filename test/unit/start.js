@@ -7,3 +7,5 @@
  *
  */
 (function( window, document, mmap ) {
+
+    mmap.init('.mmap');

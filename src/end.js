@@ -4,12 +4,14 @@
      *
      */
     window.mmap = {
+        // Basic
         init : init,
-        createNode : createNode,
-        getNodes : getNodes,
+        center : center,
+        addNode : addNode,
         removeNode : removeNode,
-        selectNode : selectNode,
-        centerMap : centerMap
+
+        // Advanced
+        updateNode : updateNode,
     };
 
 }(this, window.d3));
