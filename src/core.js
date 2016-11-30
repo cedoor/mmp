@@ -2,16 +2,22 @@
 
     const zoom = d3.zoom().scaleExtent([0.5, 2]).on('zoom', zoomed );
 
-    const drag = d3.drag().on('drag', dragged ).on('start', selectNode );
+    const drag = d3.drag().on('drag', dragged ).on('start', function( n ) {
+        selectNode( n.key );
+    });
 
     function zoomed() {
         global.svg.mmap.attr('transform', d3.event.transform.toString() );
     }
 
-    function selectNode( n ) {
-        d3.selectAll('.node > ellipse').attr('stroke', 'none');
-        d3.select(this).select('ellipse').attr('stroke', '#888888');
-        global.selected = n.key;
+    function selectNode( k ) {
+        if( global.selected !== k ) {
+            global.selected = k;
+            const node = d3.select('#'+ k );
+            d3.selectAll('.node > ellipse').attr('stroke', 'none');
+            node.select('ellipse').attr('stroke', '#888888');
+            events.call('nodeSelected', node.node(), global.nodes.get( k ));
+        }
     }
 
     function dragged( n ) {

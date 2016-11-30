@@ -12,6 +12,7 @@
 
         // Advanced
         updateNode : updateNode,
+        events : events
     };
 
 }(this, window.d3));

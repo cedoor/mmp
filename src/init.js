@@ -42,6 +42,8 @@
             font : 18, name : 'Root node'
         });
 
-        global.selected = 'node0';
         update();
+        selectNode('node0');
+
+        events.call('mmapCreated');
     }

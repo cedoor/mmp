@@ -1,5 +1,10 @@
     /****** Public functions ******/
 
+    const events = d3.dispatch(
+        'mmapCreated', 'mmapCentred',
+        'nodeSelected', 'nodeCreated', 'nodeRemoved'
+    );
+
     function addNode( prop ) {
         if( global.selected ) {
             const sel = global.nodes.get( global.selected );
@@ -15,6 +20,7 @@
                 name : prop && prop.name || 'Node'
             });
             update();
+            events.call('nodeCreated');
         }
     }
 
@@ -35,11 +41,15 @@
 
             global.selected = 'node0';
             redraw();
+            events.call('nodeRemoved');
+        } else {
+            console.warn('The root node can not be deleted');
         }
     }
 
     function center() {
         global.svg.main.transition().duration(500).call( zoom.transform, d3.zoomIdentity );
+        events.call('mmapCentred');
     }
 
     function updateNode( k, v ) {
@@ -47,7 +57,7 @@
         const prop = {
             'name' : updateName,
             default : function() {
-                console.warn('"'+ k +'" is not a valid node property')
+                console.error('"'+ k +'" is not a valid node property');
             }
         };
         ( prop[k] || prop.default )( s, v );

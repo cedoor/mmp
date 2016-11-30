@@ -8,6 +8,10 @@
  */
 (function( window, document, mmap ) {
 
+    mmap.events.on('mmapCreated', function(){
+        console.info('Mindmap created!');
+    });
+
     mmap.init('.mmap');
 
     // Text functions
@@ -21,6 +25,10 @@
     text.onkeyup = function( e ) {
         e.key === "Enter" ? text.blur() : mmap.updateNode('name', text.value );
     };
+
+    mmap.events.on('nodeSelected', function( n ) {
+        text.value = n.name;
+    });
 
     window.test = {}
 

@@ -51,24 +51,32 @@
             font : 18, name : 'Root node'
         });
 
-        global.selected = 'node0';
         update();
+        selectNode('node0');
+
+        events.call('mmapCreated');
     }
 
     /****** Utils functions  ******/
 
     const zoom = d3.zoom().scaleExtent([0.5, 2]).on('zoom', zoomed );
 
-    const drag = d3.drag().on('drag', dragged ).on('start', selectNode );
+    const drag = d3.drag().on('drag', dragged ).on('start', function( n ) {
+        selectNode( n.key );
+    });
 
     function zoomed() {
         global.svg.mmap.attr('transform', d3.event.transform.toString() );
     }
 
-    function selectNode( n ) {
-        d3.selectAll('.node > ellipse').attr('stroke', 'none');
-        d3.select(this).select('ellipse').attr('stroke', '#888888');
-        global.selected = n.key;
+    function selectNode( k ) {
+        if( global.selected !== k ) {
+            global.selected = k;
+            const node = d3.select('#'+ k );
+            d3.selectAll('.node > ellipse').attr('stroke', 'none');
+            node.select('ellipse').attr('stroke', '#888888');
+            events.call('nodeSelected', node.node(), global.nodes.get( k ));
+        }
     }
 
     function dragged( n ) {
@@ -189,6 +197,11 @@
 
     /****** Public functions ******/
 
+    const events = d3.dispatch(
+        'mmapCreated', 'mmapCentred',
+        'nodeSelected', 'nodeCreated', 'nodeRemoved'
+    );
+
     function addNode( prop ) {
         if( global.selected ) {
             const sel = global.nodes.get( global.selected );
@@ -204,6 +217,7 @@
                 name : prop && prop.name || 'Node'
             });
             update();
+            events.call('nodeCreated');
         }
     }
 
@@ -224,11 +238,15 @@
 
             global.selected = 'node0';
             redraw();
+            events.call('nodeRemoved');
+        } else {
+            console.warn('The root node can not be deleted');
         }
     }
 
     function center() {
         global.svg.main.transition().duration(500).call( zoom.transform, d3.zoomIdentity );
+        events.call('mmapCentred');
     }
 
     function updateNode( k, v ) {
@@ -236,7 +254,7 @@
         const prop = {
             'name' : updateName,
             default : function() {
-                console.warn('"'+ k +'" is not a valid node property')
+                console.error('"'+ k +'" is not a valid node property');
             }
         };
         ( prop[k] || prop.default )( s, v );
@@ -256,6 +274,7 @@
 
         // Advanced
         updateNode : updateNode,
+        events : events
     };
 
 }(this, window.d3));

@@ -9,3 +9,7 @@
     text.onkeyup = function( e ) {
         e.key === "Enter" ? text.blur() : mmap.updateNode('name', text.value );
     };
+
+    mmap.events.on('nodeSelected', function( n ) {
+        text.value = n.name;
+    });
