@@ -1,15 +1,3 @@
-/**
- * @author Omar Desogus
- * @license GNU GENERAL PUBLIC LICENSE
- *
- * @description
- * Tests of mmap library
- *
- */
-(function( window, document, mmap ) {
-
-    mmap.init('.mmap');
-
     // Text functions
 
     const text = document.getElementsByClassName('func')[0].childNodes[1];
@@ -21,7 +9,3 @@
     text.onkeyup = function( e ) {
         e.key === "Enter" ? text.blur() : mmap.updateNode('name', text.value );
     };
-
-    window.test = {}
-
-})( this, document, mmap );

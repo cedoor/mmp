@@ -25,29 +25,29 @@
      */
     function init( selector ) {
 
-        const frame = d3.select( selector );
+        global.container = d3.select( selector );
+        global.svg = {};
 
-        const g = frame.append('svg')
+        global.svg.main = global.container.append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
             .append('g').call( zoom );
 
-        g.append("rect")
+        global.svg.main.append("rect")
             .attr("width", '100%')
             .attr("height", '100%')
-            .attr("fill", "transparent")
+            .attr("fill", "white")
             .attr("pointer-events", "all")
             .on('mousedown', deselectNode );
 
-        // Set global variables
-        global.svg = { main : g, mmap : g.append('g') };
-        global.counter = 0;
+        global.svg.mmap = global.svg.main.append('g');
         global.nodes = d3.map();
+        global.counter = 0;
 
         global.nodes.set('node' + global.counter, {
-            x : parseInt( frame.style('width') )/2,
-            y : parseInt( frame.style('height') )/2,
-            background : '#e6e6e6', textColor : '#828c82',
+            x : parseInt( global.container.style('width') )/2,
+            y : parseInt( global.container.style('height') )/2,
+            background : '#e6ede6', textColor : '#828c82',
             font : 18, name : 'Root node'
         });
 
@@ -59,19 +59,19 @@
 
     const zoom = d3.zoom().scaleExtent([0.5, 2]).on('zoom', zoomed );
 
-    const drag = d3.drag().on('drag', dragged ).on('start', dragStarted );
+    const drag = d3.drag().on('drag', dragged ).on('start', selectNode );
 
     function zoomed() {
         global.svg.mmap.attr('transform', d3.event.transform.toString() );
     }
 
-    function dragStarted(n) {
+    function selectNode( n ) {
         d3.selectAll('.node > ellipse').attr('stroke', 'none');
-        d3.select(this).selectAll('ellipse').attr('stroke', '#888888');
+        d3.select(this).select('ellipse').attr('stroke', '#888888');
         global.selected = n.key;
     }
 
-    function dragged(n) {
+    function dragged( n ) {
         const x = n.x = d3.event.x;
         const y = n.y = d3.event.y;
         d3.select(this).attr('transform','translate('+ x +','+ y +')');
@@ -127,41 +127,6 @@
         return nodesWithKeys;
     }
 
-    function openTextEditor( n ) {
-        const self = this;
-
-        const input = document.createElement("input");
-        input.type = "text";
-        input.style = `
-            position: absolute;
-            top: ${ d3.event.y - 70 }px;
-            left: ${ d3.event.x - 40 }px;
-            padding: 5px;
-            background-color: transparent
-        `;
-        input.value = this.childNodes[1].innerHTML;
-        document.body.appendChild( input ).focus();
-        input.onblur = function() {
-            input.remove();
-        }
-        input.onkeyup = function( e ) {
-            if( e.key === "Enter" ) {
-                input.blur();
-            } else {
-                const text = self.childNodes[1];
-                const ellipse = self.childNodes[0];
-
-                n.name = text.innerHTML = input.value;
-                n.width = text.textLength.baseVal.value + 40;
-
-                ellipse.setAttribute('rx', n.width/2 );
-                ellipse.setAttribute('ry', n.height/2 );
-            }
-        };
-
-        d3.event.stopPropagation();
-    }
-
     function update() {
 
         const nodes = getNodesWithKeys();
@@ -170,10 +135,9 @@
 
         const nodeContainer = node.enter().append('g')
             .attr('class', 'node')
+            .attr('id', n => n.key )
             .attr('transform', n => 'translate(' + n.x + ',' + n.y + ')')
-            .call( drag )
-            .on("dblclick.zoom", null)
-            .on('dblclick', openTextEditor );
+            .call( drag );
 
         nodeContainer.append('text').text( n => n.name )
             .attr('fill', n => n.textColor )
@@ -212,8 +176,15 @@
         update();
     }
 
-    function selected() {
-        return global.nodes.get( global.selected );
+    // Node update functions...
+
+    function updateName( s, v ) {
+        const node = document.getElementById( s.key );
+        const text = node.childNodes[1];
+        const ellipse = node.childNodes[0];
+        s.name = text.innerHTML = v;
+        s.width = text.textLength.baseVal.value + 40;
+        ellipse.setAttribute('rx', s.width/2 );
     }
 
     /****** Public functions ******/
@@ -227,7 +198,7 @@
                 x : sel.x + ( sel.x > root.x ? 200 : -200 ),
                 y : sel.y + 50,
                 background : prop && prop.background || '#f1f1f1',
-                textColor : prop && prop.textColor || '#9a9a9a',
+                textColor : prop && prop.textColor || '#808080',
                 linkColor : prop && prop.linkColor || '#9fad9c',
                 font : prop && prop.font || 15,
                 name : prop && prop.name || 'Node'
@@ -261,11 +232,14 @@
     }
 
     function updateNode( k, v ) {
-        const sel = global.nodes.get( global.selected );
-        if( k in sel ) {
-            sel[k] = v;
-            redraw();
-        }
+        const s = global.nodes.get( global.selected );
+        const prop = {
+            'name' : updateName,
+            default : function() {
+                console.warn('"'+ k +'" is not a valid node property')
+            }
+        };
+        ( prop[k] || prop.default )( s, v );
     }
 
     /**

@@ -9,7 +9,7 @@
                 x : sel.x + ( sel.x > root.x ? 200 : -200 ),
                 y : sel.y + 50,
                 background : prop && prop.background || '#f1f1f1',
-                textColor : prop && prop.textColor || '#9a9a9a',
+                textColor : prop && prop.textColor || '#808080',
                 linkColor : prop && prop.linkColor || '#9fad9c',
                 font : prop && prop.font || 15,
                 name : prop && prop.name || 'Node'
@@ -43,9 +43,12 @@
     }
 
     function updateNode( k, v ) {
-        const sel = global.nodes.get( global.selected );
-        if( k in sel ) {
-            sel[k] = v;
-            redraw();
-        }
+        const s = global.nodes.get( global.selected );
+        const prop = {
+            'name' : updateName,
+            default : function() {
+                console.warn('"'+ k +'" is not a valid node property')
+            }
+        };
+        ( prop[k] || prop.default )( s, v );
     }

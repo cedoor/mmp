@@ -16,29 +16,29 @@
      */
     function init( selector ) {
 
-        const frame = d3.select( selector );
+        global.container = d3.select( selector );
+        global.svg = {};
 
-        const g = frame.append('svg')
+        global.svg.main = global.container.append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
             .append('g').call( zoom );
 
-        g.append("rect")
+        global.svg.main.append("rect")
             .attr("width", '100%')
             .attr("height", '100%')
-            .attr("fill", "transparent")
+            .attr("fill", "white")
             .attr("pointer-events", "all")
             .on('mousedown', deselectNode );
 
-        // Set global variables
-        global.svg = { main : g, mmap : g.append('g') };
-        global.counter = 0;
+        global.svg.mmap = global.svg.main.append('g');
         global.nodes = d3.map();
+        global.counter = 0;
 
         global.nodes.set('node' + global.counter, {
-            x : parseInt( frame.style('width') )/2,
-            y : parseInt( frame.style('height') )/2,
-            background : '#e6e6e6', textColor : '#828c82',
+            x : parseInt( global.container.style('width') )/2,
+            y : parseInt( global.container.style('height') )/2,
+            background : '#e6ede6', textColor : '#828c82',
             font : 18, name : 'Root node'
         });
 
