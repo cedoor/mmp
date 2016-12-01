@@ -12,12 +12,17 @@
 
         <div class="func">
             <input type="text" name="name" value="Root Node">
+            <input type="number" onchange="mmap.updateNode('font-size', value)" name="font-size" min="8" max="22" value="16">
+            <input class="btn" onchange="mmap.updateNode('text-color', value)" type="color" name="text" value="#9fad9c">
+            <img class="btn" onclick="test.updateNode('font-weight')" src="img/bold.svg">
+            <img class="btn" onclick="test.updateNode('font-style')" src="img/italic.svg">
+            <br>
             <img class="btn" onclick="mmap.addNode()" src="img/add.svg">
             <img class="btn" onclick="mmap.removeNode()" src="img/remove.svg">
             <img class="btn" onclick="mmap.center()" src="img/center.svg">
-            <input class="btn" onchange="mmap.updateNode('background', value)" type="color" name="node" value="#f1f1f1">
-            <input class="btn" onchange="mmap.updateNode('linkColor', value)" type="color" name="link" value="#9a9a9a">
-            <input class="btn" onchange="mmap.updateNode('textColor', value)" type="color" name="text" value="#9fad9c">
+            <br>
+            <input class="btn" onchange="mmap.updateNode('background-color', value)" type="color" name="node" value="#f1f1f1">
+            <input class="btn" onchange="mmap.updateNode('link-color', value)" type="color" name="link" value="#9a9a9a">
         </div>
 
         <div class="mmap"></div>

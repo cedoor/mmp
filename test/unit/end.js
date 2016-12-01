@@ -1,3 +1,5 @@
-    window.test = {}
+    window.test = {
+        updateNode : updateNode
+    };
 
 })( this, document, mmap );

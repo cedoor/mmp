@@ -20,7 +20,7 @@ body {
     background-color: #ebebeb;
 }
 
-.func>.btn {
+.func>.btn, .func>input:nth-child(2) {
     background-color: #f6f6f6;
     border: 1px solid #b4b4b4;
     display: block;
@@ -34,18 +34,28 @@ body {
 }
 
 .func>input:first-child:focus {
-    background-color: #f2ece7;
+    background-color: #eaf2e7;
 }
 
 .func>input:first-child {
     padding: 10px;
     margin: 5px;
-    margin-top: 10px;
     width: 180px;
     border: 1px solid #b4b4b4;
     text-align: center;
     background-color: #f6f6f6;
     font-size: 16px;
     border-radius: 3px;
+    color: #6c6c6c;
+}
+
+.func>input:nth-child(2) {
+    padding: 10px;
+    margin: 5px;
+    width: 50px;
+    border: 1px solid #b4b4b4;
+    text-align: center;
+    background-color: #f6f6f6;
+    font-size: 16px;
     color: #6c6c6c;
 }
