@@ -16,4 +16,5 @@
 .node text {
     font-family: sans-serif;
     text-anchor: middle;
+    alignment-baseline: middle; 
 }

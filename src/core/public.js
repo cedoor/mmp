@@ -9,16 +9,22 @@
         if( global.selected ) {
             const sel = global.nodes.get( global.selected );
             const root = global.nodes.get('node0');
-            global.nodes.set('node' + ( ++global.counter ), {
-                parent : sel,
+
+            const key = 'node' + ( ++global.counter );
+            const value = {
+                name : prop && prop.name || 'Node',
+                'background-color' : prop && prop['background-color'] || '#f1f1f1',
+                'text-color' : prop && prop['text-color'] || '#808080',
+                'link-color' : prop && prop['link-color'] || '#9fad9c',
+                'font-size' : prop && prop['font-size'] || 16,
+                'font-style' : prop && prop['font-style'] || 'normal',
+                'font-weight' : prop && prop['font-weight'] || 'normal',
                 x : sel.x + ( sel.x > root.x ? 200 : -200 ),
                 y : sel.y + 50,
-                background : prop && prop.background || '#f1f1f1',
-                textColor : prop && prop.textColor || '#808080',
-                linkColor : prop && prop.linkColor || '#9fad9c',
-                font : prop && prop.font || 15,
-                name : prop && prop.name || 'Node'
-            });
+                parent : sel
+            };
+
+            global.nodes.set( key, value );
             update();
             events.call('nodecreate');
         }
@@ -53,12 +59,19 @@
     }
 
     function updateNode( k, v ) {
-        const s = global.nodes.get( global.selected );
+        const sel = global.nodes.get( global.selected );
+        const dom = document.getElementById( sel.key );
         const prop = {
             'name' : updateName,
+            'background-color' : updateBackgroundColor,
+            'link-color' : updateLinkColor,
+            'text-color' : updateTextColor,
+            'font-size' : updateFontSize,
+            'font-style' : updateFontStyle,
+            'font-weight' : updateFontWeight,
             default : function() {
                 console.error('"'+ k +'" is not a valid node property');
             }
         };
-        ( prop[k] || prop.default )( s, v );
+        ( prop[k] || prop.default ).call( dom, sel, v );
     }

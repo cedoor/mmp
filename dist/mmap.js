@@ -31,6 +31,7 @@
         global.svg.main = global.container.append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
+            .attr('id', 'mmap')
             .append('g').call( zoom );
 
         global.svg.main.append("rect")
@@ -45,10 +46,12 @@
         global.counter = 0;
 
         global.nodes.set('node' + global.counter, {
+            name : 'Root node',
             x : parseInt( global.container.style('width') )/2,
             y : parseInt( global.container.style('height') )/2,
-            background : '#e6ede6', textColor : '#828c82',
-            font : 18, name : 'Root node'
+            'background-color' : '#e6ede6',
+            'text-color' : '#828c82',
+            'font-size' : 20
         });
 
         update();
@@ -77,18 +80,18 @@
     }
 
     function selectNode( k ) {
-        if( global.selected !== k ) {
+        if( global.selected !== k || global.selected === 'node0' ) {
             global.selected = k;
             const node = d3.select('#'+ k );
             d3.selectAll('.node > ellipse').attr('stroke', 'none');
-            node.select('ellipse').attr('stroke', '#888888');
+            node.select('ellipse').attr('stroke', '#587d53');
             events.call('nodeselect', node.node(), global.nodes.get( k ));
         }
     }
 
     function deselectNode() {
+        selectNode('node0');
         d3.selectAll('.node > ellipse').attr('stroke', 'none');
-        global.selected = 'node0';
     }
 
     function getNodeLevel( n ) {
@@ -133,44 +136,80 @@
             });
 
         nodeContainer.append('text').text( n => n.name )
-            .attr('fill', n => n.textColor )
-            .attr('font-size', n => n.font )
-            .attr('dy', 5 );
+            .attr('fill', n => n['text-color'])
+            .attr('font-size', n => n['font-size'])
+            .attr('font-style', n=> n['font-style'])
+            .attr('font-weight', n=> n['font-weight']);
 
         nodeContainer.append('ellipse')
-            .style('fill', n => n.background )
+            .style('fill', n => n['background-color'] )
             .attr('rx', function( n ) {
                 n.width = this.previousSibling.getBBox().width + 40;
                 return n.width/2;
             }).attr('ry', function( n ) {
-                n.height = this.previousSibling.getBBox().height + 20;
+                n.height = n['font-size']*11/10 + 30;
                 return n.height/2;
             });
 
         node.exit().remove();
 
+        d3.selectAll('.node > text').each( function() {
+            this.parentNode.appendChild(this);
+        });
+
         const link = global.svg.mmap.selectAll('.link').data( nodes.slice(1) );
 
         link.enter().insert('path', 'g')
             .attr('class', 'link')
-            .style('fill', n => n.linkColor )
-            .style('stroke', n => n.linkColor )
+            .attr('id', n => 'linkOf' + n.key )
+            .style('fill', n => n['link-color'])
+            .style('stroke', n => n['link-color'])
             .attr('d', n => drawLink( n ) );
 
         link.exit().remove();
-
-        d3.selectAll('.node > text').each( function() {
-            this.parentNode.appendChild(this);
-        });
     }
 
-    function updateName( s, v ) {
-        const node = document.getElementById( s.key );
-        const text = node.childNodes[1];
-        const ellipse = node.childNodes[0];
-        s.name = text.innerHTML = v;
-        s.width = text.textLength.baseVal.value + 40;
-        ellipse.setAttribute('rx', s.width/2 );
+    function updateName( sel, v ) {
+        const text = this.childNodes[1];
+        const ellipse = this.childNodes[0];
+        sel.name = text.innerHTML = v;
+        sel.width = text.textLength.baseVal.value + 40;
+        ellipse.setAttribute('rx', sel.width/2 );
+    }
+
+    function updateBackgroundColor( sel, v ) {
+        const ellipse = this.childNodes[0];
+        ellipse.style.setProperty('fill', sel['background-color'] = v );
+    }
+
+    function updateTextColor( sel, v ) {
+        const text = this.childNodes[1];
+        text.style.setProperty('fill', sel['text-color'] = v );
+    }
+
+    function updateFontSize( sel, v ) {
+        const text = this.childNodes[1];
+        text.style.setProperty('font-size', sel['font-size'] = v );
+    }
+
+    function updateFontStyle( sel, v ) {
+        const text = this.childNodes[1];
+        text.style.setProperty('font-style', sel['font-style'] = v );
+    }
+
+    function updateFontWeight( sel, v ) {
+        const text = this.childNodes[1];
+        text.style.setProperty('font-weight', sel['font-weight'] = v );
+    }
+
+    function updateLinkColor( sel, v ) {
+        if( sel.key !== 'node0' ) {
+            const link = document.getElementById('linkOf'+ sel.key );
+            link.style.setProperty('fill', sel['link-color'] = v );
+            link.style.setProperty('stroke', sel['link-color'] = v );
+        } else {
+            console.warn('The root node has no branches');
+        }
     }
 
     /****** Link functions  ******/
@@ -211,16 +250,22 @@
         if( global.selected ) {
             const sel = global.nodes.get( global.selected );
             const root = global.nodes.get('node0');
-            global.nodes.set('node' + ( ++global.counter ), {
-                parent : sel,
+
+            const key = 'node' + ( ++global.counter );
+            const value = {
+                name : prop && prop.name || 'Node',
+                'background-color' : prop && prop['background-color'] || '#f1f1f1',
+                'text-color' : prop && prop['text-color'] || '#808080',
+                'link-color' : prop && prop['link-color'] || '#9fad9c',
+                'font-size' : prop && prop['font-size'] || 16,
+                'font-style' : prop && prop['font-style'] || 'normal',
+                'font-weight' : prop && prop['font-weight'] || 'normal',
                 x : sel.x + ( sel.x > root.x ? 200 : -200 ),
                 y : sel.y + 50,
-                background : prop && prop.background || '#f1f1f1',
-                textColor : prop && prop.textColor || '#808080',
-                linkColor : prop && prop.linkColor || '#9fad9c',
-                font : prop && prop.font || 15,
-                name : prop && prop.name || 'Node'
-            });
+                parent : sel
+            };
+
+            global.nodes.set( key, value );
             update();
             events.call('nodecreate');
         }
@@ -255,14 +300,21 @@
     }
 
     function updateNode( k, v ) {
-        const s = global.nodes.get( global.selected );
+        const sel = global.nodes.get( global.selected );
+        const dom = document.getElementById( sel.key );
         const prop = {
             'name' : updateName,
+            'background-color' : updateBackgroundColor,
+            'link-color' : updateLinkColor,
+            'text-color' : updateTextColor,
+            'font-size' : updateFontSize,
+            'font-style' : updateFontStyle,
+            'font-weight' : updateFontWeight,
             default : function() {
                 console.error('"'+ k +'" is not a valid node property');
             }
         };
-        ( prop[k] || prop.default )( s, v );
+        ( prop[k] || prop.default ).call( dom, sel, v );
     }
 
     /**

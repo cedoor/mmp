@@ -22,6 +22,7 @@
         global.svg.main = global.container.append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
+            .attr('id', 'mmap')
             .append('g').call( zoom );
 
         global.svg.main.append("rect")
@@ -36,10 +37,12 @@
         global.counter = 0;
 
         global.nodes.set('node' + global.counter, {
+            name : 'Root node',
             x : parseInt( global.container.style('width') )/2,
             y : parseInt( global.container.style('height') )/2,
-            background : '#e6ede6', textColor : '#828c82',
-            font : 18, name : 'Root node'
+            'background-color' : '#e6ede6',
+            'text-color' : '#828c82',
+            'font-size' : 20
         });
 
         update();

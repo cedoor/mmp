@@ -18,18 +18,18 @@
     }
 
     function selectNode( k ) {
-        if( global.selected !== k ) {
+        if( global.selected !== k || global.selected === 'node0' ) {
             global.selected = k;
             const node = d3.select('#'+ k );
             d3.selectAll('.node > ellipse').attr('stroke', 'none');
-            node.select('ellipse').attr('stroke', '#888888');
+            node.select('ellipse').attr('stroke', '#587d53');
             events.call('nodeselect', node.node(), global.nodes.get( k ));
         }
     }
 
     function deselectNode() {
+        selectNode('node0');
         d3.selectAll('.node > ellipse').attr('stroke', 'none');
-        global.selected = 'node0';
     }
 
     function getNodeLevel( n ) {

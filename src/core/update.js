@@ -22,42 +22,78 @@
             });
 
         nodeContainer.append('text').text( n => n.name )
-            .attr('fill', n => n.textColor )
-            .attr('font-size', n => n.font )
-            .attr('dy', 5 );
+            .attr('fill', n => n['text-color'])
+            .attr('font-size', n => n['font-size'])
+            .attr('font-style', n=> n['font-style'])
+            .attr('font-weight', n=> n['font-weight']);
 
         nodeContainer.append('ellipse')
-            .style('fill', n => n.background )
+            .style('fill', n => n['background-color'] )
             .attr('rx', function( n ) {
                 n.width = this.previousSibling.getBBox().width + 40;
                 return n.width/2;
             }).attr('ry', function( n ) {
-                n.height = this.previousSibling.getBBox().height + 20;
+                n.height = n['font-size']*11/10 + 30;
                 return n.height/2;
             });
 
         node.exit().remove();
 
+        d3.selectAll('.node > text').each( function() {
+            this.parentNode.appendChild(this);
+        });
+
         const link = global.svg.mmap.selectAll('.link').data( nodes.slice(1) );
 
         link.enter().insert('path', 'g')
             .attr('class', 'link')
-            .style('fill', n => n.linkColor )
-            .style('stroke', n => n.linkColor )
+            .attr('id', n => 'linkOf' + n.key )
+            .style('fill', n => n['link-color'])
+            .style('stroke', n => n['link-color'])
             .attr('d', n => drawLink( n ) );
 
         link.exit().remove();
-
-        d3.selectAll('.node > text').each( function() {
-            this.parentNode.appendChild(this);
-        });
     }
 
-    function updateName( s, v ) {
-        const node = document.getElementById( s.key );
-        const text = node.childNodes[1];
-        const ellipse = node.childNodes[0];
-        s.name = text.innerHTML = v;
-        s.width = text.textLength.baseVal.value + 40;
-        ellipse.setAttribute('rx', s.width/2 );
+    function updateName( sel, v ) {
+        const text = this.childNodes[1];
+        const ellipse = this.childNodes[0];
+        sel.name = text.innerHTML = v;
+        sel.width = text.textLength.baseVal.value + 40;
+        ellipse.setAttribute('rx', sel.width/2 );
+    }
+
+    function updateBackgroundColor( sel, v ) {
+        const ellipse = this.childNodes[0];
+        ellipse.style.setProperty('fill', sel['background-color'] = v );
+    }
+
+    function updateTextColor( sel, v ) {
+        const text = this.childNodes[1];
+        text.style.setProperty('fill', sel['text-color'] = v );
+    }
+
+    function updateFontSize( sel, v ) {
+        const text = this.childNodes[1];
+        text.style.setProperty('font-size', sel['font-size'] = v );
+    }
+
+    function updateFontStyle( sel, v ) {
+        const text = this.childNodes[1];
+        text.style.setProperty('font-style', sel['font-style'] = v );
+    }
+
+    function updateFontWeight( sel, v ) {
+        const text = this.childNodes[1];
+        text.style.setProperty('font-weight', sel['font-weight'] = v );
+    }
+
+    function updateLinkColor( sel, v ) {
+        if( sel.key !== 'node0' ) {
+            const link = document.getElementById('linkOf'+ sel.key );
+            link.style.setProperty('fill', sel['link-color'] = v );
+            link.style.setProperty('stroke', sel['link-color'] = v );
+        } else {
+            console.warn('The root node has no branches');
+        }
     }
