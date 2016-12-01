@@ -12,8 +12,10 @@ gulp.task('compileSrc', function(cb) {
     return gulp.src([
         'src/start.js',
         'src/init.js',
-        'src/core.js',
-        'src/public.js',
+        'src/core/utils.js',
+        'src/core/update.js',
+        'src/core/link.js',
+        'src/core/public.js',
         'src/end.js'
     ])
     .pipe(concat('mmap.js'))

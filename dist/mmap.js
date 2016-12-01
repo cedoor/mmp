@@ -57,7 +57,7 @@
         events.call('mmcreate');
     }
 
-    /****** Utils functions  ******/
+    /****** Util functions  ******/
 
     const zoom = d3.zoom().scaleExtent([0.5, 2]).on('zoom', zoomed );
 
@@ -67,6 +67,13 @@
 
     function zoomed() {
         global.svg.mmap.attr('transform', d3.event.transform.toString() );
+    }
+
+    function dragged( n ) {
+        const x = n.x = d3.event.x;
+        const y = n.y = d3.event.y;
+        d3.select(this).attr('transform','translate('+ x +','+ y +')');
+        d3.selectAll('.link').attr('d', n => drawLink( n ) );
     }
 
     function selectNode( k ) {
@@ -79,51 +86,18 @@
         }
     }
 
-    function dragged( n ) {
-        const x = n.x = d3.event.x;
-        const y = n.y = d3.event.y;
-        d3.select(this).attr('transform','translate('+ x +','+ y +')');
-        d3.selectAll('.link').attr('d', n => diagonal( n ) );
-    }
-
     function deselectNode() {
         d3.selectAll('.node > ellipse').attr('stroke', 'none');
         global.selected = 'node0';
     }
 
-    function nodeLevel( n ) {
+    function getNodeLevel( n ) {
         var p = n.parent, level = 0;
         while ( p ) {
             level++;
             p = p.parent;
         }
         return level < 5 ? level : 5;
-    }
-
-    // Creates a curved (diagonal) path from parent to the child nodes
-    function diagonal( n ) {
-
-        const width = 30 - nodeLevel( n ) * 5;
-        const orY = n.parent.y < n.y ? -1 : 1;
-        const orX = n.parent.x > n.x ? -1 : 1;
-        const middleX = ( n.parent.x + n.x ) / 2;
-        const k = n.k = n.k || d3.randomUniform(50)();
-
-        const path = d3.path();
-        path.moveTo( n.parent.x, n.parent.y - width/2 );
-        path.bezierCurveTo(
-            middleX, n.parent.y - width/2,
-            n.parent.x + k*orX, n.y + n.height/2 + 5 + k/10,
-            n.x - ( n.width/4 - k/2 )*orX, n.y + n.height/2 + 5 + k/10
-        );
-        path.bezierCurveTo(
-            n.parent.x + k*orX + width/2*orY*orX, n.y + n.height/2 + width/2 + 5 + k/10,
-            middleX + width/2*orY*orX, n.parent.y + width/2,
-            n.parent.x, n.parent.y + width/2
-        );
-        path.closePath();
-
-        return path;
     }
 
     function getNodesWithKeys() {
@@ -133,6 +107,13 @@
             nodesWithKeys.push( n );
         });
         return nodesWithKeys;
+    }
+
+    /****** Update functions  ******/
+
+    function redraw() {
+        d3.selectAll('.node, .link').remove();
+        update();
     }
 
     function update() {
@@ -174,7 +155,7 @@
             .attr('class', 'link')
             .style('fill', n => n.linkColor )
             .style('stroke', n => n.linkColor )
-            .attr('d', n => diagonal( n ) );
+            .attr('d', n => drawLink( n ) );
 
         link.exit().remove();
 
@@ -183,13 +164,6 @@
         });
     }
 
-    function redraw() {
-        d3.selectAll('.node, .link').remove();
-        update();
-    }
-
-    // Node update functions...
-
     function updateName( s, v ) {
         const node = document.getElementById( s.key );
         const text = node.childNodes[1];
@@ -197,6 +171,33 @@
         s.name = text.innerHTML = v;
         s.width = text.textLength.baseVal.value + 40;
         ellipse.setAttribute('rx', s.width/2 );
+    }
+
+    /****** Link functions  ******/
+
+    function drawLink( n ) {
+
+        const width = 30 - getNodeLevel( n ) * 5;
+        const orY = n.parent.y < n.y ? -1 : 1;
+        const orX = n.parent.x > n.x ? -1 : 1;
+        const middleX = ( n.parent.x + n.x ) / 2;
+        const k = n.k = n.k || d3.randomUniform(50)();
+
+        const path = d3.path();
+        path.moveTo( n.parent.x, n.parent.y - width/2 );
+        path.bezierCurveTo(
+            middleX, n.parent.y - width/2,
+            n.parent.x + k*orX, n.y + n.height/2 + 5 + k/10,
+            n.x - ( n.width/4 - k/2 )*orX, n.y + n.height/2 + 5 + k/10
+        );
+        path.bezierCurveTo(
+            n.parent.x + k*orX + width/2*orY*orX, n.y + n.height/2 + width/2 + 5 + k/10,
+            middleX + width/2*orY*orX, n.parent.y + width/2,
+            n.parent.x, n.parent.y + width/2
+        );
+        path.closePath();
+
+        return path;
     }
 
     /****** Public functions ******/
