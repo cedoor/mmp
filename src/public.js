@@ -1,8 +1,8 @@
     /****** Public functions ******/
 
     const events = d3.dispatch(
-        'mmapCreated', 'mmapCentred',
-        'nodeSelected', 'nodeCreated', 'nodeRemoved'
+        'mmcreate', 'mmcenter',
+        'nodeselect', 'nodecreate', 'noderemove', 'nodedblclick'
     );
 
     function addNode( prop ) {
@@ -20,7 +20,7 @@
                 name : prop && prop.name || 'Node'
             });
             update();
-            events.call('nodeCreated');
+            events.call('nodecreate');
         }
     }
 
@@ -41,7 +41,7 @@
 
             global.selected = 'node0';
             redraw();
-            events.call('nodeRemoved');
+            events.call('noderemove');
         } else {
             console.warn('The root node can not be deleted');
         }
@@ -49,7 +49,7 @@
 
     function center() {
         global.svg.main.transition().duration(500).call( zoom.transform, d3.zoomIdentity );
-        events.call('mmapCentred');
+        events.call('mmcenter');
     }
 
     function updateNode( k, v ) {

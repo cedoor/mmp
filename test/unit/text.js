@@ -10,6 +10,10 @@
         e.key === "Enter" ? text.blur() : mmap.updateNode('name', text.value );
     };
 
-    mmap.events.on('nodeSelected', function( n ) {
+    mmap.events.on('nodeselect', function( n ) {
         text.value = n.name;
+    });
+
+    mmap.events.on('nodedblclick', function( n ) {
+        text.focus();
     });

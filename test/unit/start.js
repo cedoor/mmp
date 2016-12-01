@@ -8,7 +8,7 @@
  */
 (function( window, document, mmap ) {
 
-    mmap.events.on('mmapCreated', function(){
+    mmap.events.on('mmcreate', function(){
         console.info('Mindmap created!');
     });
 

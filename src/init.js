@@ -45,5 +45,5 @@
         update();
         selectNode('node0');
 
-        events.call('mmapCreated');
+        events.call('mmcreate');
     }

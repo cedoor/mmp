@@ -54,7 +54,7 @@
         update();
         selectNode('node0');
 
-        events.call('mmapCreated');
+        events.call('mmcreate');
     }
 
     /****** Utils functions  ******/
@@ -75,7 +75,7 @@
             const node = d3.select('#'+ k );
             d3.selectAll('.node > ellipse').attr('stroke', 'none');
             node.select('ellipse').attr('stroke', '#888888');
-            events.call('nodeSelected', node.node(), global.nodes.get( k ));
+            events.call('nodeselect', node.node(), global.nodes.get( k ));
         }
     }
 
@@ -145,7 +145,11 @@
             .attr('class', 'node')
             .attr('id', n => n.key )
             .attr('transform', n => 'translate(' + n.x + ',' + n.y + ')')
-            .call( drag );
+            .call( drag )
+            .on('dblclick', function( n ) {
+                events.call('nodedblclick', this, n);
+                d3.event.stopPropagation();
+            });
 
         nodeContainer.append('text').text( n => n.name )
             .attr('fill', n => n.textColor )
@@ -198,8 +202,8 @@
     /****** Public functions ******/
 
     const events = d3.dispatch(
-        'mmapCreated', 'mmapCentred',
-        'nodeSelected', 'nodeCreated', 'nodeRemoved'
+        'mmcreate', 'mmcenter',
+        'nodeselect', 'nodecreate', 'noderemove', 'nodedblclick'
     );
 
     function addNode( prop ) {
@@ -217,7 +221,7 @@
                 name : prop && prop.name || 'Node'
             });
             update();
-            events.call('nodeCreated');
+            events.call('nodecreate');
         }
     }
 
@@ -238,7 +242,7 @@
 
             global.selected = 'node0';
             redraw();
-            events.call('nodeRemoved');
+            events.call('noderemove');
         } else {
             console.warn('The root node can not be deleted');
         }
@@ -246,7 +250,7 @@
 
     function center() {
         global.svg.main.transition().duration(500).call( zoom.transform, d3.zoomIdentity );
-        events.call('mmapCentred');
+        events.call('mmcenter');
     }
 
     function updateNode( k, v ) {

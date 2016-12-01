@@ -33,15 +33,19 @@ body {
     width: 24px;
 }
 
+.func>input:first-child:focus {
+    background-color: #f2ece7;
+}
+
 .func>input:first-child {
     padding: 10px;
     margin: 5px;
     margin-top: 10px;
     width: 180px;
-    border: 2px solid #dbdbdb;
+    border: 1px solid #b4b4b4;
     text-align: center;
     background-color: #f6f6f6;
-    font-size: 15px;
+    font-size: 16px;
     border-radius: 3px;
-    color: #757575;
+    color: #6c6c6c;
 }
