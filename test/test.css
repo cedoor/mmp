@@ -1,26 +1,41 @@
-html, body, .mmap {
+html, body, .mmap, .sidebar {
     height: 100%;
 }
 
 body {
-    background-color: #f5f5f5;
     margin: 0;
     padding: 0;
-}
-
-.mmap {
     overflow: hidden;
 }
 
-.func {
-    position: absolute;
+.sidebar {
+    float: left;
+    width: 270px;
+    background-color: #f7f7f7;
+    border: 1px solid #dddddd;
+    font: 14px sans-serif;
+    color: #595959;
+    overflow-y: auto;
 }
 
-.func>.btn*:hover {
+.sidebar>h3 {
+    margin: 0;
+    padding: 12px 0;
+    background-color: #e8e5e1;
+    color: #717171;
+    border-bottom: 1px solid #dedcdc;
+    text-align: center;
+}
+
+.mmap {
+    margin-left: 272px;
+}
+
+.sidebar>.btn*:hover {
     background-color: #ebebeb;
 }
 
-.func>.btn, .func>input:nth-child(2) {
+.sidebar>.btn, .sidebar>input:nth-child(2) {
     background-color: #f6f6f6;
     border: 1px solid #b4b4b4;
     display: block;
@@ -29,15 +44,15 @@ body {
     cursor: pointer;
 }
 
-.func>input.btn {
+.sidebar>input.btn {
     width: 24px;
 }
 
-.func>input:first-child:focus {
+.sidebar>input:first-child:focus {
     background-color: #eaf2e7;
 }
 
-.func>input:first-child {
+.sidebar>input:first-child {
     padding: 10px;
     margin: 5px;
     width: 180px;
@@ -49,7 +64,7 @@ body {
     color: #6c6c6c;
 }
 
-.func>input:nth-child(2) {
+.sidebar>input:nth-child(2) {
     padding: 10px;
     margin: 5px;
     width: 50px;

@@ -5,7 +5,7 @@ var gulp = require('gulp'),
     rename = require('gulp-rename');
 
 gulp.task('default', ['watch'], function() {
-    gulp.start('compileSrc','compileTest');
+    gulp.start('compileSrc');
 });
 
 gulp.task('compileSrc', function(cb) {
@@ -25,21 +25,8 @@ gulp.task('compileSrc', function(cb) {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('compileTest', function(cb) {
-    return gulp.src([
-        'test/unit/start.js',
-        'test/unit/text.js',
-        'test/unit/end.js'
-    ])
-    .pipe(concat('test.js'))
-    .pipe(gulp.dest('test'));
-});
-
 gulp.task('watch', function() {
     gulp.watch('src/**/*.js', [
         'compileSrc'
-    ]);
-    gulp.watch('test/unit/**/*.js', [
-        'compileTest'
     ]);
 });
