@@ -50,8 +50,8 @@
             x : parseInt( global.container.style('width') )/2,
             y : parseInt( global.container.style('height') )/2,
             'background-color' : '#e6ede6',
-            'text-color' : '#828c82',
-            'font-size' : 20
+            'text-color' : '#828c82', 'font-size' : 20,
+            'font-style' : 'normal', 'font-weight' : 'normal'
         });
 
         update();
@@ -189,17 +189,25 @@
 
     function updateFontSize( sel, v ) {
         const text = this.childNodes[1];
+        const ellipse = this.childNodes[0];
         text.style.setProperty('font-size', sel['font-size'] = v );
+        sel.width = text.textLength.baseVal.value + 40;
+        sel.height = sel['font-size']*11/10 + 30;
+        ellipse.setAttribute('rx', sel.width/2 );
+        ellipse.setAttribute('ry', sel.height/2 );
+        d3.selectAll('.link').attr('d', n => drawLink( n ) );
     }
 
-    function updateFontStyle( sel, v ) {
+    function updateFontStyle( sel ) {
         const text = this.childNodes[1];
-        text.style.setProperty('font-style', sel['font-style'] = v );
+        sel['font-style'] = sel['font-style'] === 'normal' ? 'italic' : 'normal';
+        text.style.setProperty('font-style', sel['font-style'] );
     }
 
-    function updateFontWeight( sel, v ) {
+    function updateFontWeight( sel ) {
         const text = this.childNodes[1];
-        text.style.setProperty('font-weight', sel['font-weight'] = v );
+        sel['font-weight'] = sel['font-weight'] === 'normal' ? 'bold' : 'normal';
+        text.style.setProperty('font-weight', sel['font-weight'] );
     }
 
     function updateLinkColor( sel, v ) {
