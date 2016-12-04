@@ -12,18 +12,22 @@
 
         <div class="sidebar">
             <h3>Mmap</h3>
-            <input type="text" name="name" value="Root Node">
-            <input type="number" onchange="mmap.updateNode('font-size', value)" name="font-size" min="8" max="22" value="16">
-            <input class="btn" onchange="mmap.updateNode('text-color', value)" type="color" name="text" value="#9fad9c">
-            <img class="btn" onclick="mmap.updateNode('font-weight')" src="img/bold.svg">
-            <img class="btn" onclick="mmap.updateNode('font-style')" src="img/italic.svg">
-            <br>
-            <img class="btn" onclick="mmap.addNode()" src="img/add.svg">
-            <img class="btn" onclick="mmap.removeNode()" src="img/remove.svg">
-            <img class="btn" onclick="mmap.center()" src="img/center.svg">
-            <br>
-            <input class="btn" onchange="mmap.updateNode('background-color', value)" type="color" name="node" value="#f1f1f1">
-            <input class="btn" onchange="mmap.updateNode('link-color', value)" type="color" name="link" value="#9a9a9a">
+            <input id="node-name" type="text" name="name">
+            <div>
+                <img class="btn" onclick="mmap.updateNode('font-weight')" src="img/bold.svg">
+                <img class="btn" onclick="mmap.updateNode('font-style')" src="img/italic.svg">
+                <input id="font-size" type="number" name="font-size">
+            </div>
+            <div>
+                <img class="btn" onclick="mmap.addNode()" src="img/add.svg">
+                <img class="btn" onclick="mmap.removeNode()" src="img/remove.svg">
+                <img class="btn" onclick="mmap.center()" src="img/center.svg">
+            </div>
+            <div>
+                <input class="btn btn-color" onchange="mmap.updateNode('background-color', value)" type="color" name="background-color">
+                <input class="btn btn-color" onchange="mmap.updateNode('link-color', value)" type="color" name="link-color">
+                <input class="btn btn-color" onchange="mmap.updateNode('text-color', value)" type="color" name="text-color">
+            </div>
         </div>
 
         <div class="mmap"></div>

@@ -8,29 +8,45 @@
  */
 (function( window, document, mmap ) {
 
+    // DOM elements
+
+    const nodeName = document.getElementById('node-name');
+    const fontSize = document.getElementById('font-size');
+    const backgroundColor = document.getElementsByClassName('btn-color')[0];
+    const linkColor = document.getElementsByClassName('btn-color')[1];
+    const textColor = document.getElementsByClassName('btn-color')[2];
+
+    fontSize.onkeyup = fontSize.onclick = function() {
+        mmap.updateNode('font-size', fontSize.value );
+    }
+
+    nodeName.onblur = function() {
+        if( nodeName.value === '' ) mmap.updateNode('name', nodeName.value = 'Node');
+    }
+
+    nodeName.onkeyup = function( e ) {
+        e.key === "Enter" ? nodeName.blur() : mmap.updateNode('name', nodeName.value );
+    };
+
+    // mmap events
+
     mmap.events.on('mmcreate', function(){
         console.info('Mindmap created!');
     });
 
-    mmap.init('.mmap');
-
-    const textInput = document.getElementsByClassName('sidebar')[0].childNodes[1];
-
-    textInput.onblur = function() {
-        if( textInput.value === '' ) mmap.updateNode('name', textInput.value = 'Node');
-    }
-
-    textInput.onkeyup = function( e ) {
-        e.key === "Enter" ? textInput.blur() : mmap.updateNode('name', textInput.value );
-    };
-
     mmap.events.on('nodeselect', function( n ) {
-        textInput.value = n.name;
+        nodeName.value = n.name;
+        fontSize.value = n['font-size'];
+        backgroundColor.value = n['background-color'];
+        linkColor.value = n['link-color'] || '#ffffff';
+        textColor.value = n['text-color'];
     });
 
     mmap.events.on('nodedblclick', function( n ) {
-        textInput.focus();
+        nodeName.focus();
     });
+
+    mmap.init('.mmap');
 
     window.test = {};
 
