@@ -7,7 +7,7 @@
     });
 
     function zoomed() {
-        global.svg.mmap.attr('transform', d3.event.transform.toString() );
+        global.svg.mmap.attr('transform', d3.event.transform );
     }
 
     function dragged( n ) {
@@ -29,7 +29,7 @@
 
     function deselectNode() {
         selectNode('node0');
-        d3.selectAll('.node > ellipse').attr('stroke', 'none');
+        d3.select('#node0 > ellipse').attr('stroke', 'none');
     }
 
     function getNodeLevel( n ) {

@@ -24,8 +24,8 @@
         nodeContainer.append('text').text( n => n.name )
             .attr('fill', n => n['text-color'])
             .attr('font-size', n => n['font-size'])
-            .attr('font-style', n=> n['font-style'])
-            .attr('font-weight', n=> n['font-weight']);
+            .attr('font-style', n => n['font-style'])
+            .attr('font-weight', n => n['font-weight']);
 
         nodeContainer.append('ellipse')
             .style('fill', n => n['background-color'] )

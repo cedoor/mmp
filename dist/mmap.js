@@ -39,7 +39,7 @@
             .attr("height", '100%')
             .attr("fill", "white")
             .attr("pointer-events", "all")
-            .on('mousedown', deselectNode );
+            .on('click', deselectNode );
 
         global.svg.mmap = global.svg.main.append('g');
         global.nodes = d3.map();
@@ -55,8 +55,9 @@
         });
 
         update();
-        selectNode('node0');
+        deselectNode();
 
+        window.onresize = center;
         events.call('mmcreate');
     }
 
@@ -69,7 +70,7 @@
     });
 
     function zoomed() {
-        global.svg.mmap.attr('transform', d3.event.transform.toString() );
+        global.svg.mmap.attr('transform', d3.event.transform );
     }
 
     function dragged( n ) {
@@ -91,7 +92,7 @@
 
     function deselectNode() {
         selectNode('node0');
-        d3.selectAll('.node > ellipse').attr('stroke', 'none');
+        d3.select('#node0 > ellipse').attr('stroke', 'none');
     }
 
     function getNodeLevel( n ) {
@@ -138,8 +139,8 @@
         nodeContainer.append('text').text( n => n.name )
             .attr('fill', n => n['text-color'])
             .attr('font-size', n => n['font-size'])
-            .attr('font-style', n=> n['font-style'])
-            .attr('font-weight', n=> n['font-weight']);
+            .attr('font-style', n => n['font-style'])
+            .attr('font-weight', n => n['font-weight']);
 
         nodeContainer.append('ellipse')
             .style('fill', n => n['background-color'] )
@@ -294,7 +295,7 @@
             }
             clean( global.selected );
 
-            global.selected = 'node0';
+            selectNode('node0');
             redraw();
             events.call('noderemove');
         } else {
@@ -303,7 +304,13 @@
     }
 
     function center() {
-        global.svg.main.transition().duration(500).call( zoom.transform, d3.zoomIdentity );
+        const root = global.nodes.get('node0');
+        const center = {
+            x : parseInt( global.container.style('width') )/2,
+            y : parseInt( global.container.style('height') )/2
+        }
+        const zoomId = d3.zoomIdentity.translate( center.x - root.x, center.y - root.y );
+        global.svg.main.transition().duration(500).call( zoom.transform, zoomId );
         events.call('mmcenter');
     }
 

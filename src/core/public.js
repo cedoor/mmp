@@ -45,7 +45,7 @@
             }
             clean( global.selected );
 
-            global.selected = 'node0';
+            selectNode('node0');
             redraw();
             events.call('noderemove');
         } else {
@@ -54,7 +54,13 @@
     }
 
     function center() {
-        global.svg.main.transition().duration(500).call( zoom.transform, d3.zoomIdentity );
+        const root = global.nodes.get('node0');
+        const center = {
+            x : parseInt( global.container.style('width') )/2,
+            y : parseInt( global.container.style('height') )/2
+        }
+        const zoomId = d3.zoomIdentity.translate( center.x - root.x, center.y - root.y );
+        global.svg.main.transition().duration(500).call( zoom.transform, zoomId );
         events.call('mmcenter');
     }
 
