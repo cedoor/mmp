@@ -14,22 +14,23 @@
         const x = n.x = d3.event.x;
         const y = n.y = d3.event.y;
         d3.select(this).attr('transform','translate('+ x +','+ y +')');
-        d3.selectAll('.link').attr('d', n => drawLink( n ) );
+        d3.selectAll('.link').attr('d', drawLink );
     }
 
-    function selectNode( k ) {
-        if( global.selected !== k || global.selected === 'node0' ) {
-            global.selected = k;
-            const node = d3.select('#'+ k );
-            d3.selectAll('.node > ellipse').attr('stroke', 'none');
-            node.select('ellipse').attr('stroke', '#587d53');
-            events.call('nodeselect', node.node(), global.nodes.get( k ));
+    function selectNode( key ) {
+        if( global.selected !== key || global.selected === 'node0' ) {
+            d3.selectAll('.node > path').style('stroke', 'none');
+            global.selected = key;
+            const node = d3.select('#'+ key );
+            const bg = node.select('path');
+            bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
+            events.call('nodeselect', node.node(), global.nodes.get( key ));
         }
     }
 
     function deselectNode() {
         selectNode('node0');
-        d3.select('#node0 > ellipse').attr('stroke', 'none');
+        d3.select('#node0 > path').style('stroke', 'none');
     }
 
     function getNodeLevel( n ) {

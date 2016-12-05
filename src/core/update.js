@@ -27,21 +27,11 @@
             .attr('font-style', n => n['font-style'])
             .attr('font-weight', n => n['font-weight']);
 
-        nodeContainer.append('ellipse')
-            .style('fill', n => n['background-color'] )
-            .attr('rx', function( n ) {
-                n.width = this.previousSibling.getBBox().width + 40;
-                return n.width/2;
-            }).attr('ry', function( n ) {
-                n.height = n['font-size']*11/10 + 30;
-                return n.height/2;
-            });
+        nodeContainer.insert('path', 'text')
+            .style('fill', n => n['background-color'])
+            .attr('d', drawBgShape );
 
         node.exit().remove();
-
-        d3.selectAll('.node > text').each( function() {
-            this.parentNode.appendChild(this);
-        });
 
         const link = global.svg.mmap.selectAll('.link').data( nodes.slice(1) );
 
@@ -50,22 +40,23 @@
             .attr('id', n => 'linkOf' + n.key )
             .style('fill', n => n['link-color'])
             .style('stroke', n => n['link-color'])
-            .attr('d', n => drawLink( n ) );
+            .attr('d', drawLink );
 
         link.exit().remove();
     }
 
     function updateName( sel, v ) {
         const text = this.childNodes[1];
-        const ellipse = this.childNodes[0];
+        const bg = this.childNodes[0];
         sel.name = text.innerHTML = v;
-        sel.width = text.textLength.baseVal.value + 40;
-        ellipse.setAttribute('rx', sel.width/2 );
+        sel.width = text.textLength.baseVal.value + 50;
+        d3.select( bg ).attr('d', drawBgShape );
     }
 
     function updateBackgroundColor( sel, v ) {
-        const ellipse = this.childNodes[0];
-        ellipse.style.setProperty('fill', sel['background-color'] = v );
+        const bg = this.childNodes[0];
+        bg.style.setProperty('fill', sel['background-color'] = v );
+        bg.style.setProperty('stroke', d3.color( v ).darker( .5 ) );
     }
 
     function updateTextColor( sel, v ) {
@@ -75,13 +66,12 @@
 
     function updateFontSize( sel, v ) {
         const text = this.childNodes[1];
-        const ellipse = this.childNodes[0];
+        const bg = this.childNodes[0];
         text.style.setProperty('font-size', sel['font-size'] = v );
-        sel.width = text.textLength.baseVal.value + 40;
+        sel.width = text.textLength.baseVal.value + 50;
         sel.height = sel['font-size']*11/10 + 30;
-        ellipse.setAttribute('rx', sel.width/2 );
-        ellipse.setAttribute('ry', sel.height/2 );
-        d3.selectAll('.link').attr('d', n => drawLink( n ) );
+        d3.select( bg ).attr('d', drawBgShape );
+        d3.selectAll('.link').attr('d', drawLink );
     }
 
     function updateFontStyle( sel ) {

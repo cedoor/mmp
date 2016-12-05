@@ -77,22 +77,23 @@
         const x = n.x = d3.event.x;
         const y = n.y = d3.event.y;
         d3.select(this).attr('transform','translate('+ x +','+ y +')');
-        d3.selectAll('.link').attr('d', n => drawLink( n ) );
+        d3.selectAll('.link').attr('d', drawLink );
     }
 
-    function selectNode( k ) {
-        if( global.selected !== k || global.selected === 'node0' ) {
-            global.selected = k;
-            const node = d3.select('#'+ k );
-            d3.selectAll('.node > ellipse').attr('stroke', 'none');
-            node.select('ellipse').attr('stroke', '#587d53');
-            events.call('nodeselect', node.node(), global.nodes.get( k ));
+    function selectNode( key ) {
+        if( global.selected !== key || global.selected === 'node0' ) {
+            d3.selectAll('.node > path').style('stroke', 'none');
+            global.selected = key;
+            const node = d3.select('#'+ key );
+            const bg = node.select('path');
+            bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
+            events.call('nodeselect', node.node(), global.nodes.get( key ));
         }
     }
 
     function deselectNode() {
         selectNode('node0');
-        d3.select('#node0 > ellipse').attr('stroke', 'none');
+        d3.select('#node0 > path').style('stroke', 'none');
     }
 
     function getNodeLevel( n ) {
@@ -142,21 +143,11 @@
             .attr('font-style', n => n['font-style'])
             .attr('font-weight', n => n['font-weight']);
 
-        nodeContainer.append('ellipse')
-            .style('fill', n => n['background-color'] )
-            .attr('rx', function( n ) {
-                n.width = this.previousSibling.getBBox().width + 40;
-                return n.width/2;
-            }).attr('ry', function( n ) {
-                n.height = n['font-size']*11/10 + 30;
-                return n.height/2;
-            });
+        nodeContainer.insert('path', 'text')
+            .style('fill', n => n['background-color'])
+            .attr('d', drawBgShape );
 
         node.exit().remove();
-
-        d3.selectAll('.node > text').each( function() {
-            this.parentNode.appendChild(this);
-        });
 
         const link = global.svg.mmap.selectAll('.link').data( nodes.slice(1) );
 
@@ -165,22 +156,23 @@
             .attr('id', n => 'linkOf' + n.key )
             .style('fill', n => n['link-color'])
             .style('stroke', n => n['link-color'])
-            .attr('d', n => drawLink( n ) );
+            .attr('d', drawLink );
 
         link.exit().remove();
     }
 
     function updateName( sel, v ) {
         const text = this.childNodes[1];
-        const ellipse = this.childNodes[0];
+        const bg = this.childNodes[0];
         sel.name = text.innerHTML = v;
-        sel.width = text.textLength.baseVal.value + 40;
-        ellipse.setAttribute('rx', sel.width/2 );
+        sel.width = text.textLength.baseVal.value + 50;
+        d3.select( bg ).attr('d', drawBgShape );
     }
 
     function updateBackgroundColor( sel, v ) {
-        const ellipse = this.childNodes[0];
-        ellipse.style.setProperty('fill', sel['background-color'] = v );
+        const bg = this.childNodes[0];
+        bg.style.setProperty('fill', sel['background-color'] = v );
+        bg.style.setProperty('stroke', d3.color( v ).darker( .5 ) );
     }
 
     function updateTextColor( sel, v ) {
@@ -190,13 +182,12 @@
 
     function updateFontSize( sel, v ) {
         const text = this.childNodes[1];
-        const ellipse = this.childNodes[0];
+        const bg = this.childNodes[0];
         text.style.setProperty('font-size', sel['font-size'] = v );
-        sel.width = text.textLength.baseVal.value + 40;
+        sel.width = text.textLength.baseVal.value + 50;
         sel.height = sel['font-size']*11/10 + 30;
-        ellipse.setAttribute('rx', sel.width/2 );
-        ellipse.setAttribute('ry', sel.height/2 );
-        d3.selectAll('.link').attr('d', n => drawLink( n ) );
+        d3.select( bg ).attr('d', drawBgShape );
+        d3.selectAll('.link').attr('d', drawLink );
     }
 
     function updateFontStyle( sel ) {
@@ -221,28 +212,44 @@
         }
     }
 
-    /****** Link functions  ******/
+    /****** Shape functions  ******/
 
     function drawLink( n ) {
 
-        const width = 30 - getNodeLevel( n ) * 5;
-        const orY = n.parent.y < n.y ? -1 : 1;
-        const orX = n.parent.x > n.x ? -1 : 1;
+        const width = 22 - getNodeLevel( n ) * 3;
         const middleX = ( n.parent.x + n.x ) / 2;
-        const k = n.k = n.k || d3.randomUniform(50)();
+        const orY = n.parent.y < n.y + n.height/2 ? -1 : 1;
+        const orX = n.parent.x > n.x ? -1 : 1;
 
         const path = d3.path();
         path.moveTo( n.parent.x, n.parent.y - width/2 );
         path.bezierCurveTo(
-            middleX, n.parent.y - width/2,
-            n.parent.x + k*orX, n.y + n.height/2 + 5 + k/10,
-            n.x - ( n.width/4 - k/2 )*orX, n.y + n.height/2 + 5 + k/10
+            middleX, n.parent.y,
+            n.parent.x, n.y + n.height/2 + 2,
+            n.x - n.width/4*orX, n.y + n.height/2 + 2
         );
         path.bezierCurveTo(
-            n.parent.x + k*orX + width/2*orY*orX, n.y + n.height/2 + width/2 + 5 + k/10,
-            middleX + width/2*orY*orX, n.parent.y + width/2,
+            n.parent.x + width*orY*orX, n.y + n.height/2 + 2 + width,
+            middleX + (width*2)*orY*orX, n.parent.y + width,
             n.parent.x, n.parent.y + width/2
         );
+        path.closePath();
+
+        return path;
+    }
+
+    function drawBgShape( n ) {
+
+        const path = d3.path();
+        const x = ( n.width = this.nextSibling.getBBox().width + 50 )/2;
+        const y = ( n.height = n['font-size']*11/10 + 30 )/2;
+        const k = n.k = n.k || d3.randomUniform( -20, 20 )();
+
+        path.moveTo( -x, k/3 );
+        path.bezierCurveTo( -x, -y +10, -x + 10, -y, k, -y );
+        path.bezierCurveTo( x - 10, -y, x, -y + 10, x, k/3 );
+        path.bezierCurveTo( x, y - 10, x - 10, y, k, y );
+        path.bezierCurveTo( -x + 10, y, -x, y - 10, -x, k/3 );
         path.closePath();
 
         return path;
