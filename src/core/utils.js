@@ -14,7 +14,7 @@
         const x = n.x = d3.event.x;
         const y = n.y = d3.event.y;
         d3.select(this).attr('transform','translate('+ x +','+ y +')');
-        d3.selectAll('.link').attr('d', drawLink );
+        d3.selectAll('.branch').attr('d', drawBranch );
     }
 
     function selectNode( key ) {

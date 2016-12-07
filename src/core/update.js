@@ -1,7 +1,7 @@
     /****** Update functions  ******/
 
     function redraw() {
-        d3.selectAll('.node, .link').remove();
+        d3.selectAll('.node, .branch').remove();
         update();
     }
 
@@ -33,16 +33,16 @@
 
         node.exit().remove();
 
-        const link = global.svg.mmap.selectAll('.link').data( nodes.slice(1) );
+        const branch = global.svg.mmap.selectAll('.branch').data( nodes.slice(1) );
 
-        link.enter().insert('path', 'g')
-            .attr('class', 'link')
-            .attr('id', n => 'linkOf' + n.key )
-            .style('fill', n => n['link-color'])
-            .style('stroke', n => n['link-color'])
-            .attr('d', drawLink );
+        branch.enter().insert('path', 'g')
+            .attr('class', 'branch')
+            .attr('id', n => 'branchOf' + n.key )
+            .style('fill', n => n['branch-color'])
+            .style('stroke', n => n['branch-color'])
+            .attr('d', drawBranch );
 
-        link.exit().remove();
+        branch.exit().remove();
     }
 
     function updateName( sel, v ) {
@@ -71,7 +71,7 @@
         sel.width = text.textLength.baseVal.value + 45;
         sel.height = sel['font-size']*11/10 + 30;
         d3.select( bg ).attr('d', drawBgShape );
-        d3.selectAll('.link').attr('d', drawLink );
+        d3.selectAll('.branch').attr('d', drawBranch );
     }
 
     function updateFontStyle( sel ) {
@@ -86,11 +86,11 @@
         text.style.setProperty('font-weight', sel['font-weight'] );
     }
 
-    function updateLinkColor( sel, v ) {
+    function updateBranchColor( sel, v ) {
         if( sel.key !== 'node0' ) {
-            const link = document.getElementById('linkOf'+ sel.key );
-            link.style.setProperty('fill', sel['link-color'] = v );
-            link.style.setProperty('stroke', sel['link-color'] = v );
+            const branch = document.getElementById('branchOf'+ sel.key );
+            branch.style.setProperty('fill', sel['branch-color'] = v );
+            branch.style.setProperty('stroke', sel['branch-color'] = v );
         } else {
             console.warn('The root node has no branches');
         }

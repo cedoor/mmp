@@ -1,6 +1,6 @@
     /****** Shape functions  ******/
 
-    function drawLink( n ) {
+    function drawBranch( n ) {
 
         const width = 22 - getNodeLevel( n ) * 3;
         const middleX = ( n.parent.x + n.x ) / 2;
