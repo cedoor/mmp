@@ -30,7 +30,7 @@
             .attr("height", '100%')
             .attr("fill", "white")
             .attr("pointer-events", "all")
-            .on('mousedown', deselectNode );
+            .on('click', deselectNode );
 
         global.svg.mmap = global.svg.main.append('g');
         global.nodes = d3.map();
@@ -46,7 +46,8 @@
         });
 
         update();
-        selectNode('node0');
+        deselectNode();
 
+        window.onresize = center;
         events.call('mmcreate');
     }

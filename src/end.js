@@ -12,7 +12,8 @@
 
         // Advanced
         updateNode : updateNode,
-        events : events
+        events : events,
+        getPNG : getPNG
     };
 
 }(this, window.d3));

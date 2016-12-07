@@ -3,8 +3,7 @@
     cursor: pointer;
 }
 
-.node ellipse {
-    stroke-opacity : .2;
+.node path {
     stroke-width : 3;
 }
 
@@ -16,5 +15,5 @@
 .node text {
     font-family: sans-serif;
     text-anchor: middle;
-    alignment-baseline: middle; 
+    alignment-baseline: middle;
 }
