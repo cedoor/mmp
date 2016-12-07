@@ -8,18 +8,23 @@ body {
     overflow: hidden;
 }
 
+table {
+    width: 100%;
+}
+
 .sidebar {
     float: left;
-    width: 270px;
+    width: 300px;
     background-color: #f7f7f7;
     border: 1px solid #dddddd;
-    font: 14px sans-serif;
+    font: 16px sans-serif;
     color: #595959;
     overflow-y: auto;
 }
 
 .sidebar>h3 {
     margin: 0;
+    margin-bottom: 10px;
     padding: 12px 0;
     background-color: #e8e5e1;
     color: #717171;
@@ -27,59 +32,47 @@ body {
     text-align: center;
 }
 
-.sidebar>div {
-    width: 200px;
-    margin: 10px auto;
+table>tbody>tr>td:first-child {
+    width: 42%;
+    text-align: right;
 }
 
-#node-name, #font-size {
+table>tbody>tr>td:last-child>* {
     background-color: #fafafa;
     border: 1px solid #b4b4b4;
-    color: #6c6c6c;
     border-radius: 3px;
+    display: block;
+    margin: 3px auto;
+}
+
+table>tbody>tr>td>input[type="text"] {
+    text-align: center;
+    color: #6c6c6c;
+    padding: 10px;
+    width: 120px;
+    font-size: 16px;
+}
+
+table>tbody>tr>td>input[type="color"] {
+    width: 24px;
+}
+
+table>tbody>tr>td>img:hover {
+    background-color: #ebebeb;
+}
+
+table>tbody>tr>td>img,
+table>tbody>tr>td>input[type="color"] {
+    padding: 5px;
+    width: 80px;
+    height: 24px;
+    cursor: pointer;
 }
 
 #node-name:focus {
     background-color: #f1f7f0;
 }
 
-#node-name {
-    display: block;
-    padding: 10px;
-    width: 200px;
-    margin: 10px 22px;
-    text-align: center;
-    font-size: 16px;
-}
-
-#font-size {
-    padding: 5px;
-    padding-right: 0;
-    margin-right: 16px;
-    margin-top: 14px;
-    width: 44px;
-    float: right;
-    font-size: 15px;
-}
-
-.btn:hover {
-    background-color: #ebebeb;
-}
-
-.btn {
-    background-color: #f6f6f6;
-    border: 1px solid #b4b4b4;
-    padding: 10px;
-    border-radius: 3px;
-    margin: 5px;
-    margin-right: 10px;
-    cursor: pointer;
-}
-
-.btn-color {
-    width: 24px;
-}
-
 .mmap {
-    margin-left: 272px;
+    margin-left: 302px;
 }

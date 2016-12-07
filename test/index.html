@@ -11,33 +11,107 @@
     <body>
 
         <div class="sidebar">
-            <h3>Mmap</h3>
-            <input id="node-name" type="text" name="name">
-            <div>
-                <img class="btn" onclick="mmap.updateNode('font-weight')" src="img/bold.svg">
-                <img class="btn" onclick="mmap.updateNode('font-style')" src="img/italic.svg">
-                <input id="font-size" type="number" name="font-size">
-            </div>
-            <div>
-                <img class="btn" onclick="mmap.addNode()" src="img/add.svg">
-                <img class="btn" onclick="mmap.removeNode()" src="img/remove.svg">
-                <img class="btn" onclick="mmap.center()" src="img/center.svg">
-            </div>
-            <div>
-                <img class="btn" onclick="mmap.newMap()" src="img/new.svg">
-                <img class="btn" onclick="mmap.getPNG('mmap')" src="img/img.svg">
-            </div>
-            <div>
-                <input class="btn btn-color" onchange="mmap.updateNode('background-color', value)" type="color" name="background-color">
-                <input class="btn btn-color" onchange="mmap.updateNode('link-color', value)" type="color" name="link-color">
-                <input class="btn btn-color" onchange="mmap.updateNode('text-color', value)" type="color" name="text-color">
-            </div>
+            <h3>mmap.js tests</h3>
+            <table>
+                <tr>
+                    <td>Node name :</td>
+                    <td><input id="node-name" type="text" name="node-name"></td>
+                </tr>
+                <tr>
+                    <td>Font size :</td>
+                    <td><input id="font-size" type="text" name="font-size"></td>
+                </tr>
+                <tr>
+                    <td>Bold font :</td>
+                    <td><img onclick="mmap.updateNode('font-weight')" src="img/bold.svg"></td>
+                </tr>
+                <tr>
+                    <td>Italic font :</td>
+                    <td><img onclick="mmap.updateNode('font-style')" src="img/italic.svg"></td>
+                </tr>
+                <tr>
+                    <td>Add node :</td>
+                    <td><img onclick="mmap.addNode()" src="img/add.svg"></td>
+                </tr>
+                <tr>
+                    <td>Remove node :</td>
+                    <td><img onclick="mmap.removeNode()" src="img/remove.svg"></td>
+                </tr>
+                <tr>
+                    <td>Center :</td>
+                    <td><img onclick="mmap.center()" src="img/center.svg"></td>
+                </tr>
+                <tr>
+                    <td>New map :</td>
+                    <td><img onclick="mmap.newMap()" src="img/new.svg"></td>
+                </tr>
+                <tr>
+                    <td>Get image :</td>
+                    <td><img onclick="mmap.getPNG('mmap')" src="img/img.svg"></td>
+                </tr>
+                <tr>
+                    <td>Node color :</td>
+                    <td><input class="color-btn" type="color" name="background-color"
+                        onchange="mmap.updateNode('background-color', value)"></td>
+                </tr>
+                <tr>
+                    <td>Branch color :</td>
+                    <td><input class="color-btn" type="color" name="branch-color"
+                        onchange="mmap.updateNode('branch-color', value)"></td>
+                </tr>
+                <tr>
+                    <td>Text color :</td>
+                    <td><input class="color-btn" type="color" name="text-color"
+                        onchange="mmap.updateNode('text-color', value)"></td>
+                </tr>
+            </table>
         </div>
 
         <div class="mmap"></div>
 
         <script src="../bower_components/d3/d3.min.js"></script>
         <script src="../dist/mmap.js"></script>
-        <script src="test.js"></script>
+        <script>
+
+            // DOM elements
+            const nodeName = document.getElementById('node-name');
+            const fontSize = document.getElementById('font-size');
+            const backgroundColor = document.getElementsByClassName('color-btn')[0];
+            const branchColor = document.getElementsByClassName('color-btn')[1];
+            const textColor = document.getElementsByClassName('color-btn')[2];
+
+            fontSize.onkeyup = function() {
+                mmap.updateNode('font-size', fontSize.value );
+            }
+
+            nodeName.onblur = function() {
+                if( nodeName.value === '' ) mmap.updateNode('name', nodeName.value = 'Node');
+            }
+
+            nodeName.onkeyup = function( e ) {
+                e.key === "Enter" ? nodeName.blur() : mmap.updateNode('name', nodeName.value );
+            };
+
+            // mmap events
+
+            mmap.events.on('mmcreate', function(){
+                console.info('Mindmap created!');
+            });
+
+            mmap.events.on('nodeselect', function( n ) {
+                nodeName.value = n['name'];
+                fontSize.value = n['font-size'];
+                backgroundColor.value = n['background-color'];
+                branchColor.value = n['branch-color'] || '#ffffff';
+                textColor.value = n['text-color'];
+            });
+
+            mmap.events.on('nodedblclick', function( n ) {
+                nodeName.focus();
+            });
+
+            mmap.init('.mmap');
+
+        </script>
     </body>
 </html>
