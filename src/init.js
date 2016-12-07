@@ -36,6 +36,8 @@
         global.counter = 0;
 
         createRootNode();
+        update();
+        deselectNode();
 
         window.onresize = center;
         events.call('mmcreate');

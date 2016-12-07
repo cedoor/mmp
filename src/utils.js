@@ -120,6 +120,4 @@
             'text-color' : '#828c82', 'font-size' : 20,
             'font-style' : 'normal', 'font-weight' : 'normal'
         });
-        update();
-        deselectNode();
     }

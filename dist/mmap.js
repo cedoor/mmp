@@ -45,6 +45,8 @@
         global.counter = 0;
 
         createRootNode();
+        update();
+        deselectNode();
 
         window.onresize = center;
         events.call('mmcreate');
@@ -172,8 +174,6 @@
             'text-color' : '#828c82', 'font-size' : 20,
             'font-style' : 'normal', 'font-weight' : 'normal'
         });
-        update();
-        deselectNode();
     }
 
     /****** Update functions  ******/
@@ -425,9 +425,11 @@
     }
 
     function newMap() {
+        global.counter = 0;
         global.nodes.clear();
         createRootNode();
-        //redraw();
+        redraw();
+        deselectNode();
     }
 
     /**

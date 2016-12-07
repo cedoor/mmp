@@ -105,7 +105,9 @@
     }
 
     function newMap() {
+        global.counter = 0;
         global.nodes.clear();
         createRootNode();
-        //redraw();
+        redraw();
+        deselectNode();
     }
