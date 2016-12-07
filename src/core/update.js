@@ -49,7 +49,7 @@
         const text = this.childNodes[1];
         const bg = this.childNodes[0];
         sel.name = text.innerHTML = v;
-        sel.width = text.textLength.baseVal.value + 50;
+        sel.width = text.textLength.baseVal.value + 45;
         d3.select( bg ).attr('d', drawBgShape );
     }
 
@@ -68,7 +68,7 @@
         const text = this.childNodes[1];
         const bg = this.childNodes[0];
         text.style.setProperty('font-size', sel['font-size'] = v );
-        sel.width = text.textLength.baseVal.value + 50;
+        sel.width = text.textLength.baseVal.value + 45;
         sel.height = sel['font-size']*11/10 + 30;
         d3.select( bg ).attr('d', drawBgShape );
         d3.selectAll('.link').attr('d', drawLink );
