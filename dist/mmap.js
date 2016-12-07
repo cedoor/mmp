@@ -430,6 +430,7 @@
         createRootNode();
         redraw();
         deselectNode();
+        center();
     }
 
     /**
