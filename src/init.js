@@ -22,7 +22,6 @@
         global.svg.main = global.container.append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
-            .attr('id', 'mmap')
             .append('g').call( zoom );
 
         global.svg.main.append("rect")
@@ -36,17 +35,7 @@
         global.nodes = d3.map();
         global.counter = 0;
 
-        global.nodes.set('node' + global.counter, {
-            name : 'Root node',
-            x : parseInt( global.container.style('width') )/2,
-            y : parseInt( global.container.style('height') )/2,
-            'background-color' : '#e6ede6',
-            'text-color' : '#828c82', 'font-size' : 20,
-            'font-style' : 'normal', 'font-weight' : 'normal'
-        });
-
-        update();
-        deselectNode();
+        createRootNode();
 
         window.onresize = center;
         events.call('mmcreate');

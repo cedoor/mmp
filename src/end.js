@@ -7,6 +7,7 @@
         // Basic
         init : init,
         center : center,
+        newMap : newMap,
         addNode : addNode,
         removeNode : removeNode,
 

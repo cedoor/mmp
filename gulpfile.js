@@ -10,14 +10,14 @@ gulp.task('default', ['watch'], function() {
     gulp.start('compileSrc');
 });
 
-gulp.task('compileSrc', function(cb) {
+gulp.task('compileSrc', function( cb ) {
     return gulp.src([
         'src/start.js',
         'src/init.js',
-        'src/core/utils.js',
-        'src/core/update.js',
-        'src/core/shapes.js',
-        'src/core/public.js',
+        'src/utils.js',
+        'src/update.js',
+        'src/shapes.js',
+        'src/public.js',
         'src/end.js'
     ])
     .pipe(concat('mmap.js'))
@@ -30,7 +30,5 @@ gulp.task('compileSrc', function(cb) {
 
 gulp.task('watch', function() {
     livereload.listen();
-    gulp.watch('src/**/*.js', [
-        'compileSrc'
-    ]);
+    gulp.watch('src/**/*.js', ['compileSrc']);
 });
