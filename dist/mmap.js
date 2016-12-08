@@ -31,7 +31,7 @@
         global.svg.main = global.container.append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
-            .append('g').call( zoom );
+            .call( zoom );
 
         global.svg.main.append("rect")
             .attr("width", '100%')
@@ -48,6 +48,7 @@
         update();
         deselectNode();
 
+        shortcuts();
         window.onresize = center;
         events.call('mmcreate');
     }
@@ -174,6 +175,29 @@
             'text-color' : '#828c82', 'font-size' : 20,
             'font-style' : 'normal', 'font-weight' : 'normal'
         });
+    }
+
+    function shortcuts() {
+        var map = {}, f = function( cb ) {
+            cb();
+            map = {};
+            return false;
+        };
+        onkeyup = onkeydown = function( e ) {
+            map[e.keyCode] = e.type === 'keydown';
+            if ( map[17] && map[38] ) return f( function() {
+                console.log('ctrl+up');
+            })
+            else if ( map[17] && map[40] ) return f( function() {
+                console.log('ctrl+down');
+            })
+            else if ( map[17] && map[39] ) return f( function() {
+                console.log('ctrl+right');
+            })
+            else if ( map[17] && map[37] ) return f( function() {
+                console.log('ctrl+left');
+            })
+        }
     }
 
     /****** Update functions  ******/

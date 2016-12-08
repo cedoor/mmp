@@ -121,3 +121,26 @@
             'font-style' : 'normal', 'font-weight' : 'normal'
         });
     }
+
+    function shortcuts() {
+        var map = {}, f = function( cb ) {
+            cb();
+            map = {};
+            return false;
+        };
+        onkeyup = onkeydown = function( e ) {
+            map[e.keyCode] = e.type === 'keydown';
+            if ( map[17] && map[38] ) return f( function() {
+                console.log('ctrl+up');
+            })
+            else if ( map[17] && map[40] ) return f( function() {
+                console.log('ctrl+down');
+            })
+            else if ( map[17] && map[39] ) return f( function() {
+                console.log('ctrl+right');
+            })
+            else if ( map[17] && map[37] ) return f( function() {
+                console.log('ctrl+left');
+            })
+        }
+    }

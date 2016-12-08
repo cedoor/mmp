@@ -22,7 +22,7 @@
         global.svg.main = global.container.append('svg')
             .attr('width', '100%')
             .attr('height', '100%')
-            .append('g').call( zoom );
+            .call( zoom );
 
         global.svg.main.append("rect")
             .attr("width", '100%')
@@ -39,6 +39,7 @@
         update();
         deselectNode();
 
+        shortcuts();
         window.onresize = center;
         events.call('mmcreate');
     }
