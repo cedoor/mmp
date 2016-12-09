@@ -39,7 +39,7 @@
         update();
         deselectNode();
 
-        shortcuts();
+        setShortcuts();
         window.onresize = center;
         events.call('mmcreate');
     }

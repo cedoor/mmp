@@ -89,8 +89,13 @@
             }
 
             nodeName.onkeyup = function( e ) {
-                e.key === "Enter" ? nodeName.blur() : mmap.updateNode('name', nodeName.value );
+                mmap.updateNode('name', nodeName.value );
             };
+
+            nodeName.onkeydown = function( e ) {
+                e.stopPropagation();
+                e.key === "Enter" && nodeName.blur();
+            }
 
             // mmap events
 

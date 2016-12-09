@@ -42,6 +42,10 @@
         return level < 5 ? level : 5;
     }
 
+    function clearObject( obj ) {
+        for ( var member in obj ) delete obj[member];
+    }
+
     function getNodesWithKeys() {
         const nodesWithKeys = [];
         global.nodes.each( function( n, k ) {
@@ -120,27 +124,4 @@
             'text-color' : '#828c82', 'font-size' : 20,
             'font-style' : 'normal', 'font-weight' : 'normal'
         });
-    }
-
-    function shortcuts() {
-        var map = {}, f = function( cb ) {
-            cb();
-            map = {};
-            return false;
-        };
-        onkeyup = onkeydown = function( e ) {
-            map[e.keyCode] = e.type === 'keydown';
-            if ( map[17] && map[38] ) return f( function() {
-                console.log('ctrl+up');
-            })
-            else if ( map[17] && map[40] ) return f( function() {
-                console.log('ctrl+down');
-            })
-            else if ( map[17] && map[39] ) return f( function() {
-                console.log('ctrl+right');
-            })
-            else if ( map[17] && map[37] ) return f( function() {
-                console.log('ctrl+left');
-            })
-        }
     }

@@ -17,6 +17,7 @@ gulp.task('compileSrc', function( cb ) {
         'src/utils.js',
         'src/update.js',
         'src/shapes.js',
+        'src/shortcuts.js',
         'src/public.js',
         'src/end.js'
     ])
