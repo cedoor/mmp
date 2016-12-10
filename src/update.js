@@ -23,6 +23,7 @@
             });
 
         nodeContainer.append('text').text( n => n.name )
+            .style('font-family', 'sans-serif')
             .style('text-anchor', 'middle')
             .style('alignment-baseline', 'middle')
             .style('fill', n => n['text-color'])
@@ -55,17 +56,20 @@
         sel.name = text.innerHTML = v;
         sel.width = text.textLength.baseVal.value + 45;
         d3.select( bg ).attr('d', drawBgShape );
+        saveMapSnapshot();
     }
 
     function updateBackgroundColor( sel, v ) {
         const bg = this.childNodes[0];
         bg.style.setProperty('fill', sel['background-color'] = v );
         bg.style.setProperty('stroke', d3.color( v ).darker( .5 ) );
+        saveMapSnapshot();
     }
 
     function updateTextColor( sel, v ) {
         const text = this.childNodes[1];
         text.style.setProperty('fill', sel['text-color'] = v );
+        saveMapSnapshot();
     }
 
     function updateFontSize( sel, v ) {
@@ -76,18 +80,21 @@
         sel.height = sel['font-size']*11/10 + 30;
         d3.select( bg ).attr('d', drawBgShape );
         d3.selectAll('.branch').attr('d', drawBranch );
+        saveMapSnapshot();
     }
 
     function updateFontStyle( sel ) {
         const text = this.childNodes[1];
         sel['font-style'] = sel['font-style'] === 'normal' ? 'italic' : 'normal';
         text.style.setProperty('font-style', sel['font-style'] );
+        saveMapSnapshot();
     }
 
     function updateFontWeight( sel ) {
         const text = this.childNodes[1];
         sel['font-weight'] = sel['font-weight'] === 'normal' ? 'bold' : 'normal';
         text.style.setProperty('font-weight', sel['font-weight'] );
+        saveMapSnapshot();
     }
 
     function updateBranchColor( sel, v ) {
@@ -95,6 +102,7 @@
             const branch = document.getElementById('branchOf'+ sel.key );
             branch.style.setProperty('fill', sel['branch-color'] = v );
             branch.style.setProperty('stroke', sel['branch-color'] = v );
+            saveMapSnapshot();
         } else {
             console.warn('The root node has no branches');
         }

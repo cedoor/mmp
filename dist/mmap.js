@@ -26,10 +26,12 @@
     function init( selector ) {
 
         global.container = d3.select( selector );
+        global.history = {
+            index : -1, snapshots : []
+        };
         global.svg = {};
 
         global.svg.main = global.container.append('svg')
-            .style('font-family', 'sans-serif')
             .attr('width', '100%')
             .attr('height', '100%')
             .call( zoom );
@@ -47,6 +49,7 @@
 
         createRootNode();
         update();
+        saveMapSnapshot();
         deselectNode();
 
         setShortcuts();
@@ -60,7 +63,7 @@
 
     const drag = d3.drag().on('drag', dragged ).on('start', function( n ) {
         selectNode( n.key );
-    });
+    }).on('end', saveMapSnapshot );
 
     function zoomed() {
         global.svg.mmap.attr('transform', d3.event.transform );
@@ -93,7 +96,8 @@
         var p = n.parent, level = 0;
         while ( p ) {
             level++;
-            p = p.parent;
+            const n = global.nodes.get( p );
+            p = n.parent;
         }
         return level < 5 ? level : 5;
     }
@@ -182,6 +186,20 @@
         });
     }
 
+    function copyOfMap( map ) {
+        const copy = d3.map();
+        map.each( function( v, k ) {
+            copy.set( k, Object.assign( {}, v ) );
+        });
+        return copy;
+    }
+
+    function saveMapSnapshot() {
+        const h = global.history;
+        h.snapshots.push( copyOfMap( global.nodes ) );
+        h.index = h.snapshots.length - 1;
+    }
+
     /****** Update functions  ******/
 
     function redraw() {
@@ -207,6 +225,7 @@
             });
 
         nodeContainer.append('text').text( n => n.name )
+            .style('font-family', 'sans-serif')
             .style('text-anchor', 'middle')
             .style('alignment-baseline', 'middle')
             .style('fill', n => n['text-color'])
@@ -239,17 +258,20 @@
         sel.name = text.innerHTML = v;
         sel.width = text.textLength.baseVal.value + 45;
         d3.select( bg ).attr('d', drawBgShape );
+        saveMapSnapshot();
     }
 
     function updateBackgroundColor( sel, v ) {
         const bg = this.childNodes[0];
         bg.style.setProperty('fill', sel['background-color'] = v );
         bg.style.setProperty('stroke', d3.color( v ).darker( .5 ) );
+        saveMapSnapshot();
     }
 
     function updateTextColor( sel, v ) {
         const text = this.childNodes[1];
         text.style.setProperty('fill', sel['text-color'] = v );
+        saveMapSnapshot();
     }
 
     function updateFontSize( sel, v ) {
@@ -260,18 +282,21 @@
         sel.height = sel['font-size']*11/10 + 30;
         d3.select( bg ).attr('d', drawBgShape );
         d3.selectAll('.branch').attr('d', drawBranch );
+        saveMapSnapshot();
     }
 
     function updateFontStyle( sel ) {
         const text = this.childNodes[1];
         sel['font-style'] = sel['font-style'] === 'normal' ? 'italic' : 'normal';
         text.style.setProperty('font-style', sel['font-style'] );
+        saveMapSnapshot();
     }
 
     function updateFontWeight( sel ) {
         const text = this.childNodes[1];
         sel['font-weight'] = sel['font-weight'] === 'normal' ? 'bold' : 'normal';
         text.style.setProperty('font-weight', sel['font-weight'] );
+        saveMapSnapshot();
     }
 
     function updateBranchColor( sel, v ) {
@@ -279,6 +304,7 @@
             const branch = document.getElementById('branchOf'+ sel.key );
             branch.style.setProperty('fill', sel['branch-color'] = v );
             branch.style.setProperty('stroke', sel['branch-color'] = v );
+            saveMapSnapshot();
         } else {
             console.warn('The root node has no branches');
         }
@@ -288,23 +314,24 @@
 
     function drawBranch( n ) {
 
+        const p = global.nodes.get( n.parent );
         const width = 22 - getNodeLevel( n ) * 3;
-        const middleX = ( n.parent.x + n.x ) / 2;
-        const orY = n.parent.y < n.y + n.height/2 ? -1 : 1;
-        const orX = n.parent.x > n.x ? -1 : 1;
+        const middleX = ( p.x + n.x ) / 2;
+        const orY = p.y < n.y + n.height/2 ? -1 : 1;
+        const orX = p.x > n.x ? -1 : 1;
         const inv = orX*orY;
 
         const path = d3.path();
-        path.moveTo( n.parent.x, n.parent.y - width*.8 );
+        path.moveTo( p.x, p.y - width*.8 );
         path.bezierCurveTo(
-            middleX - width*inv, n.parent.y - width/2,
-            n.parent.x - width/2*inv, n.y + n.height/2 - width/3,
+            middleX - width*inv, p.y - width/2,
+            p.x - width/2*inv, n.y + n.height/2 - width/3,
             n.x - n.width/3*orX, n.y + n.height/2 + 3
         );
         path.bezierCurveTo(
-            n.parent.x + width/2*inv, n.y + n.height/2 + width/3,
-            middleX + width*inv, n.parent.y + width/2,
-            n.parent.x, n.parent.y + width*.8
+            p.x + width/2*inv, n.y + n.height/2 + width/3,
+            middleX + width*inv, p.y + width/2,
+            p.x, p.y + width*.8
         );
         path.closePath();
 
@@ -447,7 +474,6 @@
         if( global.selected ) {
             const sel = global.nodes.get( global.selected );
             const root = global.nodes.get('node0');
-
             const key = 'node' + ( ++global.counter );
             const value = {
                 name : prop && prop.name || 'Node',
@@ -459,12 +485,12 @@
                 'font-weight' : prop && prop['font-weight'] || 'normal',
                 x : sel.x + ( sel.x > root.x ? 200 : -200 ),
                 y : sel.y + 50,
-                parent : sel
+                parent : sel.key
             };
-
             global.nodes.set( key, value );
             update();
             events.call('nodecreate');
+            saveMapSnapshot();
         }
     }
 
@@ -474,7 +500,7 @@
 
             const clean = function( key ) {
                 global.nodes.each( function( n ) {
-                    if ( n.key !== 'node0' && n.parent.key === key ) {
+                    if ( n.key !== 'node0' && n.parent === key ) {
                         global.nodes.remove( n.key );
                         clean( n.key );
                         return;
@@ -486,6 +512,7 @@
             selectNode('node0');
             redraw();
             events.call('noderemove');
+            saveMapSnapshot();
         } else {
             console.warn('The root node can not be deleted');
         }
@@ -500,6 +527,7 @@
         const zoomId = d3.zoomIdentity.translate( center.x - root.x, center.y - root.y );
         global.svg.main.transition().duration(500).call( zoom.transform, zoomId );
         events.call('mmcenter');
+        saveMapSnapshot();
     }
 
     function updateNode( k, v ) {
@@ -547,8 +575,31 @@
         global.nodes.clear();
         createRootNode();
         redraw();
+        saveMapSnapshot();
         deselectNode();
         center();
+    }
+
+    function undo() {
+        const h = global.history;
+        if( h.index > 0 ) {
+            h.index--;
+            const snapshot = h.snapshots[ h.index ];
+            global.nodes = copyOfMap( snapshot );
+            selectNode('node0');
+            redraw();
+        }
+    }
+
+    function repeat() {
+        const h = global.history;
+        if( h.index < h.snapshots.length - 1 ) {
+            h.index++;
+            const snapshot = h.snapshots[ h.index ];
+            global.nodes = copyOfMap( snapshot );
+            selectNode('node0');
+            redraw();
+        }
     }
 
     /**
@@ -560,6 +611,8 @@
         // Basic
         init : init,
         center : center,
+        undo : undo,
+        repeat : repeat,
         newMap : newMap,
         addNode : addNode,
         removeNode : removeNode,

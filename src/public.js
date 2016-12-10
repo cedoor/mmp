@@ -9,7 +9,6 @@
         if( global.selected ) {
             const sel = global.nodes.get( global.selected );
             const root = global.nodes.get('node0');
-
             const key = 'node' + ( ++global.counter );
             const value = {
                 name : prop && prop.name || 'Node',
@@ -21,12 +20,12 @@
                 'font-weight' : prop && prop['font-weight'] || 'normal',
                 x : sel.x + ( sel.x > root.x ? 200 : -200 ),
                 y : sel.y + 50,
-                parent : sel
+                parent : sel.key
             };
-
             global.nodes.set( key, value );
             update();
             events.call('nodecreate');
+            saveMapSnapshot();
         }
     }
 
@@ -36,7 +35,7 @@
 
             const clean = function( key ) {
                 global.nodes.each( function( n ) {
-                    if ( n.key !== 'node0' && n.parent.key === key ) {
+                    if ( n.key !== 'node0' && n.parent === key ) {
                         global.nodes.remove( n.key );
                         clean( n.key );
                         return;
@@ -48,6 +47,7 @@
             selectNode('node0');
             redraw();
             events.call('noderemove');
+            saveMapSnapshot();
         } else {
             console.warn('The root node can not be deleted');
         }
@@ -62,6 +62,7 @@
         const zoomId = d3.zoomIdentity.translate( center.x - root.x, center.y - root.y );
         global.svg.main.transition().duration(500).call( zoom.transform, zoomId );
         events.call('mmcenter');
+        saveMapSnapshot();
     }
 
     function updateNode( k, v ) {
@@ -109,6 +110,29 @@
         global.nodes.clear();
         createRootNode();
         redraw();
+        saveMapSnapshot();
         deselectNode();
         center();
+    }
+
+    function undo() {
+        const h = global.history;
+        if( h.index > 0 ) {
+            h.index--;
+            const snapshot = h.snapshots[ h.index ];
+            global.nodes = copyOfMap( snapshot );
+            selectNode('node0');
+            redraw();
+        }
+    }
+
+    function repeat() {
+        const h = global.history;
+        if( h.index < h.snapshots.length - 1 ) {
+            h.index++;
+            const snapshot = h.snapshots[ h.index ];
+            global.nodes = copyOfMap( snapshot );
+            selectNode('node0');
+            redraw();
+        }
     }

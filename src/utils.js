@@ -4,7 +4,7 @@
 
     const drag = d3.drag().on('drag', dragged ).on('start', function( n ) {
         selectNode( n.key );
-    });
+    }).on('end', saveMapSnapshot );
 
     function zoomed() {
         global.svg.mmap.attr('transform', d3.event.transform );
@@ -37,7 +37,8 @@
         var p = n.parent, level = 0;
         while ( p ) {
             level++;
-            p = p.parent;
+            const n = global.nodes.get( p );
+            p = n.parent;
         }
         return level < 5 ? level : 5;
     }
@@ -124,4 +125,18 @@
             'text-color' : '#828c82', 'font-size' : 20,
             'font-style' : 'normal', 'font-weight' : 'normal'
         });
+    }
+
+    function copyOfMap( map ) {
+        const copy = d3.map();
+        map.each( function( v, k ) {
+            copy.set( k, Object.assign( {}, v ) );
+        });
+        return copy;
+    }
+
+    function saveMapSnapshot() {
+        const h = global.history;
+        h.snapshots.push( copyOfMap( global.nodes ) );
+        h.index = h.snapshots.length - 1;
     }
