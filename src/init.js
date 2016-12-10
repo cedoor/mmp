@@ -20,6 +20,7 @@
         global.svg = {};
 
         global.svg.main = global.container.append('svg')
+            .style('font-family', 'sans-serif')
             .attr('width', '100%')
             .attr('height', '100%')
             .call( zoom );

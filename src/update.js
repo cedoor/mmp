@@ -12,6 +12,7 @@
         const node = global.svg.mmap.selectAll('.node').data( nodes );
 
         const nodeContainer = node.enter().append('g')
+            .style('cursor', 'pointer')
             .attr('class', 'node')
             .attr('id', n => n.key )
             .attr('transform', n => 'translate(' + n.x + ',' + n.y + ')')
@@ -22,13 +23,16 @@
             });
 
         nodeContainer.append('text').text( n => n.name )
-            .attr('fill', n => n['text-color'])
-            .attr('font-size', n => n['font-size'])
-            .attr('font-style', n => n['font-style'])
-            .attr('font-weight', n => n['font-weight']);
+            .style('text-anchor', 'middle')
+            .style('alignment-baseline', 'middle')
+            .style('fill', n => n['text-color'])
+            .style('font-size', n => n['font-size'])
+            .style('font-style', n => n['font-style'])
+            .style('font-weight', n => n['font-weight']);
 
         nodeContainer.insert('path', 'text')
             .style('fill', n => n['background-color'])
+            .style('stroke-width', 3 )
             .attr('d', drawBgShape );
 
         node.exit().remove();
@@ -36,10 +40,10 @@
         const branch = global.svg.mmap.selectAll('.branch').data( nodes.slice(1) );
 
         branch.enter().insert('path', 'g')
-            .attr('class', 'branch')
-            .attr('id', n => 'branchOf' + n.key )
             .style('fill', n => n['branch-color'])
             .style('stroke', n => n['branch-color'])
+            .attr('class', 'branch')
+            .attr('id', n => 'branchOf' + n.key )
             .attr('d', drawBranch );
 
         branch.exit().remove();
