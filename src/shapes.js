@@ -2,7 +2,8 @@
 
     function drawBranch( n ) {
 
-        const width = 22 - getNodeLevel( n ) * 3;
+        const nodeLevel = getNodeLevel( n );
+        const width = 22 - ( nodeLevel < 5 ? nodeLevel : 5 ) * 3;
         const middleX = ( n.parent.x + n.x ) / 2;
         const orY = n.parent.y < n.y + n.height/2 ? -1 : 1;
         const orX = n.parent.x > n.x ? -1 : 1;

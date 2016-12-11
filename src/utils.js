@@ -39,9 +39,9 @@
             level++;
             p = p.parent;
         }
-        return level < 5 ? level : 5;
+        return level;
     }
-
+    
     function clearObject( obj ) {
         for ( var member in obj ) delete obj[member];
     }

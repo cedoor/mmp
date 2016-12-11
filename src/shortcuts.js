@@ -43,53 +43,51 @@
         node.node().dispatchEvent( e );
     }
 
-    // To fix
+    function getCloserVerticalNode( node, pos ) {
+        var key, tmp = 100000;
+        const root = global.nodes.get('node0');
+        const or = root.x > node.x;
+        global.nodes.each( function( n, k ) {
+            const d = {'up' : node.y - n.y, 'down' : n.y - node.y }[pos];
+            const sameLevel = node.parent === n.parent;
+            const sameNode = node.key === n.key;
+            const sameOr = ( or && root.x >= n.x ) || ( !or && root.x <= n.x );
+            if ( sameOr && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
+                tmp = d;
+                key = n.key;
+            }
+        });
+        return key || node.key;
+    }
+
+    function getCloserHorizontalNode( node, pos ) {
+        var key;
+        const level = getNodeLevel( node );
+        const root = global.nodes.get('node0');
+        const or = root.x > node.x;
+        global.nodes.each( function( n, k ) {
+            const sameOr = ( or && root.x >= n.x ) || ( !or && root.x <= n.x );
+            const l = getNodeLevel( n );
+            var checkLevel;
+            if ( or ) {
+                checkLevel = pos === 'left' ? l === level+1 : l === level-1;
+            } else {
+                checkLevel = pos === 'right' ? l === level+1 : l === level-1;
+            }
+            if ( sameOr && checkLevel ) {
+                key = n.key;
+            }
+        });
+        return key || node.key;
+    }
+
     function moveSelection( dir ) {
-        const s = global.nodes.get( global.selected );
-        var tmp, node = s.key;
-        switch ( dir ) {
-            case 'up':
-                tmp = 10000;
-                global.nodes.each( function( n, k ) {
-                    const range = s.y - n.y;
-                    if ( range > 0 && range < tmp && s.key !== n.key ) {
-                        tmp = range;
-                        node = n.key;
-                    }
-                });
-                break;
-            case 'down':
-                tmp = -10000;
-                global.nodes.each( function( n, k ) {
-                    const range = s.y - n.y;
-                    if ( range < 0 && range > tmp && s.key !== n.key ) {
-                        tmp = range;
-                        node = n.key;
-                    }
-                });
-                break;
-            case 'right':
-                tmp = -10000;
-                global.nodes.each( function( n, k ) {
-                    const range = s.x - n.x;
-                    if ( range < 0 && range > tmp && s.key !== n.key ) {
-                        tmp = range;
-                        node = n.key;
-                    }
-                });
-                break;
-            case 'left':
-                tmp = 10000;
-                global.nodes.each( function( n, k ) {
-                    const range = s.x - n.x;
-                    if ( range > 0 && range < tmp && s.key !== n.key ) {
-                        tmp = range;
-                        node = n.key;
-                    }
-                });
-                break;
-        }
-        selectNode( node );
+        selectNode({
+            'up' : getCloserVerticalNode,
+            'down' : getCloserVerticalNode,
+            'left' : getCloserHorizontalNode,
+            'right' : getCloserHorizontalNode
+        }[ dir ]( global.nodes.get( global.selected ), dir ));
     }
 
     function moveNode( dir ) {
