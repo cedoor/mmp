@@ -91,6 +91,10 @@
                 mmap.updateNode('font-size', fontSize.value );
             }
 
+            fontSize.onkeydown = function( e ) {
+                e.stopPropagation();
+            }
+
             nodeName.onblur = function() {
                 if( nodeName.value === '' ) mmap.updateNode('name', nodeName.value = 'Node');
             }

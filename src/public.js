@@ -62,7 +62,6 @@
         const zoomId = d3.zoomIdentity.translate( center.x - root.x, center.y - root.y );
         global.svg.main.transition().duration(500).call( zoom.transform, zoomId );
         events.call('mmcenter');
-        saveMapSnapshot();
     }
 
     function updateNode( k, v ) {

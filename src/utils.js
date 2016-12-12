@@ -4,13 +4,19 @@
 
     const drag = d3.drag().on('drag', dragged ).on('start', function( n ) {
         selectNode( n.key );
-    }).on('end', saveMapSnapshot );
+    }).on('end', function() {
+        if ( global.dragged ) {
+            global.dragged = false;
+            saveMapSnapshot();
+        };
+    });
 
     function zoomed() {
         global.svg.mmap.attr('transform', d3.event.transform );
     }
 
     function dragged( n ) {
+        global.dragged = true;
         const x = n.x = d3.event.x;
         const y = n.y = d3.event.y;
         d3.select(this).attr('transform','translate('+ x +','+ y +')');
@@ -42,7 +48,7 @@
         }
         return level;
     }
-    
+
     function clearObject( obj ) {
         for ( var member in obj ) delete obj[member];
     }
@@ -137,6 +143,11 @@
 
     function saveMapSnapshot() {
         const h = global.history;
+        const l = h.snapshots.length;
+        if ( h.index < l - 1 ) {
+            console.log( h.index );
+        }
+        h.index = h.snapshots.length;
         h.snapshots.push( copyOfMap( global.nodes ) );
-        h.index = h.snapshots.length - 1;
+        console.info('Snapshot saved!');
     }

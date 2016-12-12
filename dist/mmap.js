@@ -63,13 +63,19 @@
 
     const drag = d3.drag().on('drag', dragged ).on('start', function( n ) {
         selectNode( n.key );
-    }).on('end', saveMapSnapshot );
+    }).on('end', function() {
+        if ( global.dragged ) {
+            global.dragged = false;
+            saveMapSnapshot();
+        };
+    });
 
     function zoomed() {
         global.svg.mmap.attr('transform', d3.event.transform );
     }
 
     function dragged( n ) {
+        global.dragged = true;
         const x = n.x = d3.event.x;
         const y = n.y = d3.event.y;
         d3.select(this).attr('transform','translate('+ x +','+ y +')');
@@ -101,7 +107,7 @@
         }
         return level;
     }
-    
+
     function clearObject( obj ) {
         for ( var member in obj ) delete obj[member];
     }
@@ -196,8 +202,13 @@
 
     function saveMapSnapshot() {
         const h = global.history;
+        const l = h.snapshots.length;
+        if ( h.index < l - 1 ) {
+            console.log( h.index );
+        }
+        h.index = h.snapshots.length;
         h.snapshots.push( copyOfMap( global.nodes ) );
-        h.index = h.snapshots.length - 1;
+        console.info('Snapshot saved!');
     }
 
     /****** Update functions  ******/
@@ -253,36 +264,45 @@
     }
 
     function updateName( sel, v ) {
-        const text = this.childNodes[1];
-        const bg = this.childNodes[0];
-        sel.name = text.innerHTML = v;
-        sel.width = text.textLength.baseVal.value + 45;
-        d3.select( bg ).attr('d', drawBgShape );
-        saveMapSnapshot();
+        if ( sel.name != v ) {
+            console.log('updated');
+            const text = this.childNodes[1];
+            const bg = this.childNodes[0];
+            sel.name = text.innerHTML = v;
+            sel.width = text.textLength.baseVal.value + 45;
+            d3.select( bg ).attr('d', drawBgShape );
+            saveMapSnapshot();
+        }
     }
 
     function updateBackgroundColor( sel, v ) {
-        const bg = this.childNodes[0];
-        bg.style.setProperty('fill', sel['background-color'] = v );
-        bg.style.setProperty('stroke', d3.color( v ).darker( .5 ) );
-        saveMapSnapshot();
+        if ( sel['background-color'] !== v ) {
+            const bg = this.childNodes[0];
+            bg.style.setProperty('fill', sel['background-color'] = v );
+            bg.style.setProperty('stroke', d3.color( v ).darker( .5 ) );
+            saveMapSnapshot();
+        }
     }
 
     function updateTextColor( sel, v ) {
-        const text = this.childNodes[1];
-        text.style.setProperty('fill', sel['text-color'] = v );
-        saveMapSnapshot();
+        if ( sel['text-color'] !== v ) {
+            const text = this.childNodes[1];
+            text.style.setProperty('fill', sel['text-color'] = v );
+            saveMapSnapshot();
+        }
     }
 
     function updateFontSize( sel, v ) {
-        const text = this.childNodes[1];
-        const bg = this.childNodes[0];
-        text.style.setProperty('font-size', sel['font-size'] = v );
-        sel.width = text.textLength.baseVal.value + 45;
-        sel.height = sel['font-size']*11/10 + 30;
-        d3.select( bg ).attr('d', drawBgShape );
-        d3.selectAll('.branch').attr('d', drawBranch );
-        saveMapSnapshot();
+        if ( sel['font-size'] != v ) {
+            const text = this.childNodes[1];
+            const bg = this.childNodes[0];
+            text.style.setProperty('font-size', sel['font-size'] = v );
+            sel.width = text.textLength.baseVal.value + 45;
+            sel.height = sel['font-size']*11/10 + 30;
+            d3.select( bg ).attr('d', drawBgShape );
+            d3.selectAll('.branch').attr('d', drawBranch );
+            saveMapSnapshot();
+        }
     }
 
     function updateFontStyle( sel ) {
@@ -301,13 +321,13 @@
 
     function updateBranchColor( sel, v ) {
         if( sel.key !== 'node0' ) {
-            const branch = document.getElementById('branchOf'+ sel.key );
-            branch.style.setProperty('fill', sel['branch-color'] = v );
-            branch.style.setProperty('stroke', sel['branch-color'] = v );
-            saveMapSnapshot();
-        } else {
-            console.warn('The root node has no branches');
-        }
+            if ( sel['branch-color'] !== v ) {
+                const branch = document.getElementById('branchOf'+ sel.key );
+                branch.style.setProperty('fill', sel['branch-color'] = v );
+                branch.style.setProperty('stroke', sel['branch-color'] = v );
+                saveMapSnapshot();
+            }
+        } else console.warn('The root node has no branches');
     }
 
     /****** Shape functions  ******/
@@ -532,7 +552,6 @@
         const zoomId = d3.zoomIdentity.translate( center.x - root.x, center.y - root.y );
         global.svg.main.transition().duration(500).call( zoom.transform, zoomId );
         events.call('mmcenter');
-        saveMapSnapshot();
     }
 
     function updateNode( k, v ) {
