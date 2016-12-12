@@ -63,29 +63,18 @@
 
     function getCloserHorizontalNode( node, pos ) {
         const root = global.nodes.get('node0');
-        const currentLevel = getNodeLevel( node );
-        var key, checks, nextLevel, tmp = Number.MIN_VALUE;
-
-        if ( node.x < root.x ) nextLevel = currentLevel + ( pos ?  1 : -1 )
-        else if ( node.x > root.x ) nextLevel = currentLevel + ( !pos ?  1 : -1 )
-        else nextLevel = currentLevel + 1;
-
+        var key, checks, tmp = Number.MIN_VALUE;
         global.nodes.each( function( n, k ) {
-            if ( node.x < root.x ) {
-                checks = ( n.x < root.x || n.key === 'node0' ) &&
-                         ( pos ? n.parent === node.key : true );
-                console.log( n.parent, node.key )
-            }
-            else if ( node.x > root.x ) {
-                checks = n.x > root.x || n.key === 'node0';
-            }
-            else checks = pos ? n.x < root.x : n.x > root.x
-            if ( checks && getNodeLevel( n ) === nextLevel && n.y > tmp ) {
+            if ( node.x < root.x )
+                checks = pos ? n.parent === node.key : node.parent === n.key;
+            else if ( node.x > root.x )
+                checks = !pos ? n.parent === node.key : node.parent === n.key;
+            else checks = ( pos ? n.x < root.x : n.x > root.x ) && n.parent === node.key;
+            if ( checks && n.y > tmp ) {
                 tmp = n.y;
                 key = n.key;
             }
         });
-
         return key || node.key;
     }
 

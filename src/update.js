@@ -12,6 +12,7 @@
         const node = global.svg.mmap.selectAll('.node').data( nodes );
 
         const nodeContainer = node.enter().append('g')
+            .style('cursor', 'pointer')
             .attr('class', 'node')
             .attr('id', n => n.key )
             .attr('transform', n => 'translate(' + n.x + ',' + n.y + ')')
@@ -22,13 +23,17 @@
             });
 
         nodeContainer.append('text').text( n => n.name )
-            .attr('fill', n => n['text-color'])
-            .attr('font-size', n => n['font-size'])
-            .attr('font-style', n => n['font-style'])
-            .attr('font-weight', n => n['font-weight']);
+            .style('font-family', 'sans-serif')
+            .style('text-anchor', 'middle')
+            .style('alignment-baseline', 'middle')
+            .style('fill', n => n['text-color'])
+            .style('font-size', n => n['font-size'])
+            .style('font-style', n => n['font-style'])
+            .style('font-weight', n => n['font-weight']);
 
         nodeContainer.insert('path', 'text')
             .style('fill', n => n['background-color'])
+            .style('stroke-width', 3 )
             .attr('d', drawBgShape );
 
         node.exit().remove();
@@ -36,10 +41,10 @@
         const branch = global.svg.mmap.selectAll('.branch').data( nodes.slice(1) );
 
         branch.enter().insert('path', 'g')
-            .attr('class', 'branch')
-            .attr('id', n => 'branchOf' + n.key )
             .style('fill', n => n['branch-color'])
             .style('stroke', n => n['branch-color'])
+            .attr('class', 'branch')
+            .attr('id', n => 'branchOf' + n.key )
             .attr('d', drawBranch );
 
         branch.exit().remove();
@@ -51,17 +56,20 @@
         sel.name = text.innerHTML = v;
         sel.width = text.textLength.baseVal.value + 45;
         d3.select( bg ).attr('d', drawBgShape );
+        saveMapSnapshot();
     }
 
     function updateBackgroundColor( sel, v ) {
         const bg = this.childNodes[0];
         bg.style.setProperty('fill', sel['background-color'] = v );
         bg.style.setProperty('stroke', d3.color( v ).darker( .5 ) );
+        saveMapSnapshot();
     }
 
     function updateTextColor( sel, v ) {
         const text = this.childNodes[1];
         text.style.setProperty('fill', sel['text-color'] = v );
+        saveMapSnapshot();
     }
 
     function updateFontSize( sel, v ) {
@@ -72,18 +80,21 @@
         sel.height = sel['font-size']*11/10 + 30;
         d3.select( bg ).attr('d', drawBgShape );
         d3.selectAll('.branch').attr('d', drawBranch );
+        saveMapSnapshot();
     }
 
     function updateFontStyle( sel ) {
         const text = this.childNodes[1];
         sel['font-style'] = sel['font-style'] === 'normal' ? 'italic' : 'normal';
         text.style.setProperty('font-style', sel['font-style'] );
+        saveMapSnapshot();
     }
 
     function updateFontWeight( sel ) {
         const text = this.childNodes[1];
         sel['font-weight'] = sel['font-weight'] === 'normal' ? 'bold' : 'normal';
         text.style.setProperty('font-weight', sel['font-weight'] );
+        saveMapSnapshot();
     }
 
     function updateBranchColor( sel, v ) {
@@ -91,6 +102,7 @@
             const branch = document.getElementById('branchOf'+ sel.key );
             branch.style.setProperty('fill', sel['branch-color'] = v );
             branch.style.setProperty('stroke', sel['branch-color'] = v );
+            saveMapSnapshot();
         } else {
             console.warn('The root node has no branches');
         }

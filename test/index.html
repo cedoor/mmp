@@ -5,13 +5,12 @@
         <meta charset="UTF-8">
         <title>Mmap</title>
         <meta name="description" content="Electron app to draw original mind maps">
-        <link href="../dist/mmap.css" rel="stylesheet">
         <link href="test.css" rel="stylesheet">
     </head>
     <body>
 
         <div class="sidebar">
-            <h3>mmap.js tests</h3>
+            <h3>mmap.js</h3>
             <table>
                 <tr>
                     <td>Node name :</td>
@@ -28,6 +27,14 @@
                 <tr>
                     <td>Italic font :</td>
                     <td><img onclick="mmap.updateNode('font-style')" src="img/italic.svg"></td>
+                </tr>
+                <tr>
+                    <td>Undo :</td>
+                    <td><img onclick="mmap.undo()" src="img/undo.svg"></td>
+                </tr>
+                <tr>
+                    <td>Repeat :</td>
+                    <td><img onclick="mmap.repeat()" src="img/repeat.svg"></td>
                 </tr>
                 <tr>
                     <td>Add node :</td>
