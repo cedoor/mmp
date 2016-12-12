@@ -6,7 +6,15 @@
         };
         onkeyup = onkeydown = function( e ) {
             map[e.keyCode] = e.type === 'keydown';
-            if ( sc('ctrl','up') ) moveNode('up');
+            if ( sc('ctrl','maiusc','z') ) {
+                repeat();
+                return false;
+            }
+            else if ( sc('ctrl','z') ) {
+                undo();
+                return false;
+            }
+            else if ( sc('ctrl','up') ) moveNode('up');
             else if ( sc('ctrl','down') ) moveNode('down');
             else if ( sc('ctrl','left') ) moveNode('left');
             else if ( sc('ctrl','right') ) moveNode('right');
@@ -14,6 +22,7 @@
             else if ( sc('down') ) moveSelection('down');
             else if ( sc('right') ) moveSelection('right');
             else if ( sc('left') ) moveSelection('left');
+            else if ( sc('i') ) getPNG('mmap');
             else if ( sc('c') ) center();
             else if ( sc('n') ) newMap();
             else if ( sc('+') ) addNode();
@@ -26,9 +35,8 @@
     function shortcut( keys, map ) {
         const alias = {
             'up' : 38, 'down' : 40, 'right' : 39, 'left' : 37,
-            'ctrl' : 17, 'alt' : 18, 'maiusc' : 16,
-            'esc' : 27, 'enter' : 13,
-            'c' : 67, 'n' : 78, '+' : 187, '-' : 189
+            'ctrl' : 17, 'alt' : 18, 'maiusc' : 16, 'esc' : 27, 'enter' : 13,
+            'c' : 67, 'n' : 78, '+' : 187, '-' : 189, 'i' : 73, 'z' : 90
         }
         for ( var i = 0; i < keys.length; i++ )
             if( ! map[alias[keys[i]]] ) return false;
