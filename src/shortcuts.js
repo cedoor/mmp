@@ -44,14 +44,15 @@
     }
 
     function getCloserVerticalNode( node, pos ) {
-        var key, tmp = 100000;
         const root = global.nodes.get('node0');
+        const currentLevel = getNodeLevel( node );
         const or = root.x > node.x;
+        var key, tmp = Number.MAX_VALUE;
         global.nodes.each( function( n, k ) {
-            const d = {'up' : node.y - n.y, 'down' : n.y - node.y }[pos];
-            const sameLevel = node.parent === n.parent;
+            const d = pos ? node.y - n.y : n.y - node.y;
+            const sameLevel = currentLevel === getNodeLevel( n );
             const sameNode = node.key === n.key;
-            const sameOr = ( or && root.x >= n.x ) || ( !or && root.x <= n.x );
+            const sameOr = ( or && root.x > n.x ) || ( !or && root.x < n.x );
             if ( sameOr && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
                 tmp = d;
                 key = n.key;
@@ -61,33 +62,41 @@
     }
 
     function getCloserHorizontalNode( node, pos ) {
-        var key;
-        const level = getNodeLevel( node );
         const root = global.nodes.get('node0');
-        const or = root.x > node.x;
+        const currentLevel = getNodeLevel( node );
+        var key, checks, nextLevel, tmp = Number.MIN_VALUE;
+
+        if ( node.x < root.x ) nextLevel = currentLevel + ( pos ?  1 : -1 )
+        else if ( node.x > root.x ) nextLevel = currentLevel + ( !pos ?  1 : -1 )
+        else nextLevel = currentLevel + 1;
+
         global.nodes.each( function( n, k ) {
-            const sameOr = ( or && root.x >= n.x ) || ( !or && root.x <= n.x );
-            const l = getNodeLevel( n );
-            var checkLevel;
-            if ( or ) {
-                checkLevel = pos === 'left' ? l === level+1 : l === level-1;
-            } else {
-                checkLevel = pos === 'right' ? l === level+1 : l === level-1;
+            if ( node.x < root.x ) {
+                checks = ( n.x < root.x || n.key === 'node0' ) &&
+                         ( pos ? n.parent === node.key : true );
+                console.log( n.parent, node.key )
             }
-            if ( sameOr && checkLevel ) {
+            else if ( node.x > root.x ) {
+                checks = n.x > root.x || n.key === 'node0';
+            }
+            else checks = pos ? n.x < root.x : n.x > root.x
+            if ( checks && getNodeLevel( n ) === nextLevel && n.y > tmp ) {
+                tmp = n.y;
                 key = n.key;
             }
         });
+
         return key || node.key;
     }
 
     function moveSelection( dir ) {
+        const sel = global.nodes.get( global.selected );
         selectNode({
             'up' : getCloserVerticalNode,
             'down' : getCloserVerticalNode,
             'left' : getCloserHorizontalNode,
             'right' : getCloserHorizontalNode
-        }[ dir ]( global.nodes.get( global.selected ), dir ));
+        }[ dir ]( sel, dir === 'up' || dir === 'left' ));
     }
 
     function moveNode( dir ) {
