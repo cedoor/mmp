@@ -484,7 +484,7 @@
                 name : prop && prop.name || 'Node',
                 'background-color' : prop && prop['background-color'] || '#f1f1f1',
                 'text-color' : prop && prop['text-color'] || '#808080',
-                'branch-color' : prop && prop['branch-color'] || '#9fad9c',
+                'branch-color' : prop && prop['branch-color'] || sel['branch-color'] || '#9fad9c',
                 'font-size' : prop && prop['font-size'] || 16,
                 'font-style' : prop && prop['font-style'] || 'normal',
                 'font-weight' : prop && prop['font-weight'] || 'normal',
