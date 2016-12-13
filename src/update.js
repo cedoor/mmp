@@ -7,7 +7,7 @@
 
     function update() {
 
-        const nodes = getNodesWithKeys();
+        const nodes = global.nodes.entries();
 
         const node = global.svg.mmap.selectAll('.node').data( nodes );
 
@@ -15,24 +15,24 @@
             .style('cursor', 'pointer')
             .attr('class', 'node')
             .attr('id', n => n.key )
-            .attr('transform', n => 'translate(' + n.x + ',' + n.y + ')')
+            .attr('transform', n => 'translate(' + n.value.x + ',' + n.value.y + ')')
             .call( drag )
             .on('dblclick', function( n ) {
                 events.call('nodedblclick', this, n);
                 d3.event.stopPropagation();
             });
 
-        nodeContainer.append('text').text( n => n.name )
+        nodeContainer.append('text').text( n => n.value.name )
             .style('font-family', 'sans-serif')
             .style('text-anchor', 'middle')
             .style('alignment-baseline', 'middle')
-            .style('fill', n => n['text-color'])
-            .style('font-size', n => n['font-size'])
-            .style('font-style', n => n['font-style'])
-            .style('font-weight', n => n['font-weight']);
+            .style('fill', n => n.value['text-color'])
+            .style('font-size', n => n.value['font-size'])
+            .style('font-style', n => n.value['font-style'])
+            .style('font-weight', n => n.value['font-weight']);
 
         nodeContainer.insert('path', 'text')
-            .style('fill', n => n['background-color'])
+            .style('fill', n => n.value['background-color'])
             .style('stroke-width', 3 )
             .attr('d', drawBgShape );
 
@@ -41,8 +41,8 @@
         const branch = global.svg.mmap.selectAll('.branch').data( nodes.slice(1) );
 
         branch.enter().insert('path', 'g')
-            .style('fill', n => n['branch-color'])
-            .style('stroke', n => n['branch-color'])
+            .style('fill', n => n.value['branch-color'])
+            .style('stroke', n => n.value['branch-color'])
             .attr('class', 'branch')
             .attr('id', n => 'branchOf' + n.key )
             .attr('d', drawBranch );
@@ -106,9 +106,9 @@
     }
 
     function updateBranchColor( sel, v ) {
-        if( sel.key !== 'node0' ) {
+        if( global.selected !== 'node0' ) {
             if ( sel['branch-color'] !== v ) {
-                const branch = document.getElementById('branchOf'+ sel.key );
+                const branch = document.getElementById('branchOf'+ global.selected );
                 branch.style.setProperty('fill', sel['branch-color'] = v );
                 branch.style.setProperty('stroke', sel['branch-color'] = v );
                 saveSnapshot();

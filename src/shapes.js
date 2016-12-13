@@ -1,7 +1,8 @@
     /****** Shape functions  ******/
 
-    function drawBranch( n ) {
+    function drawBranch( node ) {
 
+        const n = node.value;
         const p = global.nodes.get( n.parent );
         const nodeLevel = getNodeLevel( n );
         const width = 22 - ( nodeLevel < 5 ? nodeLevel : 5 ) * 3;
@@ -27,8 +28,9 @@
         return path;
     }
 
-    function drawBgShape( n ) {
+    function drawBgShape( node ) {
 
+        const n = node.value;
         const path = d3.path();
         const x = ( n.width = this.nextSibling.getBBox().width + 45 )/2;
         const y = ( n.height = n['font-size']*11/10 + 30 )/2;

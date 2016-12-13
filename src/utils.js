@@ -17,9 +17,9 @@
 
     function dragged( n ) {
         global.dragged = true;
-        const x = n.x = d3.event.x;
-        const y = n.y = d3.event.y;
-        d3.select(this).attr('transform','translate('+ x +','+ y +')');
+        const x = n.value.x += d3.event.dx;
+        const y = n.value.y += d3.event.dy;
+        d3.select(this).attr('transform','translate('+[ x, y ]+')');
         d3.selectAll('.branch').attr('d', drawBranch );
     }
 
@@ -51,15 +51,6 @@
 
     function clearObject( obj ) {
         for ( var member in obj ) delete obj[member];
-    }
-
-    function getNodesWithKeys() {
-        const nodesWithKeys = [];
-        global.nodes.each( function( n, k ) {
-            n.key = k;
-            nodesWithKeys.push( n );
-        });
-        return nodesWithKeys;
     }
 
     function styles( el ) {

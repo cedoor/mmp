@@ -74,9 +74,9 @@
 
     function dragged( n ) {
         global.dragged = true;
-        const x = n.x = d3.event.x;
-        const y = n.y = d3.event.y;
-        d3.select(this).attr('transform','translate('+ x +','+ y +')');
+        const x = n.value.x += d3.event.dx;
+        const y = n.value.y += d3.event.dy;
+        d3.select(this).attr('transform','translate('+[ x, y ]+')');
         d3.selectAll('.branch').attr('d', drawBranch );
     }
 
@@ -108,15 +108,6 @@
 
     function clearObject( obj ) {
         for ( var member in obj ) delete obj[member];
-    }
-
-    function getNodesWithKeys() {
-        const nodesWithKeys = [];
-        global.nodes.each( function( n, k ) {
-            n.key = k;
-            nodesWithKeys.push( n );
-        });
-        return nodesWithKeys;
     }
 
     function styles( el ) {
@@ -228,7 +219,7 @@
 
     function update() {
 
-        const nodes = getNodesWithKeys();
+        const nodes = global.nodes.entries();
 
         const node = global.svg.mmap.selectAll('.node').data( nodes );
 
@@ -236,24 +227,24 @@
             .style('cursor', 'pointer')
             .attr('class', 'node')
             .attr('id', n => n.key )
-            .attr('transform', n => 'translate(' + n.x + ',' + n.y + ')')
+            .attr('transform', n => 'translate(' + n.value.x + ',' + n.value.y + ')')
             .call( drag )
             .on('dblclick', function( n ) {
                 events.call('nodedblclick', this, n);
                 d3.event.stopPropagation();
             });
 
-        nodeContainer.append('text').text( n => n.name )
+        nodeContainer.append('text').text( n => n.value.name )
             .style('font-family', 'sans-serif')
             .style('text-anchor', 'middle')
             .style('alignment-baseline', 'middle')
-            .style('fill', n => n['text-color'])
-            .style('font-size', n => n['font-size'])
-            .style('font-style', n => n['font-style'])
-            .style('font-weight', n => n['font-weight']);
+            .style('fill', n => n.value['text-color'])
+            .style('font-size', n => n.value['font-size'])
+            .style('font-style', n => n.value['font-style'])
+            .style('font-weight', n => n.value['font-weight']);
 
         nodeContainer.insert('path', 'text')
-            .style('fill', n => n['background-color'])
+            .style('fill', n => n.value['background-color'])
             .style('stroke-width', 3 )
             .attr('d', drawBgShape );
 
@@ -262,8 +253,8 @@
         const branch = global.svg.mmap.selectAll('.branch').data( nodes.slice(1) );
 
         branch.enter().insert('path', 'g')
-            .style('fill', n => n['branch-color'])
-            .style('stroke', n => n['branch-color'])
+            .style('fill', n => n.value['branch-color'])
+            .style('stroke', n => n.value['branch-color'])
             .attr('class', 'branch')
             .attr('id', n => 'branchOf' + n.key )
             .attr('d', drawBranch );
@@ -327,9 +318,9 @@
     }
 
     function updateBranchColor( sel, v ) {
-        if( sel.key !== 'node0' ) {
+        if( global.selected !== 'node0' ) {
             if ( sel['branch-color'] !== v ) {
-                const branch = document.getElementById('branchOf'+ sel.key );
+                const branch = document.getElementById('branchOf'+ global.selected );
                 branch.style.setProperty('fill', sel['branch-color'] = v );
                 branch.style.setProperty('stroke', sel['branch-color'] = v );
                 saveSnapshot();
@@ -339,8 +330,9 @@
 
     /****** Shape functions  ******/
 
-    function drawBranch( n ) {
+    function drawBranch( node ) {
 
+        const n = node.value;
         const p = global.nodes.get( n.parent );
         const nodeLevel = getNodeLevel( n );
         const width = 22 - ( nodeLevel < 5 ? nodeLevel : 5 ) * 3;
@@ -366,8 +358,9 @@
         return path;
     }
 
-    function drawBgShape( n ) {
+    function drawBgShape( node ) {
 
+        const n = node.value;
         const path = d3.path();
         const x = ( n.width = this.nextSibling.getBBox().width + 45 )/2;
         const y = ( n.height = n['font-size']*11/10 + 30 )/2;
@@ -436,49 +429,50 @@
         node.node().dispatchEvent( e );
     }
 
-    function getCloserVerticalNode( node, pos ) {
+    function getCloserVerticalNode( pos ) {
+        const currentNode = global.nodes.get( global.selected );
         const root = global.nodes.get('node0');
-        const currentLevel = getNodeLevel( node );
-        const or = root.x > node.x;
+        const currentLevel = getNodeLevel( currentNode );
+        const or = root.x > currentNode.x;
         var key, tmp = Number.MAX_VALUE;
         global.nodes.each( function( n, k ) {
-            const d = pos ? node.y - n.y : n.y - node.y;
+            const d = pos ? currentNode.y - n.y : n.y - currentNode.y;
             const sameLevel = currentLevel === getNodeLevel( n );
-            const sameNode = node.key === n.key;
+            const sameNode = global.selected === k;
             const sameOr = ( or && root.x > n.x ) || ( !or && root.x < n.x );
             if ( sameOr && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
                 tmp = d;
-                key = n.key;
+                key = k;
             }
         });
-        return key || node.key;
+        return key || global.selected;
     }
 
-    function getCloserHorizontalNode( node, pos ) {
+    function getCloserHorizontalNode( pos ) {
+        const currentNode = global.nodes.get( global.selected );
         const root = global.nodes.get('node0');
         var key, checks, tmp = Number.MIN_VALUE;
         global.nodes.each( function( n, k ) {
-            if ( node.x < root.x )
-                checks = pos ? n.parent === node.key : node.parent === n.key;
-            else if ( node.x > root.x )
-                checks = !pos ? n.parent === node.key : node.parent === n.key;
-            else checks = ( pos ? n.x < root.x : n.x > root.x ) && n.parent === node.key;
+            if ( currentNode.x < root.x )
+                checks = pos ? n.parent === global.selected : currentNode.parent === k;
+            else if ( currentNode.x > root.x )
+                checks = !pos ? n.parent === global.selected : currentNode.parent === k;
+            else checks = ( pos ? n.x < root.x : n.x > root.x ) && n.parent === global.selected;
             if ( checks && n.y > tmp ) {
                 tmp = n.y;
-                key = n.key;
+                key = k;
             }
         });
-        return key || node.key;
+        return key || global.selected;
     }
 
     function moveSelection( dir ) {
-        const sel = global.nodes.get( global.selected );
         selectNode({
             'up' : getCloserVerticalNode,
             'down' : getCloserVerticalNode,
             'left' : getCloserHorizontalNode,
             'right' : getCloserHorizontalNode
-        }[ dir ]( sel, dir === 'up' || dir === 'left' ));
+        }[ dir ]( dir === 'up' || dir === 'left' ));
     }
 
     function moveNode( dir ) {
@@ -491,7 +485,7 @@
             case 'right': s.x += range; break;
             case 'left': s.x -= range; break;
         }
-        dom.attr('transform', n => 'translate(' + n.x + ',' + n.y + ')');
+        dom.attr('transform', n => 'translate(' + n.value.x + ',' + n.value.y + ')');
         d3.selectAll('.branch').attr('d', drawBranch );
         saveSnapshot();
     }
@@ -518,7 +512,7 @@
                 'font-weight' : prop && prop['font-weight'] || 'normal',
                 x : sel.x + ( sel.x > root.x ? 200 : -200 ),
                 y : sel.y + 50,
-                parent : sel.key
+                parent : global.selected
             };
             global.nodes.set( key, value );
             update();
@@ -564,7 +558,7 @@
 
     function updateNode( k, v ) {
         const sel = global.nodes.get( global.selected );
-        const dom = document.getElementById( sel.key );
+        const dom = document.getElementById( global.selected );
         const prop = {
             'name' : updateName,
             'background-color' : updateBackgroundColor,

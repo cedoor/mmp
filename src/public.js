@@ -20,7 +20,7 @@
                 'font-weight' : prop && prop['font-weight'] || 'normal',
                 x : sel.x + ( sel.x > root.x ? 200 : -200 ),
                 y : sel.y + 50,
-                parent : sel.key
+                parent : global.selected
             };
             global.nodes.set( key, value );
             update();
@@ -66,7 +66,7 @@
 
     function updateNode( k, v ) {
         const sel = global.nodes.get( global.selected );
-        const dom = document.getElementById( sel.key );
+        const dom = document.getElementById( global.selected );
         const prop = {
             'name' : updateName,
             'background-color' : updateBackgroundColor,
