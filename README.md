@@ -9,7 +9,7 @@ You can install this package with bower :
 
     bower install mmap --save
 
-Then add a `script` to your `index.html` :
+Then add the mmap library with the dependencies to your `index.html` :
 
     <script src="/bower_components/d3/d3.min.js"></script>
     <script src="/bower_components/mmap/dist/mmap.min.js"></script>
