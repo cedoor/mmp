@@ -22,7 +22,7 @@
             else if ( sc('down') ) moveSelection('down');
             else if ( sc('right') ) moveSelection('right');
             else if ( sc('left') ) moveSelection('left');
-            else if ( sc('i') ) getPNG('mmap');
+            else if ( sc('i') ) png('mmap');
             else if ( sc('c') ) center();
             else if ( sc('n') ) newMap();
             else if ( sc('+') ) addNode();
