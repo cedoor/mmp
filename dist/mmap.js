@@ -47,7 +47,7 @@
 
         createRootNode();
         update();
-        saveMapSnapshot();
+        saveSnapshot();
         deselectNode();
 
         setShortcuts();
@@ -64,7 +64,7 @@
     }).on('end', function() {
         if ( global.dragged ) {
             global.dragged = false;
-            saveMapSnapshot();
+            saveSnapshot();
         };
     });
 
@@ -190,26 +190,33 @@
         });
     }
 
-    function copyOfMap( map ) {
-        const copy = d3.map();
-        map.each( function( v, k ) {
-            copy.set( k, Object.assign( {}, v ) );
-        });
-        return copy;
+    function setCounter() {
+        const getIntOfKey = k => parseInt( k.substring(4) );
+        const keys = global.nodes.keys().map( getIntOfKey );
+        global.counter = Math.max(...keys);
     }
 
-    function saveMapSnapshot() {
+    function d3MapConverter( data ) {
+        const map = d3.map();
+        data.forEach( function( node ) {
+            map.set( node.key, Object.assign( {}, node.value ) );
+        });
+        return map;
+    }
+
+    function saveSnapshot() {
         const h = global.history;
         if ( h.index < h.snapshots.length - 1 ) h.snapshots.splice( h.index + 1 );
-        h.snapshots.push( copyOfMap( global.nodes ) );
+        const nodes = JSON.parse( JSON.stringify( global.nodes.entries() ) );
+        h.snapshots.push( nodes );
         h.index++;
     }
 
-    function loadMapSnapshot() {
-        const h = global.history;
-        global.nodes = copyOfMap( h.snapshots[ h.index ] );
-        selectNode('node0');
+    function loadSnapshot( snapshot ) {
+        global.nodes = d3MapConverter( snapshot );
         redraw();
+        deselectNode();
+        setCounter();
     }
 
     /****** Update functions  ******/
@@ -271,7 +278,7 @@
             sel.name = text.innerHTML = v;
             sel.width = text.textLength.baseVal.value + 45;
             d3.select( bg ).attr('d', drawBgShape );
-            saveMapSnapshot();
+            saveSnapshot();
         }
     }
 
@@ -280,7 +287,7 @@
             const bg = this.childNodes[0];
             bg.style.setProperty('fill', sel['background-color'] = v );
             bg.style.setProperty('stroke', d3.color( v ).darker( .5 ) );
-            saveMapSnapshot();
+            saveSnapshot();
         }
     }
 
@@ -288,7 +295,7 @@
         if ( sel['text-color'] !== v ) {
             const text = this.childNodes[1];
             text.style.setProperty('fill', sel['text-color'] = v );
-            saveMapSnapshot();
+            saveSnapshot();
         }
     }
 
@@ -301,7 +308,7 @@
             sel.height = sel['font-size']*11/10 + 30;
             d3.select( bg ).attr('d', drawBgShape );
             d3.selectAll('.branch').attr('d', drawBranch );
-            saveMapSnapshot();
+            saveSnapshot();
         }
     }
 
@@ -309,14 +316,14 @@
         const text = this.childNodes[1];
         sel['font-style'] = sel['font-style'] === 'normal' ? 'italic' : 'normal';
         text.style.setProperty('font-style', sel['font-style'] );
-        saveMapSnapshot();
+        saveSnapshot();
     }
 
     function updateFontWeight( sel ) {
         const text = this.childNodes[1];
         sel['font-weight'] = sel['font-weight'] === 'normal' ? 'bold' : 'normal';
         text.style.setProperty('font-weight', sel['font-weight'] );
-        saveMapSnapshot();
+        saveSnapshot();
     }
 
     function updateBranchColor( sel, v ) {
@@ -325,7 +332,7 @@
                 const branch = document.getElementById('branchOf'+ sel.key );
                 branch.style.setProperty('fill', sel['branch-color'] = v );
                 branch.style.setProperty('stroke', sel['branch-color'] = v );
-                saveMapSnapshot();
+                saveSnapshot();
             }
         } else console.warn('The root node has no branches');
     }
@@ -486,7 +493,7 @@
         }
         dom.attr('transform', n => 'translate(' + n.x + ',' + n.y + ')');
         d3.selectAll('.branch').attr('d', drawBranch );
-        saveMapSnapshot();
+        saveSnapshot();
     }
 
     /****** Public functions ******/
@@ -516,7 +523,7 @@
             global.nodes.set( key, value );
             update();
             events.call('nodecreate');
-            saveMapSnapshot();
+            saveSnapshot();
         }
     }
 
@@ -538,7 +545,7 @@
             selectNode('node0');
             redraw();
             events.call('noderemove');
-            saveMapSnapshot();
+            saveSnapshot();
         } else {
             console.warn('The root node can not be deleted');
         }
@@ -573,7 +580,7 @@
         ( prop[k] || prop.default ).call( dom, sel, v );
     }
 
-    function getPNG( name, background ) {
+    function png( name, background ) {
         const image = new Image();
         image.src = getDataURI();
         image.onload = function() {
@@ -600,7 +607,7 @@
         global.nodes.clear();
         createRootNode();
         redraw();
-        saveMapSnapshot();
+        saveSnapshot();
         deselectNode();
         center();
     }
@@ -609,7 +616,7 @@
         const h = global.history;
         if( h.index > 0 ) {
             h.index--;
-            loadMapSnapshot();
+            loadSnapshot( h.snapshots[h.index] );
         }
     }
 
@@ -617,8 +624,17 @@
         const h = global.history;
         if( h.index < h.snapshots.length - 1 ) {
             h.index++;
-            loadMapSnapshot();
+            loadSnapshot( h.snapshots[h.index] );
         }
+    }
+
+    function data() {
+        return global.history.snapshots[ global.history.index ];
+    }
+
+    function load( data ) {
+        loadSnapshot( data );
+        saveSnapshot();
     }
 
     /**
@@ -627,19 +643,18 @@
      *
      */
     window.mmap = {
-        // Basic
         init : init,
         center : center,
         undo : undo,
         repeat : repeat,
-        newMap : newMap,
+        new : newMap,
+        events : events,
+        png : png,
+        data : data,
+        load : load,
         addNode : addNode,
         removeNode : removeNode,
-
-        // Advanced
-        updateNode : updateNode,
-        events : events,
-        getPNG : getPNG
+        updateNode : updateNode
     };
 
 }(this, window.d3));

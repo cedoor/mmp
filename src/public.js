@@ -25,7 +25,7 @@
             global.nodes.set( key, value );
             update();
             events.call('nodecreate');
-            saveMapSnapshot();
+            saveSnapshot();
         }
     }
 
@@ -47,7 +47,7 @@
             selectNode('node0');
             redraw();
             events.call('noderemove');
-            saveMapSnapshot();
+            saveSnapshot();
         } else {
             console.warn('The root node can not be deleted');
         }
@@ -82,7 +82,7 @@
         ( prop[k] || prop.default ).call( dom, sel, v );
     }
 
-    function getPNG( name, background ) {
+    function png( name, background ) {
         const image = new Image();
         image.src = getDataURI();
         image.onload = function() {
@@ -109,7 +109,7 @@
         global.nodes.clear();
         createRootNode();
         redraw();
-        saveMapSnapshot();
+        saveSnapshot();
         deselectNode();
         center();
     }
@@ -118,7 +118,7 @@
         const h = global.history;
         if( h.index > 0 ) {
             h.index--;
-            loadMapSnapshot();
+            loadSnapshot( h.snapshots[h.index] );
         }
     }
 
@@ -126,6 +126,15 @@
         const h = global.history;
         if( h.index < h.snapshots.length - 1 ) {
             h.index++;
-            loadMapSnapshot();
+            loadSnapshot( h.snapshots[h.index] );
         }
+    }
+
+    function data() {
+        return global.history.snapshots[ global.history.index ];
+    }
+
+    function load( data ) {
+        loadSnapshot( data );
+        saveSnapshot();
     }

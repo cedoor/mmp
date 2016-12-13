@@ -108,5 +108,5 @@
         }
         dom.attr('transform', n => 'translate(' + n.x + ',' + n.y + ')');
         d3.selectAll('.branch').attr('d', drawBranch );
-        saveMapSnapshot();
+        saveSnapshot();
     }

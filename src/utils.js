@@ -7,7 +7,7 @@
     }).on('end', function() {
         if ( global.dragged ) {
             global.dragged = false;
-            saveMapSnapshot();
+            saveSnapshot();
         };
     });
 
@@ -133,24 +133,31 @@
         });
     }
 
-    function copyOfMap( map ) {
-        const copy = d3.map();
-        map.each( function( v, k ) {
-            copy.set( k, Object.assign( {}, v ) );
-        });
-        return copy;
+    function setCounter() {
+        const getIntOfKey = k => parseInt( k.substring(4) );
+        const keys = global.nodes.keys().map( getIntOfKey );
+        global.counter = Math.max(...keys);
     }
 
-    function saveMapSnapshot() {
+    function d3MapConverter( data ) {
+        const map = d3.map();
+        data.forEach( function( node ) {
+            map.set( node.key, Object.assign( {}, node.value ) );
+        });
+        return map;
+    }
+
+    function saveSnapshot() {
         const h = global.history;
         if ( h.index < h.snapshots.length - 1 ) h.snapshots.splice( h.index + 1 );
-        h.snapshots.push( copyOfMap( global.nodes ) );
+        const nodes = JSON.parse( JSON.stringify( global.nodes.entries() ) );
+        h.snapshots.push( nodes );
         h.index++;
     }
 
-    function loadMapSnapshot() {
-        const h = global.history;
-        global.nodes = copyOfMap( h.snapshots[ h.index ] );
-        selectNode('node0');
+    function loadSnapshot( snapshot ) {
+        global.nodes = d3MapConverter( snapshot );
         redraw();
+        deselectNode();
+        setCounter();
     }

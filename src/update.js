@@ -57,7 +57,7 @@
             sel.name = text.innerHTML = v;
             sel.width = text.textLength.baseVal.value + 45;
             d3.select( bg ).attr('d', drawBgShape );
-            saveMapSnapshot();
+            saveSnapshot();
         }
     }
 
@@ -66,7 +66,7 @@
             const bg = this.childNodes[0];
             bg.style.setProperty('fill', sel['background-color'] = v );
             bg.style.setProperty('stroke', d3.color( v ).darker( .5 ) );
-            saveMapSnapshot();
+            saveSnapshot();
         }
     }
 
@@ -74,7 +74,7 @@
         if ( sel['text-color'] !== v ) {
             const text = this.childNodes[1];
             text.style.setProperty('fill', sel['text-color'] = v );
-            saveMapSnapshot();
+            saveSnapshot();
         }
     }
 
@@ -87,7 +87,7 @@
             sel.height = sel['font-size']*11/10 + 30;
             d3.select( bg ).attr('d', drawBgShape );
             d3.selectAll('.branch').attr('d', drawBranch );
-            saveMapSnapshot();
+            saveSnapshot();
         }
     }
 
@@ -95,14 +95,14 @@
         const text = this.childNodes[1];
         sel['font-style'] = sel['font-style'] === 'normal' ? 'italic' : 'normal';
         text.style.setProperty('font-style', sel['font-style'] );
-        saveMapSnapshot();
+        saveSnapshot();
     }
 
     function updateFontWeight( sel ) {
         const text = this.childNodes[1];
         sel['font-weight'] = sel['font-weight'] === 'normal' ? 'bold' : 'normal';
         text.style.setProperty('font-weight', sel['font-weight'] );
-        saveMapSnapshot();
+        saveSnapshot();
     }
 
     function updateBranchColor( sel, v ) {
@@ -111,7 +111,7 @@
                 const branch = document.getElementById('branchOf'+ sel.key );
                 branch.style.setProperty('fill', sel['branch-color'] = v );
                 branch.style.setProperty('stroke', sel['branch-color'] = v );
-                saveMapSnapshot();
+                saveSnapshot();
             }
         } else console.warn('The root node has no branches');
     }

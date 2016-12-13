@@ -4,19 +4,18 @@
      *
      */
     window.mmap = {
-        // Basic
         init : init,
         center : center,
         undo : undo,
         repeat : repeat,
-        newMap : newMap,
+        new : newMap,
+        events : events,
+        png : png,
+        data : data,
+        load : load,
         addNode : addNode,
         removeNode : removeNode,
-
-        // Advanced
-        updateNode : updateNode,
-        events : events,
-        getPNG : getPNG
+        updateNode : updateNode
     };
 
 }(this, window.d3));

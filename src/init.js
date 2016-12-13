@@ -38,7 +38,7 @@
 
         createRootNode();
         update();
-        saveMapSnapshot();
+        saveSnapshot();
         deselectNode();
 
         setShortcuts();
