@@ -52,7 +52,6 @@
 
     function updateName( sel, v ) {
         if ( sel.name != v ) {
-            console.log('updated');
             const text = this.childNodes[1];
             const bg = this.childNodes[0];
             sel.name = text.innerHTML = v;

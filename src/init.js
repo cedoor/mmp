@@ -17,9 +17,7 @@
     function init( selector ) {
 
         global.container = d3.select( selector );
-        global.history = {
-            index : -1, snapshots : []
-        };
+        global.history = { index : -1, snapshots : [] };
         global.svg = {};
 
         global.svg.main = global.container.append('svg')

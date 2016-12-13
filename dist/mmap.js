@@ -26,9 +26,7 @@
     function init( selector ) {
 
         global.container = d3.select( selector );
-        global.history = {
-            index : -1, snapshots : []
-        };
+        global.history = { index : -1, snapshots : [] };
         global.svg = {};
 
         global.svg.main = global.container.append('svg')
@@ -202,13 +200,16 @@
 
     function saveMapSnapshot() {
         const h = global.history;
-        const l = h.snapshots.length;
-        if ( h.index < l - 1 ) {
-            console.log( h.index );
-        }
-        h.index = h.snapshots.length;
+        if ( h.index < h.snapshots.length - 1 ) h.snapshots.splice( h.index + 1 );
         h.snapshots.push( copyOfMap( global.nodes ) );
-        console.info('Snapshot saved!');
+        h.index++;
+    }
+
+    function loadMapSnapshot() {
+        const h = global.history;
+        global.nodes = copyOfMap( h.snapshots[ h.index ] );
+        selectNode('node0');
+        redraw();
     }
 
     /****** Update functions  ******/
@@ -265,7 +266,6 @@
 
     function updateName( sel, v ) {
         if ( sel.name != v ) {
-            console.log('updated');
             const text = this.childNodes[1];
             const bg = this.childNodes[0];
             sel.name = text.innerHTML = v;
@@ -486,6 +486,7 @@
         }
         dom.attr('transform', n => 'translate(' + n.x + ',' + n.y + ')');
         d3.selectAll('.branch').attr('d', drawBranch );
+        saveMapSnapshot();
     }
 
     /****** Public functions ******/
@@ -608,10 +609,7 @@
         const h = global.history;
         if( h.index > 0 ) {
             h.index--;
-            const snapshot = h.snapshots[ h.index ];
-            global.nodes = copyOfMap( snapshot );
-            selectNode('node0');
-            redraw();
+            loadMapSnapshot();
         }
     }
 
@@ -619,10 +617,7 @@
         const h = global.history;
         if( h.index < h.snapshots.length - 1 ) {
             h.index++;
-            const snapshot = h.snapshots[ h.index ];
-            global.nodes = copyOfMap( snapshot );
-            selectNode('node0');
-            redraw();
+            loadMapSnapshot();
         }
     }
 

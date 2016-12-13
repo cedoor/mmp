@@ -143,11 +143,14 @@
 
     function saveMapSnapshot() {
         const h = global.history;
-        const l = h.snapshots.length;
-        if ( h.index < l - 1 ) {
-            console.log( h.index );
-        }
-        h.index = h.snapshots.length;
+        if ( h.index < h.snapshots.length - 1 ) h.snapshots.splice( h.index + 1 );
         h.snapshots.push( copyOfMap( global.nodes ) );
-        console.info('Snapshot saved!');
+        h.index++;
+    }
+
+    function loadMapSnapshot() {
+        const h = global.history;
+        global.nodes = copyOfMap( h.snapshots[ h.index ] );
+        selectNode('node0');
+        redraw();
     }

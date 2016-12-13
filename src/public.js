@@ -118,10 +118,7 @@
         const h = global.history;
         if( h.index > 0 ) {
             h.index--;
-            const snapshot = h.snapshots[ h.index ];
-            global.nodes = copyOfMap( snapshot );
-            selectNode('node0');
-            redraw();
+            loadMapSnapshot();
         }
     }
 
@@ -129,9 +126,6 @@
         const h = global.history;
         if( h.index < h.snapshots.length - 1 ) {
             h.index++;
-            const snapshot = h.snapshots[ h.index ];
-            global.nodes = copyOfMap( snapshot );
-            selectNode('node0');
-            redraw();
+            loadMapSnapshot();
         }
     }
