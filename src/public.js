@@ -18,8 +18,8 @@
                 'font-size' : prop && prop['font-size'] || 16,
                 'font-style' : prop && prop['font-style'] || 'normal',
                 'font-weight' : prop && prop['font-weight'] || 'normal',
-                x : sel.x + ( sel.x > root.x ? 200 : -200 ),
-                y : sel.y + 50,
+                x : findXPosition( sel, root ),
+                y : findYPosition( sel, root ),
                 parent : global.selected
             };
             global.nodes.set( key, value );

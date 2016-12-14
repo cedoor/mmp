@@ -15,6 +15,33 @@
         global.svg.mmap.attr('transform', d3.event.transform );
     }
 
+    function findXPosition( sel, root ) {
+        var dir;
+        if ( sel.x > root.x ) dir = 1;
+        else if ( sel.x < root.x ) dir = -1;
+        else dir = Math.random() >= 0.5 ? -1 : 1;
+        return sel.x + 200*dir;
+    }
+
+    function findYPosition( sel, root ) {
+        const range = 30;
+        const nodes = global.nodes.values();
+        const childNodes = nodes.filter( n => n.parent === global.selected );
+        var found = false, y;
+        while ( !found ) {
+            y = sel.y + range * d3.randomUniform( -6, 6 )();
+            found = function() {
+                for ( var i in childNodes ) {
+                    const node = childNodes[i];
+                    if ( node.y + node.height/2 > y > node.y - node.height/2 ) return false;
+                }
+                return true;
+            } ();
+            console.log( found );
+        }
+        return y;
+    }
+
     function dragged( n ) {
         global.dragged = true;
         const x = n.value.x += d3.event.dx;
