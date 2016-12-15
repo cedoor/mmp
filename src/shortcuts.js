@@ -6,28 +6,22 @@
         };
         onkeyup = onkeydown = function( e ) {
             map[e.keyCode] = e.type === 'keydown';
-            if ( sc('ctrl','maiusc','z') ) {
-                repeat();
-                return false;
-            }
-            else if ( sc('ctrl','z') ) {
-                undo();
-                return false;
-            }
-            else if ( sc('ctrl','up') ) moveNode('up');
-            else if ( sc('ctrl','down') ) moveNode('down');
-            else if ( sc('ctrl','left') ) moveNode('left');
-            else if ( sc('ctrl','right') ) moveNode('right');
-            else if ( sc('up') ) moveSelection('up');
-            else if ( sc('down') ) moveSelection('down');
-            else if ( sc('right') ) moveSelection('right');
-            else if ( sc('left') ) moveSelection('left');
-            else if ( sc('i') ) png('mmap');
-            else if ( sc('c') ) center();
-            else if ( sc('n') ) newMap();
-            else if ( sc('+') ) addNode();
-            else if ( sc('-') ) removeNode();
-            else if ( sc('enter') ) focusNode();
+            if ( sc('ctrl','maiusc','z') ) return !!repeat();
+            else if ( sc('ctrl','z') ) return !!undo();
+            else if ( sc('ctrl','maiusc','up') ) moveNode('up');
+            else if ( sc('ctrl','maiusc','down') ) moveNode('down');
+            else if ( sc('ctrl','maiusc','left') ) moveNode('left');
+            else if ( sc('ctrl','maiusc','right') ) moveNode('right');
+            else if ( sc('alt','up') ) return !!moveSelection('up');
+            else if ( sc('alt','down') ) return !!moveSelection('down');
+            else if ( sc('alt','right') ) return !!moveSelection('right');
+            else if ( sc('alt','left') ) return !!moveSelection('left');
+            else if ( sc('alt','i') ) png('mmap');
+            else if ( sc('alt','c') ) center();
+            else if ( sc('alt','n') ) newMap();
+            else if ( sc('alt','+') ) addNode();
+            else if ( sc('alt','-') ) removeNode();
+            else if ( sc('alt','f') ) return !!focusNode();
             else if ( sc('esc') ) deselectNode();
         }
     }
@@ -35,20 +29,12 @@
     function shortcut( keys, map ) {
         const alias = {
             'up' : 38, 'down' : 40, 'right' : 39, 'left' : 37,
-            'ctrl' : 17, 'alt' : 18, 'maiusc' : 16, 'esc' : 27, 'enter' : 13,
+            'ctrl' : 17, 'alt' : 18, 'maiusc' : 16, 'esc' : 27, 'f' : 70,
             'c' : 67, 'n' : 78, '+' : 187, '-' : 189, 'i' : 73, 'z' : 90
         }
         for ( var i = 0; i < keys.length; i++ )
             if( ! map[alias[keys[i]]] ) return false;
         return true;
-    }
-
-    function focusNode() {
-        const node = d3.select('#'+ global.selected );
-        const bg = node.select('path');
-        bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
-        const e = new MouseEvent('dblclick');
-        node.node().dispatchEvent( e );
     }
 
     function getCloserVerticalNode( pos ) {
