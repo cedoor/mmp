@@ -103,22 +103,13 @@
                 mmap.updateNode('font-size', fontSize.value );
             }
 
-            fontSize.onkeydown = function( e ) {
-                e.stopPropagation();
-            }
-
             nodeName.onblur = function() {
                 if( nodeName.value === '' ) mmap.updateNode('name', nodeName.value = 'Node');
             }
 
             nodeName.onkeyup = function( e ) {
-                mmap.updateNode('name', nodeName.value );
+                e.key === "Enter" ? nodeName.blur() : mmap.updateNode('name', nodeName.value );
             };
-
-            nodeName.onkeydown = function( e ) {
-                e.stopPropagation();
-                e.key === "Enter" && nodeName.blur();
-            }
 
             saveMap.onclick = function() {
                 const data = mmap.data();

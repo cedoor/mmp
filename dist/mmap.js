@@ -65,7 +65,7 @@
         if ( global.dragged ) {
             global.dragged = false;
             saveSnapshot();
-        };
+        }
     });
 
     function zoomed() {
@@ -81,20 +81,23 @@
     }
 
     function findYPosition( sel, root ) {
-        const range = 30;
         const nodes = global.nodes.values();
         const childNodes = nodes.filter( n => n.parent === global.selected );
-        var found = false, y;
+        var found, y, k = -3;
         while ( !found ) {
-            y = sel.y + range * d3.randomUniform( -6, 6 )();
-            found = function() {
-                for ( var i in childNodes ) {
-                    const node = childNodes[i];
-                    if ( node.y + node.height/2 > y > node.y - node.height/2 ) return false;
-                }
-                return true;
-            } ();
-            console.log( found );
+            y = sel.y + 40 * k;
+            found = true;
+            for ( var i in childNodes ) {
+                const node = childNodes[i];
+                const range = node.height*1.5;
+                found = !( y < node.y + range && y > node.y - range );
+                if ( !found ) break;
+            }
+            k = k === -1 ? k+2 : k+1;
+            if ( k > 3 ) {
+                found = true;
+                y = sel.y - 200 + d3.randomUniform( -20, 20 )();
+            }
         }
         return y;
     }
@@ -116,6 +119,14 @@
             bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
             events.call('nodeselect', node.node(), global.nodes.get( key ));
         }
+    }
+
+    function focusNode() {
+        const node = d3.select('#'+ global.selected );
+        const bg = node.select('path');
+        bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
+        const e = new MouseEvent('dblclick');
+        node.node().dispatchEvent( e );
     }
 
     function deselectNode() {
@@ -411,28 +422,22 @@
         };
         onkeyup = onkeydown = function( e ) {
             map[e.keyCode] = e.type === 'keydown';
-            if ( sc('ctrl','maiusc','z') ) {
-                repeat();
-                return false;
-            }
-            else if ( sc('ctrl','z') ) {
-                undo();
-                return false;
-            }
-            else if ( sc('ctrl','up') ) moveNode('up');
-            else if ( sc('ctrl','down') ) moveNode('down');
-            else if ( sc('ctrl','left') ) moveNode('left');
-            else if ( sc('ctrl','right') ) moveNode('right');
-            else if ( sc('up') ) moveSelection('up');
-            else if ( sc('down') ) moveSelection('down');
-            else if ( sc('right') ) moveSelection('right');
-            else if ( sc('left') ) moveSelection('left');
-            else if ( sc('i') ) png('mmap');
-            else if ( sc('c') ) center();
-            else if ( sc('n') ) newMap();
-            else if ( sc('+') ) addNode();
-            else if ( sc('-') ) removeNode();
-            else if ( sc('enter') ) focusNode();
+            if ( sc('ctrl','maiusc','z') ) return !!repeat();
+            else if ( sc('ctrl','z') ) return !!undo();
+            else if ( sc('ctrl','maiusc','up') ) moveNode('up');
+            else if ( sc('ctrl','maiusc','down') ) moveNode('down');
+            else if ( sc('ctrl','maiusc','left') ) moveNode('left');
+            else if ( sc('ctrl','maiusc','right') ) moveNode('right');
+            else if ( sc('alt','up') ) return !!moveSelection('up');
+            else if ( sc('alt','down') ) return !!moveSelection('down');
+            else if ( sc('alt','right') ) return !!moveSelection('right');
+            else if ( sc('alt','left') ) return !!moveSelection('left');
+            else if ( sc('alt','i') ) png('mmap');
+            else if ( sc('alt','c') ) center();
+            else if ( sc('alt','n') ) newMap();
+            else if ( sc('alt','+') ) addNode();
+            else if ( sc('alt','-') ) removeNode();
+            else if ( sc('alt','f') ) return !!focusNode();
             else if ( sc('esc') ) deselectNode();
         }
     }
@@ -440,20 +445,12 @@
     function shortcut( keys, map ) {
         const alias = {
             'up' : 38, 'down' : 40, 'right' : 39, 'left' : 37,
-            'ctrl' : 17, 'alt' : 18, 'maiusc' : 16, 'esc' : 27, 'enter' : 13,
+            'ctrl' : 17, 'alt' : 18, 'maiusc' : 16, 'esc' : 27, 'f' : 70,
             'c' : 67, 'n' : 78, '+' : 187, '-' : 189, 'i' : 73, 'z' : 90
         }
         for ( var i = 0; i < keys.length; i++ )
             if( ! map[alias[keys[i]]] ) return false;
         return true;
-    }
-
-    function focusNode() {
-        const node = d3.select('#'+ global.selected );
-        const bg = node.select('path');
-        bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
-        const e = new MouseEvent('dblclick');
-        node.node().dispatchEvent( e );
     }
 
     function getCloserVerticalNode( pos ) {
@@ -553,14 +550,14 @@
             global.nodes.remove( global.selected );
 
             const clean = function( key ) {
-                global.nodes.each( function( n ) {
+                global.nodes.each( function( n, k ) {
                     if ( n.key !== 'node0' && n.parent === key ) {
-                        global.nodes.remove( n.key );
-                        clean( n.key );
+                        global.nodes.remove( k );
+                        clean( k );
                         return;
                     }
                 });
-            }
+            };
             clean( global.selected );
 
             selectNode('node0');

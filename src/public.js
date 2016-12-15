@@ -34,14 +34,14 @@
             global.nodes.remove( global.selected );
 
             const clean = function( key ) {
-                global.nodes.each( function( n ) {
+                global.nodes.each( function( n, k ) {
                     if ( n.key !== 'node0' && n.parent === key ) {
-                        global.nodes.remove( n.key );
-                        clean( n.key );
+                        global.nodes.remove( k );
+                        clean( k );
                         return;
                     }
                 });
-            }
+            };
             clean( global.selected );
 
             selectNode('node0');
