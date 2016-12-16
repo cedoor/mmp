@@ -5,7 +5,7 @@
  * @license GNU GENERAL PUBLIC LICENSE
  *
  */
-(function( window, d3 ) {
+(function( window, d3 ) { 'use strict';
 
     /**
      * @name global
@@ -115,8 +115,7 @@
         const dy = d3.event.dy, dx = d3.event.dx, parent = n;
         const or = orientation( n.value.x );
         setNodeCoords( this, n.value.x += dx, n.value.y += dy );
-        if ( n.value.fixed )
-            subnodes( n.key, function( n, k ) {
+        if ( n.value.fixed ) subnodes( n.key, function( n, k ) {
                 const x = n.x += dx, y = n.y += dy;
                 if ( or !== global.drag.orientation ) n.x += ( parent.value.x - n.x )*2;
                 setNodeCoords( this, x, y );
@@ -531,16 +530,22 @@
     }
 
     function moveNode( dir ) {
-        const s = global.nodes.get( global.selected );
-        const dom = d3.select('#' + global.selected );
-        const range = 10;
-        switch ( dir ) {
-            case 'up': s.y -= range; break;
-            case 'down': s.y += range; break;
-            case 'right': s.x += range; break;
-            case 'left': s.x -= range; break;
-        }
-        dom.attr('transform', n => 'translate(' + n.value.x + ',' + n.value.y + ')');
+        const s = global.nodes.get( global.selected ),
+        range = 10, oldOr = orientation( s.x ),
+        setCoord = {
+            up: n => n.y -= range,
+            down: n => n.y += range,
+            right: n => n.x += range,
+            left: n => n.x -= range
+        };
+        setCoord[ dir ]( s );
+        const newOr = orientation( s.x );
+        setNodeCoords( document.getElementById( global.selected ), s.x, s.y );
+        if ( s.fixed ) subnodes( global.selected, function( n, k ) {
+            setCoord[ dir ]( n );
+            if ( newOr !== oldOr ) n.x += ( s.x - n.x )*2;
+            setNodeCoords( this, n.x, n.y );
+        });
         d3.selectAll('.branch').attr('d', drawBranch );
         saveSnapshot();
     }

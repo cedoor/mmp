@@ -5,4 +5,4 @@
  * @license GNU GENERAL PUBLIC LICENSE
  *
  */
-(function( window, d3 ) {
+(function( window, d3 ) { 'use strict';

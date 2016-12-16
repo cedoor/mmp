@@ -58,8 +58,7 @@
         const dy = d3.event.dy, dx = d3.event.dx, parent = n;
         const or = orientation( n.value.x );
         setNodeCoords( this, n.value.x += dx, n.value.y += dy );
-        if ( n.value.fixed )
-            subnodes( n.key, function( n, k ) {
+        if ( n.value.fixed ) subnodes( n.key, function( n, k ) {
                 const x = n.x += dx, y = n.y += dy;
                 if ( or !== global.drag.orientation ) n.x += ( parent.value.x - n.x )*2;
                 setNodeCoords( this, x, y );
