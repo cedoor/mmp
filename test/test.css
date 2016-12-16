@@ -8,6 +8,10 @@ body {
     overflow: hidden;
 }
 
+*:focus {
+    outline: none;
+}
+
 table {
     width: 100%;
 }
@@ -67,6 +71,22 @@ table>tbody>tr>td>input[type="color"] {
     width: 80px;
     height: 24px;
     cursor: pointer;
+}
+
+table>tbody>tr>td>input[type="checkbox"] {
+    margin: 5px auto;
+    -webkit-appearance: none;
+    height: 24px;
+    width: 30px;
+}
+
+table>tbody>tr>td>input[type="checkbox"]:checked:before {
+    font-weight: bold;
+    color: #95b07c;
+    content: '\2713';
+    -webkit-margin-start: 0;
+    margin-left: 5px;
+    font-size: 20px;
 }
 
 #node-name:focus {

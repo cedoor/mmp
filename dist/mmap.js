@@ -27,7 +27,7 @@
 
         global.container = d3.select( selector );
         global.history = { index : -1, snapshots : [] };
-        global.svg = {};
+        global.svg = global.drag = {};
 
         global.svg.main = global.container.append('svg')
             .attr('width', '100%')
@@ -60,10 +60,11 @@
     const zoom = d3.zoom().scaleExtent([0.5, 2]).on('zoom', zoomed );
 
     const drag = d3.drag().on('drag', dragged ).on('start', function( n ) {
+        global.drag.orientation = orientation( n.value.x );
         selectNode( n.key );
     }).on('end', function() {
-        if ( global.dragged ) {
-            global.dragged = false;
+        if ( global.drag.status ) {
+            global.drag.status = false;
             saveSnapshot();
         }
     });
@@ -102,12 +103,37 @@
         return y;
     }
 
+    function orientation( x ) {
+        return x < global.nodes.get('node0').x;
+    }
+
+    function setNodeCoords( dom, x, y ) {
+        dom.setAttribute('transform','translate('+[ x, y ]+')');
+    }
+
     function dragged( n ) {
-        global.dragged = true;
-        const x = n.value.x += d3.event.dx;
-        const y = n.value.y += d3.event.dy;
-        d3.select(this).attr('transform','translate('+[ x, y ]+')');
+        const dy = d3.event.dy, dx = d3.event.dx, parent = n;
+        const or = orientation( n.value.x );
+        setNodeCoords( this, n.value.x += dx, n.value.y += dy );
+        if ( n.value.fixed )
+            subnodes( n.key, function( n, k ) {
+                const x = n.x += dx, y = n.y += dy;
+                if ( or !== global.drag.orientation ) n.x += ( parent.value.x - n.x )*2;
+                setNodeCoords( this, x, y );
+            });
+        if ( or !== global.drag.orientation ) global.drag.orientation = or;
+        global.drag.status = true;
         d3.selectAll('.branch').attr('d', drawBranch );
+    }
+
+    function subnodes( key, cb ) {
+        global.nodes.each( function( n, k ) {
+            if ( n.parent === key ) {
+                const dom = document.getElementById( k );
+                cb.call( dom, n, k );
+                subnodes( k, cb );
+            }
+        });
     }
 
     function selectNode( key ) {
@@ -210,7 +236,7 @@
 
     function createRootNode() {
         global.nodes.set('node' + global.counter, {
-            name : 'Root node',
+            name : 'Root node', fixed : false,
             x : parseInt( global.container.style('width') )/2,
             y : parseInt( global.container.style('height') )/2,
             'background-color' : '#e6ede6',
@@ -364,6 +390,11 @@
                 saveSnapshot();
             }
         } else console.warn('The root node has no branches');
+    }
+
+    function updateFixStatus( sel ) {
+        if ( global.selected !== 'node0' ) sel.fixed = !sel.fixed;
+        else console.warn('The root node can not be fixed');
     }
 
     /****** Shape functions  ******/
@@ -528,14 +559,15 @@
             const key = 'node' + ( ++global.counter );
             const value = {
                 name : prop && prop.name || 'Node',
-                'background-color' : prop && prop['background-color'] || '#f1f1f1',
+                'background-color' : prop && prop['background-color'] || '#f9f9f9',
                 'text-color' : prop && prop['text-color'] || '#808080',
                 'branch-color' : prop && prop['branch-color'] || sel['branch-color'] || '#9fad9c',
                 'font-size' : prop && prop['font-size'] || 16,
                 'font-style' : prop && prop['font-style'] || 'normal',
                 'font-weight' : prop && prop['font-weight'] || 'normal',
-                x : findXPosition( sel, root ),
-                y : findYPosition( sel, root ),
+                fixed : prop && prop.fixed || true,
+                x : prop && prop.x || findXPosition( sel, root ),
+                y : prop && prop.y || findYPosition( sel, root ),
                 parent : global.selected
             };
             global.nodes.set( key, value );
@@ -585,6 +617,7 @@
         const dom = document.getElementById( global.selected );
         const prop = {
             'name' : updateName,
+            'fixed' : updateFixStatus,
             'background-color' : updateBackgroundColor,
             'branch-color' : updateBranchColor,
             'text-color' : updateTextColor,

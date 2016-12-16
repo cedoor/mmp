@@ -115,3 +115,8 @@
             }
         } else console.warn('The root node has no branches');
     }
+
+    function updateFixStatus( sel ) {
+        if ( global.selected !== 'node0' ) sel.fixed = !sel.fixed;
+        else console.warn('The root node can not be fixed');
+    }

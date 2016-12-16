@@ -3,10 +3,11 @@
     const zoom = d3.zoom().scaleExtent([0.5, 2]).on('zoom', zoomed );
 
     const drag = d3.drag().on('drag', dragged ).on('start', function( n ) {
+        global.drag.orientation = orientation( n.value.x );
         selectNode( n.key );
     }).on('end', function() {
-        if ( global.dragged ) {
-            global.dragged = false;
+        if ( global.drag.status ) {
+            global.drag.status = false;
             saveSnapshot();
         }
     });
@@ -45,12 +46,37 @@
         return y;
     }
 
+    function orientation( x ) {
+        return x < global.nodes.get('node0').x;
+    }
+
+    function setNodeCoords( dom, x, y ) {
+        dom.setAttribute('transform','translate('+[ x, y ]+')');
+    }
+
     function dragged( n ) {
-        global.dragged = true;
-        const x = n.value.x += d3.event.dx;
-        const y = n.value.y += d3.event.dy;
-        d3.select(this).attr('transform','translate('+[ x, y ]+')');
+        const dy = d3.event.dy, dx = d3.event.dx, parent = n;
+        const or = orientation( n.value.x );
+        setNodeCoords( this, n.value.x += dx, n.value.y += dy );
+        if ( n.value.fixed )
+            subnodes( n.key, function( n, k ) {
+                const x = n.x += dx, y = n.y += dy;
+                if ( or !== global.drag.orientation ) n.x += ( parent.value.x - n.x )*2;
+                setNodeCoords( this, x, y );
+            });
+        if ( or !== global.drag.orientation ) global.drag.orientation = or;
+        global.drag.status = true;
         d3.selectAll('.branch').attr('d', drawBranch );
+    }
+
+    function subnodes( key, cb ) {
+        global.nodes.each( function( n, k ) {
+            if ( n.parent === key ) {
+                const dom = document.getElementById( k );
+                cb.call( dom, n, k );
+                subnodes( k, cb );
+            }
+        });
     }
 
     function selectNode( key ) {
@@ -153,7 +179,7 @@
 
     function createRootNode() {
         global.nodes.set('node' + global.counter, {
-            name : 'Root node',
+            name : 'Root node', fixed : false,
             x : parseInt( global.container.style('width') )/2,
             y : parseInt( global.container.style('height') )/2,
             'background-color' : '#e6ede6',

@@ -17,16 +17,12 @@
                     <td><input id="node-name" type="text" name="node-name"></td>
                 </tr>
                 <tr>
-                    <td>Font size :</td>
-                    <td><input id="font-size" type="text" name="font-size"></td>
+                    <td>Add node :</td>
+                    <td><img onclick="mmap.addNode()" src="img/add.svg"></td>
                 </tr>
                 <tr>
-                    <td>Bold font :</td>
-                    <td><img onclick="mmap.updateNode('font-weight')" src="img/bold.svg"></td>
-                </tr>
-                <tr>
-                    <td>Italic font :</td>
-                    <td><img onclick="mmap.updateNode('font-style')" src="img/italic.svg"></td>
+                    <td>Remove node :</td>
+                    <td><img onclick="mmap.removeNode()" src="img/remove.svg"></td>
                 </tr>
                 <tr>
                     <td>Undo :</td>
@@ -35,14 +31,6 @@
                 <tr>
                     <td>Repeat :</td>
                     <td><img onclick="mmap.repeat()" src="img/repeat.svg"></td>
-                </tr>
-                <tr>
-                    <td>Add node :</td>
-                    <td><img onclick="mmap.addNode()" src="img/add.svg"></td>
-                </tr>
-                <tr>
-                    <td>Remove node :</td>
-                    <td><img onclick="mmap.removeNode()" src="img/remove.svg"></td>
                 </tr>
                 <tr>
                     <td>Center :</td>
@@ -79,6 +67,22 @@
                     <td><input class="color-btn" type="color" name="text-color"
                         onchange="mmap.updateNode('text-color', value)"></td>
                 </tr>
+                <tr>
+                    <td>Font size :</td>
+                    <td><input id="font-size" type="text" name="font-size"></td>
+                </tr>
+                <tr>
+                    <td>Bold font :</td>
+                    <td><input id="bold-font" onchange="mmap.updateNode('font-weight')" type="checkbox"></td>
+                </tr>
+                <tr>
+                    <td>Italic font :</td>
+                    <td><input id="italic-font" onchange="mmap.updateNode('font-style')" type="checkbox"></td>
+                </tr>
+                <tr>
+                    <td>Fixed node :</td>
+                    <td><input id="fixed-node" onchange="mmap.updateNode('fixed')" type="checkbox"></td>
+                </tr>
                 <input style="display:none" type="file" id="upload" accept=".json">
             </table>
         </div>
@@ -92,6 +96,9 @@
             // DOM elements
             const nodeName = document.getElementById('node-name');
             const fontSize = document.getElementById('font-size');
+            const fixedNode = document.getElementById('fixed-node');
+            const italicFont = document.getElementById('italic-font');
+            const boldFont = document.getElementById('bold-font');
             const saveMap = document.getElementById('save-map');
             const uploadMap = document.getElementById('upload-map');
             const upload = document.getElementById('upload');
@@ -145,6 +152,9 @@
                 backgroundColor.value = n['background-color'];
                 branchColor.value = n['branch-color'] || '#ffffff';
                 textColor.value = n['text-color'];
+                italicFont.checked = n['font-style'] === 'italic';
+                boldFont.checked = n['font-weight'] === 'bold';
+                fixedNode.checked = n.fixed === true;
             });
 
             mmap.events.on('nodedblclick', function( n ) {

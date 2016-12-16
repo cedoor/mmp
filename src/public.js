@@ -12,14 +12,15 @@
             const key = 'node' + ( ++global.counter );
             const value = {
                 name : prop && prop.name || 'Node',
-                'background-color' : prop && prop['background-color'] || '#f1f1f1',
+                'background-color' : prop && prop['background-color'] || '#f9f9f9',
                 'text-color' : prop && prop['text-color'] || '#808080',
                 'branch-color' : prop && prop['branch-color'] || sel['branch-color'] || '#9fad9c',
                 'font-size' : prop && prop['font-size'] || 16,
                 'font-style' : prop && prop['font-style'] || 'normal',
                 'font-weight' : prop && prop['font-weight'] || 'normal',
-                x : findXPosition( sel, root ),
-                y : findYPosition( sel, root ),
+                fixed : prop && prop.fixed || true,
+                x : prop && prop.x || findXPosition( sel, root ),
+                y : prop && prop.y || findYPosition( sel, root ),
                 parent : global.selected
             };
             global.nodes.set( key, value );
@@ -69,6 +70,7 @@
         const dom = document.getElementById( global.selected );
         const prop = {
             'name' : updateName,
+            'fixed' : updateFixStatus,
             'background-color' : updateBackgroundColor,
             'branch-color' : updateBranchColor,
             'text-color' : updateTextColor,
