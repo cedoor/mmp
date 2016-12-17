@@ -143,18 +143,22 @@
             // mmap events
 
             mmap.events.on('mmcreate', function(){
-                console.info('Mindmap created!');
+                console.log('Mindmap created!');
             });
 
-            mmap.events.on('nodeselect', function( n ) {
-                nodeName.value = n['name'];
-                fontSize.value = n['font-size'];
-                backgroundColor.value = n['background-color'];
-                branchColor.value = n['branch-color'] || '#ffffff';
-                textColor.value = n['text-color'];
-                italicFont.checked = n['font-style'] === 'italic';
-                boldFont.checked = n['font-weight'] === 'bold';
-                fixedNode.checked = n.fixed === true;
+            mmap.events.on('nodeselect', function( node ) {
+                nodeName.value = node['name'];
+                fontSize.value = node['font-size'];
+                backgroundColor.value = node['background-color'];
+                branchColor.value = node['branch-color'] || '#ffffff';
+                textColor.value = node['text-color'];
+                italicFont.checked = node['font-style'] === 'italic';
+                boldFont.checked = node['font-weight'] === 'bold';
+                fixedNode.checked = node.fixed === true;
+            });
+
+            mmap.events.on('nodeupdate', function( key, value, property ) {
+                console.log('The node \"'+ key +'\" has updated its property \"'+ property + '\"');
             });
 
             mmap.events.on('nodedblclick', function( n ) {

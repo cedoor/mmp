@@ -85,12 +85,13 @@
         return sel.x + 200 * dir;
     }
 
-    function findYPosition( sel ) {
-        return sel.y - d3.randomUniform( 60, 100 )();
-    }
-
     function orientation( x ) {
         return x < global.nodes.get('node0').x;
+    }
+
+    function error( message ) {
+        console.error( message );
+        return false;
     }
 
     function setNodeCoords( dom, x, y ) {
@@ -319,7 +320,7 @@
             sel.width = text.textLength.baseVal.value + 45;
             d3.select( bg ).attr('d', drawBgShape );
             saveSnapshot();
-        }
+        } else return false;
     }
 
     function updateBackgroundColor( sel, v ) {
@@ -328,7 +329,7 @@
             bg.style.setProperty('fill', sel['background-color'] = v );
             bg.style.setProperty('stroke', d3.color( v ).darker( .5 ) );
             saveSnapshot();
-        }
+        } else return false;
     }
 
     function updateTextColor( sel, v ) {
@@ -336,7 +337,7 @@
             const text = this.childNodes[1];
             text.style.setProperty('fill', sel['text-color'] = v );
             saveSnapshot();
-        }
+        } else return false;
     }
 
     function updateFontSize( sel, v ) {
@@ -349,7 +350,7 @@
             d3.select( bg ).attr('d', drawBgShape );
             d3.selectAll('.branch').attr('d', drawBranch );
             saveSnapshot();
-        }
+        } else return false;
     }
 
     function updateFontStyle( sel ) {
@@ -373,13 +374,13 @@
                 branch.style.setProperty('fill', sel['branch-color'] = v );
                 branch.style.setProperty('stroke', sel['branch-color'] = v );
                 saveSnapshot();
-            }
-        } else console.warn('The root node has no branches');
+            } else return false;
+        } else return error('The root node has no branches');
     }
 
     function updateFixStatus( sel ) {
         if ( global.selected !== 'node0' ) sel.fixed = !sel.fixed;
-        else console.warn('The root node can not be fixed');
+        else return error('The root node can not be fixed');
     }
 
     /****** Shape functions  ******/
@@ -539,8 +540,9 @@
     /****** Public functions ******/
 
     const events = d3.dispatch(
-        'mmcreate', 'mmcenter',
-        'nodeselect', 'nodecreate', 'noderemove', 'nodedblclick'
+        'mmcreate', 'mmcenter', 'nodedblclick',
+        'nodeselect', 'nodeupdate',
+        'nodecreate', 'noderemove'
     );
 
     function addNode( prop ) {
@@ -558,7 +560,7 @@
                 'font-weight' : prop && prop['font-weight'] || 'normal',
                 fixed : prop && prop.fixed || true,
                 x : prop && prop.x || findXPosition( sel, root ),
-                y : prop && prop.y || findYPosition( sel ),
+                y : prop && prop.y || sel.y - d3.randomUniform( 60, 100 )(),
                 parent : global.selected
             };
             global.nodes.set( key, value );
@@ -604,9 +606,9 @@
     }
 
     function updateNode( k, v ) {
-        const sel = global.nodes.get( global.selected );
-        const dom = document.getElementById( global.selected );
-        const prop = {
+        const sel = global.nodes.get( global.selected ),
+        dom = document.getElementById( global.selected ),
+        prop = {
             'name' : updateName,
             'fixed' : updateFixStatus,
             'background-color' : updateBackgroundColor,
@@ -614,12 +616,14 @@
             'text-color' : updateTextColor,
             'font-size' : updateFontSize,
             'font-style' : updateFontStyle,
-            'font-weight' : updateFontWeight,
-            default : function() {
-                console.error('"'+ k +'" is not a valid node property');
-            }
-        };
-        ( prop[k] || prop.default ).call( dom, sel, v );
+            'font-weight' : updateFontWeight
+        },
+        upd = prop[k];
+        if ( upd !== undefined ) {
+            if ( upd.call( dom, sel, v ) !== false )
+                events.call('nodeupdate', dom, global.selected, sel, k );
+        }
+        else return error('"'+ k +'" is not a valid node property');
     }
 
     function png( name, background ) {

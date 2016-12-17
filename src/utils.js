@@ -32,6 +32,11 @@
         return x < global.nodes.get('node0').x;
     }
 
+    function error( message ) {
+        console.error( message );
+        return false;
+    }
+
     function setNodeCoords( dom, x, y ) {
         dom.setAttribute('transform','translate('+[ x, y ]+')');
     }

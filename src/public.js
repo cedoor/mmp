@@ -1,8 +1,9 @@
     /****** Public functions ******/
 
     const events = d3.dispatch(
-        'mmcreate', 'mmcenter',
-        'nodeselect', 'nodecreate', 'noderemove', 'nodedblclick'
+        'mmcreate', 'mmcenter', 'nodedblclick',
+        'nodeselect', 'nodeupdate',
+        'nodecreate', 'noderemove'
     );
 
     function addNode( prop ) {
@@ -66,9 +67,9 @@
     }
 
     function updateNode( k, v ) {
-        const sel = global.nodes.get( global.selected );
-        const dom = document.getElementById( global.selected );
-        const prop = {
+        const sel = global.nodes.get( global.selected ),
+        dom = document.getElementById( global.selected ),
+        prop = {
             'name' : updateName,
             'fixed' : updateFixStatus,
             'background-color' : updateBackgroundColor,
@@ -76,12 +77,14 @@
             'text-color' : updateTextColor,
             'font-size' : updateFontSize,
             'font-style' : updateFontStyle,
-            'font-weight' : updateFontWeight,
-            default : function() {
-                console.error('"'+ k +'" is not a valid node property');
-            }
-        };
-        ( prop[k] || prop.default ).call( dom, sel, v );
+            'font-weight' : updateFontWeight
+        },
+        upd = prop[k];
+        if ( upd !== undefined ) {
+            if ( upd.call( dom, sel, v ) !== false )
+                events.call('nodeupdate', dom, global.selected, sel, k );
+        }
+        else return error('"'+ k +'" is not a valid node property');
     }
 
     function png( name, background ) {
