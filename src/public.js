@@ -20,7 +20,7 @@
                 'font-weight' : prop && prop['font-weight'] || 'normal',
                 fixed : prop && prop.fixed || true,
                 x : prop && prop.x || findXPosition( sel, root ),
-                y : prop && prop.y || findYPosition( sel, root ),
+                y : prop && prop.y || sel.y - d3.randomUniform( 60, 100 )(),
                 parent : global.selected
             };
             global.nodes.set( key, value );

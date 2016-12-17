@@ -77,30 +77,16 @@
         var dir;
         if ( sel.x > root.x ) dir = 1;
         else if ( sel.x < root.x ) dir = -1;
-        else dir = Math.random() >= 0.5 ? -1 : 1;
-        return sel.x + 200*dir;
+        else {
+            const f = n => n.parent === 'node0',
+            l = global.nodes.values().filter( f ).length;
+            dir = l % 2 === 0 ? -1 : 1;
+        }
+        return sel.x + 200 * dir;
     }
 
-    function findYPosition( sel, root ) {
-        const nodes = global.nodes.values();
-        const childNodes = nodes.filter( n => n.parent === global.selected );
-        var found, y, k = -3;
-        while ( !found ) {
-            y = sel.y + 40 * k;
-            found = true;
-            for ( var i in childNodes ) {
-                const node = childNodes[i];
-                const range = node.height*1.5;
-                found = !( y < node.y + range && y > node.y - range );
-                if ( !found ) break;
-            }
-            k = k === -1 ? k+2 : k+1;
-            if ( k > 3 ) {
-                found = true;
-                y = sel.y - 200 + d3.randomUniform( -20, 20 )();
-            }
-        }
-        return y;
+    function findYPosition( sel ) {
+        return sel.y - d3.randomUniform( 60, 100 )();
     }
 
     function orientation( x ) {
@@ -572,7 +558,7 @@
                 'font-weight' : prop && prop['font-weight'] || 'normal',
                 fixed : prop && prop.fixed || true,
                 x : prop && prop.x || findXPosition( sel, root ),
-                y : prop && prop.y || findYPosition( sel, root ),
+                y : prop && prop.y || findYPosition( sel ),
                 parent : global.selected
             };
             global.nodes.set( key, value );
