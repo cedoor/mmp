@@ -1,31 +1,24 @@
 {
-    "name": "mmap",
-    "version": "0.1.0",
-    "description": "Small library to create mind maps",
+    "name": "mmapp",
+    "version": "0.0.1",
+    "description": "Desktop app to create mind maps",
     "author": "Omar Desogus <omardesogus9@gmail.com>",
-    "main": "dist/mmap.js",
+    "main": "server.js",
     "scripts": {
-        "start": "node server.js",
-        "dev": "gulp"
+        "start": "node server.js"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/cedoor/mmap.git"
+        "url": "https://github.com/cedoor/mmapp.git"
     },
-    "homepage": "https://github.com/cedoor/mmap#readme",
+    "homepage": "https://github.com/cedoor/mmapp#readme",
     "license": "MIT",
     "dependencies": {
         "connect": "~3.4.1",
         "serve-static": "~1.11.1"
     },
     "devDependencies": {
-        "cz-conventional-changelog": "^1.2.0",
-        "gulp": "^3.9.1",
-        "gulp-concat": "^2.6.0",
-        "gulp-livereload": "^3.8.1",
-        "gulp-rename": "^1.2.2",
-        "gulp-uglify": "^2.0.0",
-        "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony"
+        "cz-conventional-changelog": "^1.2.0"
     },
     "config": {
         "commitizen": {
