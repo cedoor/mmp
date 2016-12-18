@@ -18,7 +18,7 @@
 
         global.container = d3.select( selector );
         global.history = { index : -1, snapshots : [] };
-        global.svg = global.drag = {};
+        global.svg = {};
 
         global.svg.main = global.container.append('svg')
             .attr('width', '100%')

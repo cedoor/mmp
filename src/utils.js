@@ -3,11 +3,10 @@
     const zoom = d3.zoom().scaleExtent([0.5, 2]).on('zoom', zoomed );
 
     const drag = d3.drag().on('drag', dragged ).on('start', function( n ) {
-        global.drag.orientation = orientation( n.value.x );
         selectNode( n.key );
     }).on('end', function() {
-        if ( global.drag.status ) {
-            global.drag.status = false;
+        if ( global.dragged ) {
+            global.dragged = false;
             saveSnapshot();
         }
     });
@@ -43,16 +42,16 @@
 
     function dragged( n ) {
         const dy = d3.event.dy, dx = d3.event.dx,
-        parent = n, or = orientation( n.value.x );
-        setNodeCoords( this, n.value.x += dx, n.value.y += dy );
+        x = n.value.x += dx, y = n.value.y += dy, parent = n,
+        sameOrientation = orientation( x ) === orientation( x - dx );
+        setNodeCoords( this, x, y );
         if ( n.value.fixed ) subnodes( n.key, function( n, k ) {
-                const x = n.x += dx, y = n.y += dy;
-                if ( or !== global.drag.orientation ) n.x += ( parent.value.x - n.x )*2;
-                setNodeCoords( this, x, y );
-            });
-        if ( or !== global.drag.orientation ) global.drag.orientation = or;
-        global.drag.status = true;
+            const x = n.x += dx, y = n.y += dy;
+            if ( !sameOrientation ) n.x += ( parent.value.x - n.x )*2;
+            setNodeCoords( this, x, y );
+        });
         d3.selectAll('.branch').attr('d', drawBranch );
+        global.dragged = true;
     }
 
     function subnodes( key, cb ) {
@@ -77,8 +76,7 @@
     function focusNode() {
         const node = d3.select('#'+ global.selected ), bg = node.select('path');
         bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
-        const e = new MouseEvent('dblclick');
-        node.node().dispatchEvent( e );
+        node.node().dispatchEvent( new MouseEvent('dblclick') );
     }
 
     function deselectNode() {
@@ -100,14 +98,18 @@
         for ( var member in obj ) delete obj[member];
     }
 
+    function cloneObject( obj ) {
+        return Object.assign( {}, obj );
+    }
+
     function styles( el ) {
         var css = "";
         const sheets = document.styleSheets;
         for (var i = 0; i < sheets.length; i++) {
             const rules = sheets[i].cssRules;
             for (var j = 0; j < rules.length; j++) {
-                const rule = rules[j];
-                const fontFace = rule.cssText.match(/^@font-face/);
+                const rule = rules[j],
+                fontFace = rule.cssText.match(/^@font-face/);
                 if ( el.querySelector( rule.selectorText ) || fontFace )
                     css += rule.cssText;
             }
@@ -125,17 +127,13 @@
     }
 
     function getDataURI() {
-        const el = global.svg.mmap.node();
-        const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+        const el = global.svg.mmap.node(),
+        svg = document.createElementNS('http://www.w3.org/2000/svg','svg'),
+        xmlns = "http://www.w3.org/2000/xmlns/",
+        box = el.getBBox(), padding = 15,
+        x = box.x - padding, y = box.y - padding,
+        w = box.width + padding*2, h = box.height + padding*2;
 
-        const box = el.getBBox();
-        const padding = 15;
-        const x = box.x - padding;
-        const y = box.y - padding;
-        const w = box.width + padding*2;
-        const h = box.height + padding*2;
-
-        const xmlns = "http://www.w3.org/2000/xmlns/";
         svg.setAttributeNS( xmlns, "xmlns", "http://www.w3.org/2000/svg");
         svg.setAttributeNS( xmlns, "xmlns:xlink", "http://www.w3.org/1999/xlink");
         svg.setAttribute("version", "1.1");
@@ -143,13 +141,13 @@
         svg.setAttribute("height", h );
         svg.setAttribute("viewBox", [ x, y, w, h ].join(" ") );
 
-        const css = styles( el );
-        const s = document.createElement('style');
-        const defs = document.createElement('defs');
+        const css = styles( el ),
+        s = document.createElement('style'),
+        defs = document.createElement('defs');
+
         s.setAttribute('type', 'text/css');
         s.innerHTML = "<![CDATA[\n" + css + "\n]]>";
         defs.appendChild( s );
-
         svg.appendChild( defs );
 
         const clone = el.cloneNode( true );
@@ -172,31 +170,28 @@
     }
 
     function setCounter() {
-        const getIntOfKey = k => parseInt( k.substring(4) );
-        const keys = global.nodes.keys().map( getIntOfKey );
+        const getIntOfKey = k => parseInt( k.substring(4) ),
+        keys = global.nodes.keys().map( getIntOfKey );
         global.counter = Math.max(...keys);
     }
 
-    function d3MapConverter( data ) {
-        const map = d3.map();
-        data.forEach( function( node ) {
-            map.set( node.key, Object.assign( {}, node.value ) );
+    function mapClone() {
+        return global.nodes.entries().map( function( node ) {
+            return { key : node.key, value : cloneObject( node.value ) };
         });
-        return map;
     }
 
     function saveSnapshot() {
         const h = global.history;
         if ( h.index < h.snapshots.length - 1 ) h.snapshots.splice( h.index + 1 );
-        const nodes = JSON.parse( JSON.stringify( global.nodes.entries() ) );
-        h.snapshots.push( nodes );
+        h.snapshots.push( mapClone() );
         h.index++;
     }
 
     function loadSnapshot( snapshot ) {
         global.nodes.clear();
         snapshot.forEach( function( node ) {
-            global.nodes.set( node.key, Object.assign( {}, node.value ) );
+            global.nodes.set( node.key, cloneObject( node.value ) );
         });
         redraw();
         deselectNode();

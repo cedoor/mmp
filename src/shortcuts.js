@@ -37,50 +37,45 @@
         return true;
     }
 
-    function getCloserVerticalNode( pos ) {
-        const currentNode = global.nodes.get( global.selected );
-        const root = global.nodes.get('node0');
-        const currentLevel = getNodeLevel( currentNode );
-        const or = root.x > currentNode.x;
+    function moveSelectionOnLevel( dir ) {
+        const sel = global.nodes.get( global.selected ),
+        lev = getNodeLevel( sel ), or = orientation( sel.x );
         var key, tmp = Number.MAX_VALUE;
         global.nodes.each( function( n, k ) {
-            const d = pos ? currentNode.y - n.y : n.y - currentNode.y;
-            const sameLevel = currentLevel === getNodeLevel( n );
-            const sameNode = global.selected === k;
-            const sameOr = ( or && root.x > n.x ) || ( !or && root.x < n.x );
-            if ( sameOr && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
+            const d = dir ? sel.y - n.y : n.y - sel.y,
+            sameLevel = lev === getNodeLevel( n ),
+            sameNode = global.selected === k,
+            sameOrientation = or === orientation( n.x );
+            if ( sameOrientation && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
                 tmp = d;
                 key = k;
             }
         });
-        return key || global.selected;
+        if ( key !== undefined ) selectNode( key );
     }
 
-    function getCloserHorizontalNode( pos ) {
-        const currentNode = global.nodes.get( global.selected );
-        const root = global.nodes.get('node0');
+    function moveSelectionOnBranch( dir ) {
+        const sel = global.nodes.get( global.selected ),
+        root = global.nodes.get('node0');
         var key, checks, tmp = Number.MIN_VALUE;
         global.nodes.each( function( n, k ) {
-            if ( currentNode.x < root.x )
-                checks = pos ? n.parent === global.selected : currentNode.parent === k;
-            else if ( currentNode.x > root.x )
-                checks = !pos ? n.parent === global.selected : currentNode.parent === k;
-            else checks = ( pos ? n.x < root.x : n.x > root.x ) && n.parent === global.selected;
+            if ( sel.x < root.x )
+                checks = dir ? n.parent === global.selected : sel.parent === k;
+            else if ( sel.x > root.x )
+                checks = !dir ? n.parent === global.selected : sel.parent === k;
+            else checks = ( dir ? n.x < root.x : n.x > root.x ) && n.parent === global.selected;
             if ( checks && n.y > tmp ) {
                 tmp = n.y;
                 key = k;
             }
         });
-        return key || global.selected;
+        if ( key !== undefined ) selectNode( key );
     }
 
     function moveSelection( dir ) {
-        selectNode({
-            'up' : getCloserVerticalNode,
-            'down' : getCloserVerticalNode,
-            'left' : getCloserHorizontalNode,
-            'right' : getCloserHorizontalNode
-        }[ dir ]( dir === 'up' || dir === 'left' ));
+        const d = dir === 'up' || dir === 'left';
+        if ( dir === 'up' || dir === 'down' ) moveSelectionOnLevel( d );
+        else moveSelectionOnBranch( d );
     }
 
     function moveNode( dir ) {

@@ -27,7 +27,7 @@
 
         global.container = d3.select( selector );
         global.history = { index : -1, snapshots : [] };
-        global.svg = global.drag = {};
+        global.svg = {};
 
         global.svg.main = global.container.append('svg')
             .attr('width', '100%')
@@ -60,11 +60,10 @@
     const zoom = d3.zoom().scaleExtent([0.5, 2]).on('zoom', zoomed );
 
     const drag = d3.drag().on('drag', dragged ).on('start', function( n ) {
-        global.drag.orientation = orientation( n.value.x );
         selectNode( n.key );
     }).on('end', function() {
-        if ( global.drag.status ) {
-            global.drag.status = false;
+        if ( global.dragged ) {
+            global.dragged = false;
             saveSnapshot();
         }
     });
@@ -100,16 +99,16 @@
 
     function dragged( n ) {
         const dy = d3.event.dy, dx = d3.event.dx,
-        parent = n, or = orientation( n.value.x );
-        setNodeCoords( this, n.value.x += dx, n.value.y += dy );
+        x = n.value.x += dx, y = n.value.y += dy, parent = n,
+        sameOrientation = orientation( x ) === orientation( x - dx );
+        setNodeCoords( this, x, y );
         if ( n.value.fixed ) subnodes( n.key, function( n, k ) {
-                const x = n.x += dx, y = n.y += dy;
-                if ( or !== global.drag.orientation ) n.x += ( parent.value.x - n.x )*2;
-                setNodeCoords( this, x, y );
-            });
-        if ( or !== global.drag.orientation ) global.drag.orientation = or;
-        global.drag.status = true;
+            const x = n.x += dx, y = n.y += dy;
+            if ( !sameOrientation ) n.x += ( parent.value.x - n.x )*2;
+            setNodeCoords( this, x, y );
+        });
         d3.selectAll('.branch').attr('d', drawBranch );
+        global.dragged = true;
     }
 
     function subnodes( key, cb ) {
@@ -134,8 +133,7 @@
     function focusNode() {
         const node = d3.select('#'+ global.selected ), bg = node.select('path');
         bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
-        const e = new MouseEvent('dblclick');
-        node.node().dispatchEvent( e );
+        node.node().dispatchEvent( new MouseEvent('dblclick') );
     }
 
     function deselectNode() {
@@ -157,14 +155,18 @@
         for ( var member in obj ) delete obj[member];
     }
 
+    function cloneObject( obj ) {
+        return Object.assign( {}, obj );
+    }
+
     function styles( el ) {
         var css = "";
         const sheets = document.styleSheets;
         for (var i = 0; i < sheets.length; i++) {
             const rules = sheets[i].cssRules;
             for (var j = 0; j < rules.length; j++) {
-                const rule = rules[j];
-                const fontFace = rule.cssText.match(/^@font-face/);
+                const rule = rules[j],
+                fontFace = rule.cssText.match(/^@font-face/);
                 if ( el.querySelector( rule.selectorText ) || fontFace )
                     css += rule.cssText;
             }
@@ -182,17 +184,13 @@
     }
 
     function getDataURI() {
-        const el = global.svg.mmap.node();
-        const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+        const el = global.svg.mmap.node(),
+        svg = document.createElementNS('http://www.w3.org/2000/svg','svg'),
+        xmlns = "http://www.w3.org/2000/xmlns/",
+        box = el.getBBox(), padding = 15,
+        x = box.x - padding, y = box.y - padding,
+        w = box.width + padding*2, h = box.height + padding*2;
 
-        const box = el.getBBox();
-        const padding = 15;
-        const x = box.x - padding;
-        const y = box.y - padding;
-        const w = box.width + padding*2;
-        const h = box.height + padding*2;
-
-        const xmlns = "http://www.w3.org/2000/xmlns/";
         svg.setAttributeNS( xmlns, "xmlns", "http://www.w3.org/2000/svg");
         svg.setAttributeNS( xmlns, "xmlns:xlink", "http://www.w3.org/1999/xlink");
         svg.setAttribute("version", "1.1");
@@ -200,13 +198,13 @@
         svg.setAttribute("height", h );
         svg.setAttribute("viewBox", [ x, y, w, h ].join(" ") );
 
-        const css = styles( el );
-        const s = document.createElement('style');
-        const defs = document.createElement('defs');
+        const css = styles( el ),
+        s = document.createElement('style'),
+        defs = document.createElement('defs');
+
         s.setAttribute('type', 'text/css');
         s.innerHTML = "<![CDATA[\n" + css + "\n]]>";
         defs.appendChild( s );
-
         svg.appendChild( defs );
 
         const clone = el.cloneNode( true );
@@ -229,31 +227,28 @@
     }
 
     function setCounter() {
-        const getIntOfKey = k => parseInt( k.substring(4) );
-        const keys = global.nodes.keys().map( getIntOfKey );
+        const getIntOfKey = k => parseInt( k.substring(4) ),
+        keys = global.nodes.keys().map( getIntOfKey );
         global.counter = Math.max(...keys);
     }
 
-    function d3MapConverter( data ) {
-        const map = d3.map();
-        data.forEach( function( node ) {
-            map.set( node.key, Object.assign( {}, node.value ) );
+    function mapClone() {
+        return global.nodes.entries().map( function( node ) {
+            return { key : node.key, value : cloneObject( node.value ) };
         });
-        return map;
     }
 
     function saveSnapshot() {
         const h = global.history;
         if ( h.index < h.snapshots.length - 1 ) h.snapshots.splice( h.index + 1 );
-        const nodes = JSON.parse( JSON.stringify( global.nodes.entries() ) );
-        h.snapshots.push( nodes );
+        h.snapshots.push( mapClone() );
         h.index++;
     }
 
     function loadSnapshot( snapshot ) {
         global.nodes.clear();
         snapshot.forEach( function( node ) {
-            global.nodes.set( node.key, Object.assign( {}, node.value ) );
+            global.nodes.set( node.key, cloneObject( node.value ) );
         });
         redraw();
         deselectNode();
@@ -466,50 +461,45 @@
         return true;
     }
 
-    function getCloserVerticalNode( pos ) {
-        const currentNode = global.nodes.get( global.selected );
-        const root = global.nodes.get('node0');
-        const currentLevel = getNodeLevel( currentNode );
-        const or = root.x > currentNode.x;
+    function moveSelectionOnLevel( dir ) {
+        const sel = global.nodes.get( global.selected ),
+        lev = getNodeLevel( sel ), or = orientation( sel.x );
         var key, tmp = Number.MAX_VALUE;
         global.nodes.each( function( n, k ) {
-            const d = pos ? currentNode.y - n.y : n.y - currentNode.y;
-            const sameLevel = currentLevel === getNodeLevel( n );
-            const sameNode = global.selected === k;
-            const sameOr = ( or && root.x > n.x ) || ( !or && root.x < n.x );
-            if ( sameOr && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
+            const d = dir ? sel.y - n.y : n.y - sel.y,
+            sameLevel = lev === getNodeLevel( n ),
+            sameNode = global.selected === k,
+            sameOrientation = or === orientation( n.x );
+            if ( sameOrientation && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
                 tmp = d;
                 key = k;
             }
         });
-        return key || global.selected;
+        if ( key !== undefined ) selectNode( key );
     }
 
-    function getCloserHorizontalNode( pos ) {
-        const currentNode = global.nodes.get( global.selected );
-        const root = global.nodes.get('node0');
+    function moveSelectionOnBranch( dir ) {
+        const sel = global.nodes.get( global.selected ),
+        root = global.nodes.get('node0');
         var key, checks, tmp = Number.MIN_VALUE;
         global.nodes.each( function( n, k ) {
-            if ( currentNode.x < root.x )
-                checks = pos ? n.parent === global.selected : currentNode.parent === k;
-            else if ( currentNode.x > root.x )
-                checks = !pos ? n.parent === global.selected : currentNode.parent === k;
-            else checks = ( pos ? n.x < root.x : n.x > root.x ) && n.parent === global.selected;
+            if ( sel.x < root.x )
+                checks = dir ? n.parent === global.selected : sel.parent === k;
+            else if ( sel.x > root.x )
+                checks = !dir ? n.parent === global.selected : sel.parent === k;
+            else checks = ( dir ? n.x < root.x : n.x > root.x ) && n.parent === global.selected;
             if ( checks && n.y > tmp ) {
                 tmp = n.y;
                 key = k;
             }
         });
-        return key || global.selected;
+        if ( key !== undefined ) selectNode( key );
     }
 
     function moveSelection( dir ) {
-        selectNode({
-            'up' : getCloserVerticalNode,
-            'down' : getCloserVerticalNode,
-            'left' : getCloserHorizontalNode,
-            'right' : getCloserHorizontalNode
-        }[ dir ]( dir === 'up' || dir === 'left' ));
+        const d = dir === 'up' || dir === 'left';
+        if ( dir === 'up' || dir === 'down' ) moveSelectionOnLevel( d );
+        else moveSelectionOnBranch( d );
     }
 
     function moveNode( dir ) {
