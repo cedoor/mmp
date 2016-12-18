@@ -6,23 +6,22 @@
     }
 
     function update() {
+        const map = global.nodes.entries(),
+        nodes = global.svg.mmap.selectAll('.node').data( map ),
+        branches = global.svg.mmap.selectAll('.branch').data( map.slice(1) );
 
-        const nodes = global.nodes.entries();
-
-        const node = global.svg.mmap.selectAll('.node').data( nodes );
-
-        const nodeContainer = node.enter().append('g')
+        const node = nodes.enter().append('g')
             .style('cursor', 'pointer')
             .attr('class', 'node')
             .attr('id', n => n.key )
             .attr('transform', n => 'translate(' + n.value.x + ',' + n.value.y + ')')
             .call( drag )
             .on('dblclick', function( n ) {
-                events.call('nodedblclick', this, n);
+                events.call('nodefocus', this, n.key, n.value );
                 d3.event.stopPropagation();
             });
 
-        nodeContainer.append('text').text( n => n.value.name )
+        node.append('text').text( n => n.value.name )
             .style('font-family', 'sans-serif')
             .style('text-anchor', 'middle')
             .style('alignment-baseline', 'middle')
@@ -31,23 +30,20 @@
             .style('font-style', n => n.value['font-style'])
             .style('font-weight', n => n.value['font-weight']);
 
-        nodeContainer.insert('path', 'text')
+        node.insert('path', 'text')
             .style('fill', n => n.value['background-color'])
             .style('stroke-width', 3 )
-            .attr('d', drawBgShape );
+            .attr('d', drawBackgroundShape );
 
-        node.exit().remove();
-
-        const branch = global.svg.mmap.selectAll('.branch').data( nodes.slice(1) );
-
-        branch.enter().insert('path', 'g')
+        branches.enter().insert('path', 'g')
             .style('fill', n => n.value['branch-color'])
             .style('stroke', n => n.value['branch-color'])
             .attr('class', 'branch')
             .attr('id', n => 'branchOf' + n.key )
             .attr('d', drawBranch );
 
-        branch.exit().remove();
+        nodes.exit().remove();
+        branches.exit().remove();
     }
 
     function updateName( sel, v ) {
@@ -56,7 +52,7 @@
             const bg = this.childNodes[0];
             sel.name = text.innerHTML = v;
             sel.width = text.textLength.baseVal.value + 45;
-            d3.select( bg ).attr('d', drawBgShape );
+            d3.select( bg ).attr('d', drawBackgroundShape );
             saveSnapshot();
         } else return false;
     }
@@ -85,7 +81,7 @@
             text.style.setProperty('font-size', sel['font-size'] = v );
             sel.width = text.textLength.baseVal.value + 45;
             sel.height = sel['font-size']*11/10 + 30;
-            d3.select( bg ).attr('d', drawBgShape );
+            d3.select( bg ).attr('d', drawBackgroundShape );
             d3.selectAll('.branch').attr('d', drawBranch );
             saveSnapshot();
         } else return false;

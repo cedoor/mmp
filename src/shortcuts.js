@@ -1,7 +1,7 @@
     /****** Shortcuts functions  ******/
 
     function setShortcuts( keys, cb ) {
-        var map = {}, sc = function() {
+        const map = {}, sc = function() {
             return shortcut( arguments, map );
         };
         onkeyup = onkeydown = function( e ) {

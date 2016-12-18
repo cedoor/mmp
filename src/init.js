@@ -39,9 +39,9 @@
         createRootNode();
         update();
         saveSnapshot();
-        deselectNode();
 
         setShortcuts();
-        window.onresize = center;
         events.call('mmcreate');
+        window.onresize = center;
+        deselectNode();
     }

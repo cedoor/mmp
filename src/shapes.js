@@ -28,7 +28,7 @@
         return path;
     }
 
-    function drawBgShape( node ) {
+    function drawBackgroundShape( node ) {
 
         const n = node.value;
         const path = d3.path();

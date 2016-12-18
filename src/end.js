@@ -13,9 +13,11 @@
         png : png,
         data : data,
         load : load,
-        addNode : addNode,
-        removeNode : removeNode,
-        updateNode : updateNode
+        node : {
+            update : updateNode,
+            remove : removeNode,
+            add : addNode
+        }
     };
 
 }(this, window.d3));

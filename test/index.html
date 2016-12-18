@@ -18,11 +18,11 @@
                 </tr>
                 <tr>
                     <td>Add node :</td>
-                    <td><img onclick="mmap.addNode()" src="img/add.svg"></td>
+                    <td><img onclick="mmap.node.add()" src="img/add.svg"></td>
                 </tr>
                 <tr>
                     <td>Remove node :</td>
-                    <td><img onclick="mmap.removeNode()" src="img/remove.svg"></td>
+                    <td><img onclick="mmap.node.remove()" src="img/remove.svg"></td>
                 </tr>
                 <tr>
                     <td>Undo :</td>
@@ -55,17 +55,17 @@
                 <tr>
                     <td>Node color :</td>
                     <td><input class="color-btn" type="color" name="background-color"
-                        onchange="mmap.updateNode('background-color', value)"></td>
+                        onchange="mmap.node.update('background-color', value)"></td>
                 </tr>
                 <tr>
                     <td>Branch color :</td>
                     <td><input class="color-btn" type="color" name="branch-color"
-                        onchange="mmap.updateNode('branch-color', value)"></td>
+                        onchange="mmap.node.update('branch-color', value)"></td>
                 </tr>
                 <tr>
                     <td>Text color :</td>
                     <td><input class="color-btn" type="color" name="text-color"
-                        onchange="mmap.updateNode('text-color', value)"></td>
+                        onchange="mmap.node.update('text-color', value)"></td>
                 </tr>
                 <tr>
                     <td>Font size :</td>
@@ -73,17 +73,17 @@
                 </tr>
                 <tr>
                     <td>Bold font :</td>
-                    <td><input id="bold-font" onchange="mmap.updateNode('font-weight')" type="checkbox"></td>
+                    <td><input id="bold-font" onchange="mmap.node.update('font-weight')" type="checkbox"></td>
                 </tr>
                 <tr>
                     <td>Italic font :</td>
-                    <td><input id="italic-font" onchange="mmap.updateNode('font-style')" type="checkbox"></td>
+                    <td><input id="italic-font" onchange="mmap.node.update('font-style')" type="checkbox"></td>
                 </tr>
                 <tr>
                     <td>Fixed node :</td>
-                    <td><input id="fixed-node" onchange="mmap.updateNode('fixed')" type="checkbox"></td>
+                    <td><input id="fixed-node" onchange="mmap.node.update('fixed')" type="checkbox"></td>
                 </tr>
-                <input style="display:none" type="file" id="upload" accept=".json">
+                <input style="display:none" type="file" id="upload" accept=".mmap">
             </table>
         </div>
 
@@ -107,15 +107,15 @@
             const textColor = document.getElementsByClassName('color-btn')[2];
 
             fontSize.onkeyup = function() {
-                mmap.updateNode('font-size', fontSize.value );
+                mmap.node.update('font-size', fontSize.value );
             }
 
             nodeName.onblur = function() {
-                if( nodeName.value === '' ) mmap.updateNode('name', nodeName.value = 'Node');
+                if( nodeName.value === '' ) mmap.node.update('name', nodeName.value = 'Node');
             }
 
             nodeName.onkeyup = function( e ) {
-                e.key === "Enter" ? nodeName.blur() : mmap.updateNode('name', nodeName.value );
+                e.key === "Enter" ? nodeName.blur() : mmap.node.update('name', nodeName.value );
             };
 
             saveMap.onclick = function() {
@@ -123,7 +123,7 @@
                 const json = JSON.stringify( data );
                 const blob = new Blob([ json ], { type: "application/json" });
                 const a = document.createElement('a');
-                a.download = "map.json";
+                a.download = "mymap.mmap";
                 a.href = URL.createObjectURL( blob );
                 a.click();
             }
@@ -146,22 +146,24 @@
                 console.log('Mindmap created!');
             });
 
-            mmap.events.on('nodeselect', function( node ) {
-                nodeName.value = node['name'];
-                fontSize.value = node['font-size'];
-                backgroundColor.value = node['background-color'];
-                branchColor.value = node['branch-color'] || '#ffffff';
-                textColor.value = node['text-color'];
-                italicFont.checked = node['font-style'] === 'italic';
-                boldFont.checked = node['font-weight'] === 'bold';
-                fixedNode.checked = node.fixed === true;
+            mmap.events.on('nodeselect', function( key, value ) {
+                nodeName.value = value['name'];
+                fontSize.value = value['font-size'];
+                backgroundColor.value = value['background-color'];
+                branchColor.value = value['branch-color'] || '#ffffff';
+                textColor.value = value['text-color'];
+                italicFont.checked = value['font-style'] === 'italic';
+                boldFont.checked = value['font-weight'] === 'bold';
+                fixedNode.checked = value.fixed === true;
+                console.log('The node \"'+ key +'\" has been selected');
             });
 
             mmap.events.on('nodeupdate', function( key, value, property ) {
                 console.log('The node \"'+ key +'\" has updated its property \"'+ property + '\"');
             });
 
-            mmap.events.on('nodedblclick', function( n ) {
+            mmap.events.on('nodefocus', function( key, value ) {
+                console.log('The node \"'+ key +'\" has been focused');
                 nodeName.focus();
             });
 

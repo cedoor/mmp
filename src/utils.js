@@ -1,4 +1,4 @@
-    /****** Util functions  ******/
+    /****** Util functions ******/
 
     const zoom = d3.zoom().scaleExtent([0.5, 2]).on('zoom', zoomed );
 
@@ -42,8 +42,8 @@
     }
 
     function dragged( n ) {
-        const dy = d3.event.dy, dx = d3.event.dx, parent = n;
-        const or = orientation( n.value.x );
+        const dy = d3.event.dy, dx = d3.event.dx,
+        parent = n, or = orientation( n.value.x );
         setNodeCoords( this, n.value.x += dx, n.value.y += dy );
         if ( n.value.fixed ) subnodes( n.key, function( n, k ) {
                 const x = n.x += dx, y = n.y += dy;
@@ -58,8 +58,7 @@
     function subnodes( key, cb ) {
         global.nodes.each( function( n, k ) {
             if ( n.parent === key ) {
-                const dom = document.getElementById( k );
-                cb.call( dom, n, k );
+                cb.call( document.getElementById( k ), n, k );
                 subnodes( k, cb );
             }
         });
@@ -69,16 +68,14 @@
         if( global.selected !== key || global.selected === 'node0' ) {
             d3.selectAll('.node > path').style('stroke', 'none');
             global.selected = key;
-            const node = d3.select('#'+ key );
-            const bg = node.select('path');
+            const node = d3.select('#'+ key ), bg = node.select('path');
             bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
-            events.call('nodeselect', node.node(), global.nodes.get( key ));
+            events.call('nodeselect', node.node(), key, global.nodes.get( key ));
         }
     }
 
     function focusNode() {
-        const node = d3.select('#'+ global.selected );
-        const bg = node.select('path');
+        const node = d3.select('#'+ global.selected ), bg = node.select('path');
         bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
         const e = new MouseEvent('dblclick');
         node.node().dispatchEvent( e );
@@ -197,7 +194,10 @@
     }
 
     function loadSnapshot( snapshot ) {
-        global.nodes = d3MapConverter( snapshot );
+        global.nodes.clear();
+        snapshot.forEach( function( node ) {
+            global.nodes.set( node.key, Object.assign( {}, node.value ) );
+        });
         redraw();
         deselectNode();
         setCounter();

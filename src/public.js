@@ -1,58 +1,46 @@
     /****** Public functions ******/
 
     const events = d3.dispatch(
-        'mmcreate', 'mmcenter', 'nodedblclick',
+        'mmcreate', 'mmcenter', 'nodefocus',
         'nodeselect', 'nodeupdate',
         'nodecreate', 'noderemove'
     );
 
     function addNode( prop ) {
-        if( global.selected ) {
-            const sel = global.nodes.get( global.selected );
-            const root = global.nodes.get('node0');
-            const key = 'node' + ( ++global.counter );
-            const value = {
-                name : prop && prop.name || 'Node',
-                'background-color' : prop && prop['background-color'] || '#f9f9f9',
-                'text-color' : prop && prop['text-color'] || '#808080',
-                'branch-color' : prop && prop['branch-color'] || sel['branch-color'] || '#9fad9c',
-                'font-size' : prop && prop['font-size'] || 16,
-                'font-style' : prop && prop['font-style'] || 'normal',
-                'font-weight' : prop && prop['font-weight'] || 'normal',
-                fixed : prop && prop.fixed || true,
-                x : prop && prop.x || findXPosition( sel, root ),
-                y : prop && prop.y || sel.y - d3.randomUniform( 60, 100 )(),
-                parent : global.selected
-            };
-            global.nodes.set( key, value );
-            update();
-            events.call('nodecreate');
-            saveSnapshot();
-        }
+        const s = global.nodes.get( global.selected ),
+        root = global.nodes.get('node0'),
+        key = 'node' + ( ++global.counter ),
+        value = {
+            name : prop && prop.name || 'Node',
+            'background-color' : prop && prop['background-color'] || '#f9f9f9',
+            'text-color' : prop && prop['text-color'] || '#808080',
+            'branch-color' : prop && prop['branch-color'] || s['branch-color'] || '#9fad9c',
+            'font-size' : prop && prop['font-size'] || 16,
+            'font-style' : prop && prop['font-style'] || 'normal',
+            'font-weight' : prop && prop['font-weight'] || 'normal',
+            fixed : prop && prop.fixed || true,
+            x : prop && prop.x || findXPosition( s, root ),
+            y : prop && prop.y || s.y - d3.randomUniform( 60, 100 )(),
+            parent : global.selected
+        };
+        global.nodes.set( key, value );
+        update();
+        events.call('nodecreate');
+        saveSnapshot();
     }
 
     function removeNode() {
-        if( global.selected !== 'node0' ) {
-            global.nodes.remove( global.selected );
-
-            const clean = function( key ) {
-                global.nodes.each( function( n, k ) {
-                    if ( n.key !== 'node0' && n.parent === key ) {
-                        global.nodes.remove( k );
-                        clean( k );
-                        return;
-                    }
-                });
-            };
-            clean( global.selected );
-
+        const key = global.selected;
+        if( key !== 'node0' ) {
+            global.nodes.remove( key );
+            subnodes( key, function( n, k ) {
+                global.nodes.remove( k );
+            });
             selectNode('node0');
             redraw();
-            events.call('noderemove');
             saveSnapshot();
-        } else {
-            console.warn('The root node can not be deleted');
-        }
+            events.call('noderemove', this, key );
+        } else return error('The root node can not be deleted');
     }
 
     function center() {
@@ -114,25 +102,22 @@
         global.nodes.clear();
         createRootNode();
         redraw();
-        saveSnapshot();
-        deselectNode();
         center();
+        saveSnapshot();
+        events.call('mmcreate');
+        deselectNode();
     }
 
     function undo() {
         const h = global.history;
-        if( h.index > 0 ) {
-            h.index--;
-            loadSnapshot( h.snapshots[h.index] );
-        }
+        if( h.index > 0 )
+            loadSnapshot( h.snapshots[ --h.index ] );
     }
 
     function repeat() {
         const h = global.history;
-        if( h.index < h.snapshots.length - 1 ) {
-            h.index++;
-            loadSnapshot( h.snapshots[h.index] );
-        }
+        if( h.index < h.snapshots.length - 1 )
+            loadSnapshot( h.snapshots[ ++h.index ] );
     }
 
     function data() {
@@ -141,5 +126,6 @@
 
     function load( data ) {
         loadSnapshot( data );
+        center();
         saveSnapshot();
     }
