@@ -8,7 +8,7 @@
     "license": "MIT",
     "homepage": "https://github.com/cedoor/mmap",
     "dependencies": {
-        "d3": "^4.3.0"
+        "d3": "^4.4.0"
     },
     "private" : true
 }

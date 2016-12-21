@@ -1,11 +1,16 @@
 /**
  * @name mmap
- * @version 0.1.0
+ * @version 0.1.1
  * @author Omar Desogus
- * @license GNU GENERAL PUBLIC LICENSE
- *
+ * @license MIT
  */
-(function( window, d3 ) { 'use strict';
+( function ( global, factory ) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory( exports ) :
+    typeof define === 'function' && define.amd ? define(['exports'], factory ) :
+    ( factory(( global.mmap = global.mmap || {} )) );
+}( this, ( function ( exports ) { 'use strict';
+
+    const version = "0.1.1";
 
     /**
      * @name global
@@ -370,7 +375,10 @@
     }
 
     function updateFixStatus( sel ) {
-        if ( global.selected !== 'node0' ) sel.fixed = !sel.fixed;
+        if ( global.selected !== 'node0' ) {
+            sel.fixed = !sel.fixed;
+            saveSnapshot();
+        }
         else return error('The root node can not be fixed');
     }
 
@@ -660,21 +668,22 @@
      * Make visible public functions outside
      *
      */
-    window.mmap = {
-        init : init,
-        center : center,
-        undo : undo,
-        repeat : repeat,
-        new : newMap,
-        events : events,
-        png : png,
-        data : data,
-        load : load,
-        node : {
-            update : updateNode,
-            remove : removeNode,
-            add : addNode
-        }
+    exports.version = version;
+    exports.init = init;
+    exports.center = center;
+    exports.undo = undo;
+    exports.repeat = repeat;
+    exports.new = newMap;
+    exports.events = events;
+    exports.png = png;
+    exports.data = data;
+    exports.load = load;
+    exports.node = {
+        update : updateNode,
+        remove : removeNode,
+        add : addNode
     };
 
-}(this, window.d3));
+    Object.defineProperty( exports, '__esModule', { value: true } );
+
+})));

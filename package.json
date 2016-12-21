@@ -19,13 +19,7 @@
         "serve-static": "~1.11.1"
     },
     "devDependencies": {
-        "cz-conventional-changelog": "^1.2.0",
-        "gulp": "^3.9.1",
-        "gulp-concat": "^2.6.0",
-        "gulp-livereload": "^3.8.1",
-        "gulp-rename": "^1.2.2",
-        "gulp-uglify": "^2.0.0",
-        "uglify-js": "git://github.com/mishoo/UglifyJS2#harmony"
+        "cz-conventional-changelog": "^1.2.0"
     },
     "config": {
         "commitizen": {
