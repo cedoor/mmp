@@ -1,8 +1,13 @@
 /**
  * @name mmap
- * @version 0.1.0
+ * @version 0.1.1
  * @author Omar Desogus
- * @license GNU GENERAL PUBLIC LICENSE
- *
+ * @license MIT
  */
-(function( window, d3 ) { 'use strict';
+( function ( global, factory ) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory( exports ) :
+    typeof define === 'function' && define.amd ? define(['exports'], factory ) :
+    ( factory(( global.mmap = global.mmap || {} )) );
+}( this, ( function ( exports ) { 'use strict';
+
+    const version = "0.1.1";

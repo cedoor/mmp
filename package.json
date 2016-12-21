@@ -1,17 +1,18 @@
 {
-    "name": "mmapp",
-    "version": "0.0.1",
-    "description": "Desktop app to create mind maps",
+    "name": "mmap",
+    "version": "0.1.0",
+    "description": "Small library to create mind maps",
     "author": "Omar Desogus <omardesogus9@gmail.com>",
-    "main": "server.js",
+    "main": "dist/mmap.js",
     "scripts": {
-        "start": "node server.js"
+        "start": "node server.js",
+        "dev": "gulp"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/cedoor/mmapp.git"
+        "url": "https://github.com/cedoor/mmap.git"
     },
-    "homepage": "https://github.com/cedoor/mmapp#readme",
+    "homepage": "https://github.com/cedoor/mmap#readme",
     "license": "MIT",
     "dependencies": {
         "connect": "~3.4.1",

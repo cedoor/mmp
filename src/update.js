@@ -113,6 +113,9 @@
     }
 
     function updateFixStatus( sel ) {
-        if ( global.selected !== 'node0' ) sel.fixed = !sel.fixed;
+        if ( global.selected !== 'node0' ) {
+            sel.fixed = !sel.fixed;
+            saveSnapshot();
+        }
         else return error('The root node can not be fixed');
     }
