@@ -27,8 +27,8 @@
             .style('alignment-baseline', 'middle')
             .style('fill', n => n.value['text-color'])
             .style('font-size', n => n.value['font-size'])
-            .style('font-style', n => n.value['font-style'])
-            .style('font-weight', n => n.value['font-weight']);
+            .style('font-style', n => checkItalicFont( n.value.italic ) )
+            .style('font-weight', n => checkBoldFont( n.value.bold ));
 
         node.insert('path', 'text')
             .style('fill', n => n.value['background-color'])
@@ -46,76 +46,62 @@
         branches.exit().remove();
     }
 
-    function updateName( sel, v ) {
+    function updateName( sel, v, vis ) {
         if ( sel.name != v ) {
-            const text = this.childNodes[1];
-            const bg = this.childNodes[0];
-            sel.name = text.innerHTML = v;
-            sel.width = text.textLength.baseVal.value + 45;
-            d3.select( bg ).attr('d', drawBackgroundShape );
-            saveSnapshot();
+            this.childNodes[1].innerHTML = v;
+            d3.select( this.childNodes[0] ).attr('d', drawBackgroundShape );
+            d3.selectAll('.branch').attr('d', drawBranch );
+            if ( !vis ) sel.name = v;
         } else return false;
     }
 
-    function updateBackgroundColor( sel, v ) {
+    function updateBackgroundColor( sel, v, vis ) {
         if ( sel['background-color'] !== v ) {
             const bg = this.childNodes[0];
-            bg.style.setProperty('fill', sel['background-color'] = v );
-            bg.style.setProperty('stroke', d3.color( v ).darker( .5 ) );
-            saveSnapshot();
+            bg.style['fill'] = v;
+            if ( bg.style['stroke'] !== 'none' )
+                bg.style['stroke'] = d3.color( v ).darker( .5 );
+            if ( !vis ) sel['background-color'] = v;
         } else return false;
     }
 
-    function updateTextColor( sel, v ) {
+    function updateTextColor( sel, v, vis ) {
         if ( sel['text-color'] !== v ) {
-            const text = this.childNodes[1];
-            text.style.setProperty('fill', sel['text-color'] = v );
-            saveSnapshot();
+            this.childNodes[1].style['fill'] = v;
+            if ( !vis ) sel['text-color'] = v;
         } else return false;
     }
 
-    function updateFontSize( sel, v ) {
-        if ( sel['font-size'] != v ) {
-            const text = this.childNodes[1];
-            const bg = this.childNodes[0];
-            text.style.setProperty('font-size', sel['font-size'] = v );
-            sel.width = text.textLength.baseVal.value + 45;
-            sel.height = sel['font-size']*11/10 + 30;
-            d3.select( bg ).attr('d', drawBackgroundShape );
-            d3.selectAll('.branch').attr('d', drawBranch );
-            saveSnapshot();
-        } else return false;
-    }
-
-    function updateFontStyle( sel ) {
-        const text = this.childNodes[1];
-        sel['font-style'] = sel['font-style'] === 'normal' ? 'italic' : 'normal';
-        text.style.setProperty('font-style', sel['font-style'] );
-        saveSnapshot();
-    }
-
-    function updateFontWeight( sel ) {
-        const text = this.childNodes[1];
-        sel['font-weight'] = sel['font-weight'] === 'normal' ? 'bold' : 'normal';
-        text.style.setProperty('font-weight', sel['font-weight'] );
-        saveSnapshot();
-    }
-
-    function updateBranchColor( sel, v ) {
+    function updateBranchColor( sel, v, vis ) {
         if( global.selected !== 'node0' ) {
             if ( sel['branch-color'] !== v ) {
                 const branch = document.getElementById('branchOf'+ global.selected );
-                branch.style.setProperty('fill', sel['branch-color'] = v );
-                branch.style.setProperty('stroke', sel['branch-color'] = v );
-                saveSnapshot();
+                branch.style['fill'] = branch.style['stroke'] = v;
+                if ( !vis ) sel['branch-color'] = v;
             } else return false;
         } else return error('The root node has no branches');
     }
 
+    function updateFontSize( sel, v, vis ) {
+        if ( sel['font-size'] != v ) {
+            this.childNodes[1].style['font-size'] = v;
+            d3.select( this.childNodes[0] ).attr('d', drawBackgroundShape );
+            d3.selectAll('.branch').attr('d', drawBranch );
+            if ( !vis ) sel['font-size'] = v;
+        } else return false;
+    }
+
+    function updateItalicFont( sel ) {
+        const style = checkItalicFont( sel.italic = !sel.italic );
+        this.childNodes[1].style['font-style'] = style;
+    }
+
+    function updateBoldFont( sel ) {
+        const style = checkBoldFont( sel.bold = !sel.bold );
+        this.childNodes[1].style['font-weight'] = style;
+    }
+
     function updateFixStatus( sel ) {
-        if ( global.selected !== 'node0' ) {
-            sel.fixed = !sel.fixed;
-            saveSnapshot();
-        }
+        if ( global.selected !== 'node0' ) sel.fixed = !sel.fixed;
         else return error('The root node can not be fixed');
     }

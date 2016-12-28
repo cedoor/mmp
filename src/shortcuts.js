@@ -8,10 +8,12 @@
             map[e.keyCode] = e.type === 'keydown';
             if ( sc('ctrl','maiusc','z') ) return !!repeat();
             else if ( sc('ctrl','z') ) return !!undo();
-            else if ( sc('ctrl','maiusc','up') ) moveNode('up');
-            else if ( sc('ctrl','maiusc','down') ) moveNode('down');
-            else if ( sc('ctrl','maiusc','left') ) moveNode('left');
-            else if ( sc('ctrl','maiusc','right') ) moveNode('right');
+            else if ( sc('alt','maiusc','up') ) moveNode('up');
+            else if ( sc('alt','maiusc','down') ) moveNode('down');
+            else if ( sc('alt','maiusc','left') ) moveNode('left');
+            else if ( sc('alt','maiusc','right') ) moveNode('right');
+            else if ( sc('alt','maiusc','+') ) zoomIn();
+            else if ( sc('alt','maiusc','-') ) zoomOut();
             else if ( sc('alt','up') ) return !!moveSelection('up');
             else if ( sc('alt','down') ) return !!moveSelection('down');
             else if ( sc('alt','right') ) return !!moveSelection('right');

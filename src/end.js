@@ -4,21 +4,26 @@
      *
      */
     exports.version = version;
-    exports.init = init;
     exports.center = center;
     exports.undo = undo;
     exports.repeat = repeat;
+    exports.zoomIn = zoomIn;
+    exports.zoomOut = zoomOut;
     exports.new = newMap;
-    exports.events = events;
+    exports.on = on;
     exports.png = png;
     exports.data = data;
     exports.load = load;
     exports.node = {
         update : updateNode,
         remove : removeNode,
-        add : addNode
+        add : addNode,
+        selected : selectedNode
     };
 
     Object.defineProperty( exports, '__esModule', { value: true } );
+
+    // Initialize the mind map
+    init();
 
 })));

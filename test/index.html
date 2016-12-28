@@ -25,6 +25,14 @@
                     <td><img onclick="mmap.node.remove()" src="img/remove.svg"></td>
                 </tr>
                 <tr>
+                    <td>Zoom in :</td>
+                    <td><img onclick="mmap.zoomIn()" src="img/zoomin.svg"></td>
+                </tr>
+                <tr>
+                    <td>Zoom out :</td>
+                    <td><img onclick="mmap.zoomOut()" src="img/zoomout.svg"></td>
+                </tr>
+                <tr>
                     <td>Undo :</td>
                     <td><img onclick="mmap.undo()" src="img/undo.svg"></td>
                 </tr>
@@ -73,11 +81,11 @@
                 </tr>
                 <tr>
                     <td>Bold font :</td>
-                    <td><input id="bold-font" onchange="mmap.node.update('font-weight')" type="checkbox"></td>
+                    <td><input id="bold-font" onchange="mmap.node.update('bold')" type="checkbox"></td>
                 </tr>
                 <tr>
                     <td>Italic font :</td>
-                    <td><input id="italic-font" onchange="mmap.node.update('font-style')" type="checkbox"></td>
+                    <td><input id="italic-font" onchange="mmap.node.update('italic')" type="checkbox"></td>
                 </tr>
                 <tr>
                     <td>Fixed node :</td>
@@ -87,7 +95,7 @@
             </table>
         </div>
 
-        <div class="mmap"></div>
+        <mmap></mmap>
 
         <script src="../bower_components/d3/d3.min.js"></script>
         <script src="../dist/mmap.js"></script>
@@ -106,17 +114,29 @@
             const branchColor = document.getElementsByClassName('color-btn')[1];
             const textColor = document.getElementsByClassName('color-btn')[2];
 
-            fontSize.onkeyup = function() {
+            fontSize.oninput = function() {
+                mmap.node.update('font-size', fontSize.value, true );
+            }
+
+            fontSize.onchange = function() {
                 mmap.node.update('font-size', fontSize.value );
             }
 
-            nodeName.onblur = function() {
-                if( nodeName.value === '' ) mmap.node.update('name', nodeName.value = 'Node');
+            nodeName.oninput = function() {
+                mmap.node.update('name', nodeName.value, true );
+            }
+
+            nodeName.onchange = function() {
+                mmap.node.update('name', nodeName.value );
             }
 
             nodeName.onkeyup = function( e ) {
-                e.key === "Enter" ? nodeName.blur() : mmap.node.update('name', nodeName.value );
-            };
+                if ( e.key === "Enter" ) {
+                    nodeName.blur();
+                    if( nodeName.value === '' )
+                        mmap.node.update('name', nodeName.value = 'Node');
+                }
+            }
 
             saveMap.onclick = function() {
                 const data = mmap.data();
@@ -142,32 +162,32 @@
 
             // mmap events
 
-            mmap.events.on('mmcreate', function(){
+            mmap.on('mmcreate', function(){
                 console.log('Mindmap created!');
             });
 
-            mmap.events.on('nodeselect', function( key, value ) {
+            mmap.on('nodeselect', function( key, value ) {
                 nodeName.value = value['name'];
                 fontSize.value = value['font-size'];
                 backgroundColor.value = value['background-color'];
                 branchColor.value = value['branch-color'] || '#ffffff';
                 textColor.value = value['text-color'];
-                italicFont.checked = value['font-style'] === 'italic';
-                boldFont.checked = value['font-weight'] === 'bold';
-                fixedNode.checked = value.fixed === true;
+                italicFont.checked = value['italic'];
+                boldFont.checked = value['bold'];
+                fixedNode.checked = value.fixed;
                 console.log('The node \"'+ key +'\" has been selected');
             });
 
-            mmap.events.on('nodeupdate', function( key, value, property ) {
+            mmap.on('nodeupdate', function( key, value, property ) {
                 console.log('The node \"'+ key +'\" has updated its property \"'+ property + '\"');
             });
 
-            mmap.events.on('nodefocus', function( key, value ) {
+            mmap.on('nodefocus', function( key, value ) {
                 console.log('The node \"'+ key +'\" has been focused');
                 nodeName.focus();
             });
 
-            mmap.init('.mmap');
+            mmap.new();
 
         </script>
     </body>

@@ -1,5 +1,9 @@
-html, body, .mmap, .sidebar {
+html, body,mmap, .sidebar {
     height: 100%;
+}
+
+mmap {
+    margin-left: 302px;
 }
 
 body {
@@ -91,8 +95,4 @@ table>tbody>tr>td>input[type="checkbox"]:checked:before {
 
 #node-name:focus {
     background-color: #f1f7f0;
-}
-
-.mmap {
-    margin-left: 302px;
 }

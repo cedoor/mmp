@@ -16,8 +16,8 @@
             'text-color' : prop && prop['text-color'] || '#808080',
             'branch-color' : prop && prop['branch-color'] || s['branch-color'] || '#9fad9c',
             'font-size' : prop && prop['font-size'] || 16,
-            'font-style' : prop && prop['font-style'] || 'normal',
-            'font-weight' : prop && prop['font-weight'] || 'normal',
+            italic : prop && prop.italic || false,
+            bold : prop && prop.bold || false,
             fixed : prop && prop.fixed || true,
             x : prop && prop.x || findXPosition( s, root ),
             y : prop && prop.y || s.y - d3.randomUniform( 60, 100 )(),
@@ -43,18 +43,14 @@
         } else return error('The root node can not be deleted');
     }
 
-    function center() {
-        const root = global.nodes.get('node0');
-        const center = {
-            x : parseInt( global.container.style('width') )/2,
-            y : parseInt( global.container.style('height') )/2
+    function selectedNode() {
+        return {
+            key : global.selected,
+            value : cloneObject( global.nodes.get( global.selected ) )
         }
-        const zoomId = d3.zoomIdentity.translate( center.x - root.x, center.y - root.y );
-        global.svg.main.transition().duration(500).call( zoom.transform, zoomId );
-        events.call('mmcenter');
     }
 
-    function updateNode( k, v ) {
+    function updateNode( k, v, vis ) {
         const sel = global.nodes.get( global.selected ),
         dom = document.getElementById( global.selected ),
         prop = {
@@ -64,13 +60,15 @@
             'branch-color' : updateBranchColor,
             'text-color' : updateTextColor,
             'font-size' : updateFontSize,
-            'font-style' : updateFontStyle,
-            'font-weight' : updateFontWeight
+            'italic' : updateItalicFont,
+            'bold' : updateBoldFont
         },
         upd = prop[k];
         if ( upd !== undefined ) {
-            if ( upd.call( dom, sel, v ) !== false )
+            if ( upd.call( dom, sel, v, vis ) !== false ) {
+                if ( !vis ) saveSnapshot();
                 events.call('nodeupdate', dom, global.selected, sel, k );
+            }
         }
         else return error('"'+ k +'" is not a valid node property');
     }
@@ -108,6 +106,16 @@
         deselectNode();
     }
 
+    function center() {
+        const root = global.nodes.get('node0'), center = {
+            x : parseInt( global.container.style('width') )/2,
+            y : parseInt( global.container.style('height') )/2
+        },
+        zoomId = d3.zoomIdentity.translate( center.x - root.x, center.y - root.y );
+        global.svg.main.transition().duration(500).call( zoom.transform, zoomId );
+        events.call('mmcenter');
+    }
+
     function undo() {
         const h = global.history;
         if( h.index > 0 )
@@ -118,6 +126,18 @@
         const h = global.history;
         if( h.index < h.snapshots.length - 1 )
             loadSnapshot( h.snapshots[ ++h.index ] );
+    }
+
+    function on( e, cb ) {
+        events.on( e, cb );
+    }
+
+    function zoomIn() {
+        setZoom( true );
+    }
+
+    function zoomOut() {
+        setZoom( false );
     }
 
     function data() {

@@ -40,6 +40,13 @@
         dom.setAttribute('transform','translate('+[ x, y ]+')');
     }
 
+    function setZoom( inout ) {
+        const main = global.svg.main;
+        var k = d3.zoomTransform( main.node() ).k;
+        k += inout ? k/5 : -k/5;
+        zoom.scaleTo( main.transition().duration( 100 ), k );
+    }
+
     function dragged( n ) {
         const dy = d3.event.dy, dx = d3.event.dx,
         x = n.value.x += dx, y = n.value.y += dy, parent = n,
@@ -117,6 +124,14 @@
         return css;
     }
 
+    function checkItalicFont( italic ) {
+        return italic ? 'italic' : 'normal';
+    }
+
+    function checkBoldFont( bold ) {
+        return bold ? 'bold' : 'normal';
+    }
+
     function reEncode( data ) {
         data = encodeURIComponent( data );
         data = data.replace( /%([0-9A-F]{2})/g, function( match, p1 ) {
@@ -165,7 +180,7 @@
             y : parseInt( global.container.style('height') )/2,
             'background-color' : '#e6ede6',
             'text-color' : '#828c82', 'font-size' : 20,
-            'font-style' : 'normal', 'font-weight' : 'normal'
+            italic : false, bold : false
         });
     }
 
@@ -177,7 +192,10 @@
 
     function mapClone() {
         return global.nodes.entries().map( function( node ) {
-            return { key : node.key, value : cloneObject( node.value ) };
+            const value = cloneObject( node.value );
+            delete value.width;
+            delete value.height;
+            return { key : node.key, value : value };
         });
     }
 
@@ -194,6 +212,6 @@
             global.nodes.set( node.key, cloneObject( node.value ) );
         });
         redraw();
-        deselectNode();
         setCounter();
+        if ( global.selected !== 'node0' ) deselectNode();
     }

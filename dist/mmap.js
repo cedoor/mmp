@@ -1,6 +1,6 @@
 /**
  * @name mmap
- * @version 0.1.1
+ * @version 0.1.2
  * @author Omar Desogus
  * @license MIT
  */
@@ -10,27 +10,24 @@
     ( factory(( global.mmap = global.mmap || {} )) );
 }( this, ( function ( exports ) { 'use strict';
 
-    const version = "0.1.1";
+    const version = "0.1.2";
 
     /**
      * @name global
      * @description
      * Global dictionary that will contain all the properties of the
      * map shared by all functions within the module.
-     *
      */
     const global = {};
 
     /**
      * @name init
      * @description
-     * ...
      *
-     * @param {string} selector The selector in which to draw
      */
-    function init( selector ) {
+    function init() {
 
-        global.container = d3.select( selector );
+        global.container = d3.select('mmap').style('display', 'block');
         global.history = { index : -1, snapshots : [] };
         global.svg = {};
 
@@ -100,6 +97,13 @@
 
     function setNodeCoords( dom, x, y ) {
         dom.setAttribute('transform','translate('+[ x, y ]+')');
+    }
+
+    function setZoom( inout ) {
+        const main = global.svg.main;
+        var k = d3.zoomTransform( main.node() ).k;
+        k += inout ? k/5 : -k/5;
+        zoom.scaleTo( main.transition().duration( 100 ), k );
     }
 
     function dragged( n ) {
@@ -179,6 +183,14 @@
         return css;
     }
 
+    function checkItalicFont( italic ) {
+        return italic ? 'italic' : 'normal';
+    }
+
+    function checkBoldFont( bold ) {
+        return bold ? 'bold' : 'normal';
+    }
+
     function reEncode( data ) {
         data = encodeURIComponent( data );
         data = data.replace( /%([0-9A-F]{2})/g, function( match, p1 ) {
@@ -227,7 +239,7 @@
             y : parseInt( global.container.style('height') )/2,
             'background-color' : '#e6ede6',
             'text-color' : '#828c82', 'font-size' : 20,
-            'font-style' : 'normal', 'font-weight' : 'normal'
+            italic : false, bold : false
         });
     }
 
@@ -239,7 +251,10 @@
 
     function mapClone() {
         return global.nodes.entries().map( function( node ) {
-            return { key : node.key, value : cloneObject( node.value ) };
+            const value = cloneObject( node.value );
+            delete value.width;
+            delete value.height;
+            return { key : node.key, value : value };
         });
     }
 
@@ -256,8 +271,8 @@
             global.nodes.set( node.key, cloneObject( node.value ) );
         });
         redraw();
-        deselectNode();
         setCounter();
+        if ( global.selected !== 'node0' ) deselectNode();
     }
 
     /****** Update functions  ******/
@@ -289,8 +304,8 @@
             .style('alignment-baseline', 'middle')
             .style('fill', n => n.value['text-color'])
             .style('font-size', n => n.value['font-size'])
-            .style('font-style', n => n.value['font-style'])
-            .style('font-weight', n => n.value['font-weight']);
+            .style('font-style', n => checkItalicFont( n.value.italic ) )
+            .style('font-weight', n => checkBoldFont( n.value.bold ));
 
         node.insert('path', 'text')
             .style('fill', n => n.value['background-color'])
@@ -308,77 +323,63 @@
         branches.exit().remove();
     }
 
-    function updateName( sel, v ) {
+    function updateName( sel, v, vis ) {
         if ( sel.name != v ) {
-            const text = this.childNodes[1];
-            const bg = this.childNodes[0];
-            sel.name = text.innerHTML = v;
-            sel.width = text.textLength.baseVal.value + 45;
-            d3.select( bg ).attr('d', drawBackgroundShape );
-            saveSnapshot();
+            this.childNodes[1].innerHTML = v;
+            d3.select( this.childNodes[0] ).attr('d', drawBackgroundShape );
+            d3.selectAll('.branch').attr('d', drawBranch );
+            if ( !vis ) sel.name = v;
         } else return false;
     }
 
-    function updateBackgroundColor( sel, v ) {
+    function updateBackgroundColor( sel, v, vis ) {
         if ( sel['background-color'] !== v ) {
             const bg = this.childNodes[0];
-            bg.style.setProperty('fill', sel['background-color'] = v );
-            bg.style.setProperty('stroke', d3.color( v ).darker( .5 ) );
-            saveSnapshot();
+            bg.style['fill'] = v;
+            if ( bg.style['stroke'] !== 'none' )
+                bg.style['stroke'] = d3.color( v ).darker( .5 );
+            if ( !vis ) sel['background-color'] = v;
         } else return false;
     }
 
-    function updateTextColor( sel, v ) {
+    function updateTextColor( sel, v, vis ) {
         if ( sel['text-color'] !== v ) {
-            const text = this.childNodes[1];
-            text.style.setProperty('fill', sel['text-color'] = v );
-            saveSnapshot();
+            this.childNodes[1].style['fill'] = v;
+            if ( !vis ) sel['text-color'] = v;
         } else return false;
     }
 
-    function updateFontSize( sel, v ) {
-        if ( sel['font-size'] != v ) {
-            const text = this.childNodes[1];
-            const bg = this.childNodes[0];
-            text.style.setProperty('font-size', sel['font-size'] = v );
-            sel.width = text.textLength.baseVal.value + 45;
-            sel.height = sel['font-size']*11/10 + 30;
-            d3.select( bg ).attr('d', drawBackgroundShape );
-            d3.selectAll('.branch').attr('d', drawBranch );
-            saveSnapshot();
-        } else return false;
-    }
-
-    function updateFontStyle( sel ) {
-        const text = this.childNodes[1];
-        sel['font-style'] = sel['font-style'] === 'normal' ? 'italic' : 'normal';
-        text.style.setProperty('font-style', sel['font-style'] );
-        saveSnapshot();
-    }
-
-    function updateFontWeight( sel ) {
-        const text = this.childNodes[1];
-        sel['font-weight'] = sel['font-weight'] === 'normal' ? 'bold' : 'normal';
-        text.style.setProperty('font-weight', sel['font-weight'] );
-        saveSnapshot();
-    }
-
-    function updateBranchColor( sel, v ) {
+    function updateBranchColor( sel, v, vis ) {
         if( global.selected !== 'node0' ) {
             if ( sel['branch-color'] !== v ) {
                 const branch = document.getElementById('branchOf'+ global.selected );
-                branch.style.setProperty('fill', sel['branch-color'] = v );
-                branch.style.setProperty('stroke', sel['branch-color'] = v );
-                saveSnapshot();
+                branch.style['fill'] = branch.style['stroke'] = v;
+                if ( !vis ) sel['branch-color'] = v;
             } else return false;
         } else return error('The root node has no branches');
     }
 
+    function updateFontSize( sel, v, vis ) {
+        if ( sel['font-size'] != v ) {
+            this.childNodes[1].style['font-size'] = v;
+            d3.select( this.childNodes[0] ).attr('d', drawBackgroundShape );
+            d3.selectAll('.branch').attr('d', drawBranch );
+            if ( !vis ) sel['font-size'] = v;
+        } else return false;
+    }
+
+    function updateItalicFont( sel ) {
+        const style = checkItalicFont( sel.italic = !sel.italic );
+        this.childNodes[1].style['font-style'] = style;
+    }
+
+    function updateBoldFont( sel ) {
+        const style = checkBoldFont( sel.bold = !sel.bold );
+        this.childNodes[1].style['font-weight'] = style;
+    }
+
     function updateFixStatus( sel ) {
-        if ( global.selected !== 'node0' ) {
-            sel.fixed = !sel.fixed;
-            saveSnapshot();
-        }
+        if ( global.selected !== 'node0' ) sel.fixed = !sel.fixed;
         else return error('The root node can not be fixed');
     }
 
@@ -440,10 +441,12 @@
             map[e.keyCode] = e.type === 'keydown';
             if ( sc('ctrl','maiusc','z') ) return !!repeat();
             else if ( sc('ctrl','z') ) return !!undo();
-            else if ( sc('ctrl','maiusc','up') ) moveNode('up');
-            else if ( sc('ctrl','maiusc','down') ) moveNode('down');
-            else if ( sc('ctrl','maiusc','left') ) moveNode('left');
-            else if ( sc('ctrl','maiusc','right') ) moveNode('right');
+            else if ( sc('alt','maiusc','up') ) moveNode('up');
+            else if ( sc('alt','maiusc','down') ) moveNode('down');
+            else if ( sc('alt','maiusc','left') ) moveNode('left');
+            else if ( sc('alt','maiusc','right') ) moveNode('right');
+            else if ( sc('alt','maiusc','+') ) zoomIn();
+            else if ( sc('alt','maiusc','-') ) zoomOut();
             else if ( sc('alt','up') ) return !!moveSelection('up');
             else if ( sc('alt','down') ) return !!moveSelection('down');
             else if ( sc('alt','right') ) return !!moveSelection('right');
@@ -549,8 +552,8 @@
             'text-color' : prop && prop['text-color'] || '#808080',
             'branch-color' : prop && prop['branch-color'] || s['branch-color'] || '#9fad9c',
             'font-size' : prop && prop['font-size'] || 16,
-            'font-style' : prop && prop['font-style'] || 'normal',
-            'font-weight' : prop && prop['font-weight'] || 'normal',
+            italic : prop && prop.italic || false,
+            bold : prop && prop.bold || false,
             fixed : prop && prop.fixed || true,
             x : prop && prop.x || findXPosition( s, root ),
             y : prop && prop.y || s.y - d3.randomUniform( 60, 100 )(),
@@ -576,18 +579,14 @@
         } else return error('The root node can not be deleted');
     }
 
-    function center() {
-        const root = global.nodes.get('node0');
-        const center = {
-            x : parseInt( global.container.style('width') )/2,
-            y : parseInt( global.container.style('height') )/2
+    function selectedNode() {
+        return {
+            key : global.selected,
+            value : cloneObject( global.nodes.get( global.selected ) )
         }
-        const zoomId = d3.zoomIdentity.translate( center.x - root.x, center.y - root.y );
-        global.svg.main.transition().duration(500).call( zoom.transform, zoomId );
-        events.call('mmcenter');
     }
 
-    function updateNode( k, v ) {
+    function updateNode( k, v, vis ) {
         const sel = global.nodes.get( global.selected ),
         dom = document.getElementById( global.selected ),
         prop = {
@@ -597,13 +596,15 @@
             'branch-color' : updateBranchColor,
             'text-color' : updateTextColor,
             'font-size' : updateFontSize,
-            'font-style' : updateFontStyle,
-            'font-weight' : updateFontWeight
+            'italic' : updateItalicFont,
+            'bold' : updateBoldFont
         },
         upd = prop[k];
         if ( upd !== undefined ) {
-            if ( upd.call( dom, sel, v ) !== false )
+            if ( upd.call( dom, sel, v, vis ) !== false ) {
+                if ( !vis ) saveSnapshot();
                 events.call('nodeupdate', dom, global.selected, sel, k );
+            }
         }
         else return error('"'+ k +'" is not a valid node property');
     }
@@ -641,6 +642,16 @@
         deselectNode();
     }
 
+    function center() {
+        const root = global.nodes.get('node0'), center = {
+            x : parseInt( global.container.style('width') )/2,
+            y : parseInt( global.container.style('height') )/2
+        },
+        zoomId = d3.zoomIdentity.translate( center.x - root.x, center.y - root.y );
+        global.svg.main.transition().duration(500).call( zoom.transform, zoomId );
+        events.call('mmcenter');
+    }
+
     function undo() {
         const h = global.history;
         if( h.index > 0 )
@@ -651,6 +662,18 @@
         const h = global.history;
         if( h.index < h.snapshots.length - 1 )
             loadSnapshot( h.snapshots[ ++h.index ] );
+    }
+
+    function on( e, cb ) {
+        events.on( e, cb );
+    }
+
+    function zoomIn() {
+        setZoom( true );
+    }
+
+    function zoomOut() {
+        setZoom( false );
     }
 
     function data() {
@@ -669,21 +692,26 @@
      *
      */
     exports.version = version;
-    exports.init = init;
     exports.center = center;
     exports.undo = undo;
     exports.repeat = repeat;
+    exports.zoomIn = zoomIn;
+    exports.zoomOut = zoomOut;
     exports.new = newMap;
-    exports.events = events;
+    exports.on = on;
     exports.png = png;
     exports.data = data;
     exports.load = load;
     exports.node = {
         update : updateNode,
         remove : removeNode,
-        add : addNode
+        add : addNode,
+        selected : selectedNode
     };
 
     Object.defineProperty( exports, '__esModule', { value: true } );
+
+    // Initialize the mind map
+    init();
 
 })));

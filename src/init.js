@@ -3,20 +3,17 @@
      * @description
      * Global dictionary that will contain all the properties of the
      * map shared by all functions within the module.
-     *
      */
     const global = {};
 
     /**
      * @name init
      * @description
-     * ...
      *
-     * @param {string} selector The selector in which to draw
      */
-    function init( selector ) {
+    function init() {
 
-        global.container = d3.select( selector );
+        global.container = d3.select('mmap').style('display', 'block');
         global.history = { index : -1, snapshots : [] };
         global.svg = {};
 
