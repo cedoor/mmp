@@ -33,7 +33,7 @@
         const n = node.value;
         const path = d3.path();
         const x = ( n.width = this.nextSibling.getBBox().width + 45 )/2;
-        const y = ( n.height = n['font-size']*11/10 + 30 )/2;
+        const y = ( n.height = this.nextSibling.getBBox().height + 30 )/2;
         const k = n.k = n.k || d3.randomUniform( -20, 20 )();
 
         path.moveTo( -x, k/3 );
