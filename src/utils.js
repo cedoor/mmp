@@ -213,5 +213,5 @@
         });
         redraw();
         setCounter();
-        if ( global.selected !== 'node0' ) deselectNode();
+        deselectNode();
     }
