@@ -1,6 +1,6 @@
 /**
  * @name mmap
- * @version 0.1.2
+ * @version 0.1.3
  * @author Omar Desogus
  * @license MIT
  */
@@ -10,7 +10,7 @@
     ( factory(( global.mmap = global.mmap || {} )) );
 }( this, ( function ( exports ) { 'use strict';
 
-    const version = "0.1.2";
+    const version = "0.1.3";
 
     /**
      * @name global
