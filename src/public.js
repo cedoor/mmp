@@ -73,7 +73,16 @@
         else return error('"'+ k +'" is not a valid node property');
     }
 
-    function png( name, background ) {
+    /**
+     * @name image
+     * @param {function} cb callback
+     * @param {string} type type of image, default png
+     * @param {string} background color of map background
+     * @description
+     * Get a DOMString containing the data URI of map image and
+     * pass it to callback function.
+    */
+    function image( cb, type, background ) {
         const image = new Image();
         image.src = getDataURI();
         image.onload = function() {
@@ -89,9 +98,7 @@
             context.fillStyle = background || '#ffffff';
             context.fillRect(0, 0, canvas.width, canvas.height);
 
-            a.download = name;
-            a.href = canvas.toDataURL('image/png');
-            a.click();
+            cb( canvas.toDataURL( type ) );
         }
     }
 

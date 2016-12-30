@@ -11,7 +11,7 @@
     exports.zoomOut = zoomOut;
     exports.new = newMap;
     exports.on = on;
-    exports.png = png;
+    exports.image = image;
     exports.data = data;
     exports.load = load;
     exports.node = {

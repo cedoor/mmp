@@ -50,7 +50,7 @@
                 </tr>
                 <tr>
                     <td>Get image :</td>
-                    <td><img onclick="mmap.png('mmap')" src="img/img.svg"></td>
+                    <td><img id="save-img" src="img/img.svg"></td>
                 </tr>
                 <tr>
                     <td>Save map :</td>
@@ -102,17 +102,19 @@
         <script>
 
             // DOM elements
-            const nodeName = document.getElementById('node-name');
-            const fontSize = document.getElementById('font-size');
-            const fixedNode = document.getElementById('fixed-node');
-            const italicFont = document.getElementById('italic-font');
-            const boldFont = document.getElementById('bold-font');
-            const saveMap = document.getElementById('save-map');
-            const uploadMap = document.getElementById('upload-map');
-            const upload = document.getElementById('upload');
-            const backgroundColor = document.getElementsByClassName('color-btn')[0];
-            const branchColor = document.getElementsByClassName('color-btn')[1];
-            const textColor = document.getElementsByClassName('color-btn')[2];
+            const
+            nodeName = document.getElementById('node-name'),
+            fontSize = document.getElementById('font-size'),
+            fixedNode = document.getElementById('fixed-node'),
+            italicFont = document.getElementById('italic-font'),
+            boldFont = document.getElementById('bold-font'),
+            saveMap = document.getElementById('save-map'),
+            saveImg = document.getElementById('save-img'),
+            uploadMap = document.getElementById('upload-map'),
+            upload = document.getElementById('upload'),
+            backgroundColor = document.getElementsByClassName('color-btn')[0],
+            branchColor = document.getElementsByClassName('color-btn')[1],
+            textColor = document.getElementsByClassName('color-btn')[2];
 
             fontSize.oninput = function() {
                 mmap.node.update('font-size', fontSize.value, true );
@@ -158,6 +160,15 @@
                     var data = JSON.parse( event.target.result );
                     mmap.load( data );
                 };
+            }
+
+            saveImg.onclick = function() {
+                mmap.image( function( url ) {
+                    const a = document.createElement('a');
+                    a.download = 'mmap';
+                    a.href = url;
+                    a.click();
+                });
             }
 
             // mmap events
