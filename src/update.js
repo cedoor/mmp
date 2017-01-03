@@ -47,7 +47,7 @@
     }
 
     function updateName( sel, v, vis ) {
-        if ( sel.name != v ) {
+        if ( sel.name != v || vis ) {
             this.childNodes[1].innerHTML = v;
             d3.select( this.childNodes[0] ).attr('d', drawBackgroundShape );
             d3.selectAll('.branch').attr('d', drawBranch );
@@ -56,7 +56,7 @@
     }
 
     function updateBackgroundColor( sel, v, vis ) {
-        if ( sel['background-color'] !== v ) {
+        if ( sel['background-color'] !== v || vis ) {
             const bg = this.childNodes[0];
             bg.style['fill'] = v;
             if ( bg.style['stroke'] !== 'none' )
@@ -66,7 +66,7 @@
     }
 
     function updateTextColor( sel, v, vis ) {
-        if ( sel['text-color'] !== v ) {
+        if ( sel['text-color'] !== v || vis ) {
             this.childNodes[1].style['fill'] = v;
             if ( !vis ) sel['text-color'] = v;
         } else return false;
@@ -74,7 +74,7 @@
 
     function updateBranchColor( sel, v, vis ) {
         if( global.selected !== 'node0' ) {
-            if ( sel['branch-color'] !== v ) {
+            if ( sel['branch-color'] !== v || vis ) {
                 const branch = document.getElementById('branchOf'+ global.selected );
                 branch.style['fill'] = branch.style['stroke'] = v;
                 if ( !vis ) sel['branch-color'] = v;
@@ -83,7 +83,7 @@
     }
 
     function updateFontSize( sel, v, vis ) {
-        if ( sel['font-size'] != v ) {
+        if ( sel['font-size'] != v || vis ) {
             this.childNodes[1].style['font-size'] = v;
             d3.select( this.childNodes[0] ).attr('d', drawBackgroundShape );
             d3.selectAll('.branch').attr('d', drawBranch );
