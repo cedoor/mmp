@@ -162,22 +162,6 @@
         return document.getElementById( key );
     }
 
-    function selectNode( key ) {
-        if( global.selected !== key || global.selected === 'node0' ) {
-            d3.selectAll('.node > path').style('stroke', 'none');
-            global.selected = key;
-            const node = d3.select('#'+ key ), bg = node.select('path');
-            bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
-            events.call('nodeselect', node.node(), key, global.nodes.get( key ));
-        }
-    }
-
-    function focusNode() {
-        const node = d3.select('#'+ global.selected ), bg = node.select('path');
-        bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
-        node.node().dispatchEvent( new MouseEvent('dblclick') );
-    }
-
     function deselectNode() {
         selectNode('node0');
         d3.select('#node0 > path').style('stroke', 'none');
@@ -616,6 +600,22 @@
         } else return error('The root node can not be deleted');
     }
 
+    function selectNode( key ) {
+        if( global.selected !== key || global.selected === 'node0' ) {
+            d3.selectAll('.node > path').style('stroke', 'none');
+            global.selected = key;
+            const node = d3.select('#'+ key ), bg = node.select('path');
+            bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
+            events.call('nodeselect', node.node(), key, global.nodes.get( key ));
+        }
+    }
+
+    function focusNode() {
+        const node = d3.select('#'+ global.selected ), bg = node.select('path');
+        bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
+        node.node().dispatchEvent( new MouseEvent('dblclick') );
+    }
+
     function selectedNode() {
         return {
             key : global.selected,
@@ -748,8 +748,10 @@
     exports.load = load;
     exports.node = {
         update : updateNode,
-        remove : removeNode,
         add : addChildNode,
+        remove : removeNode,
+        select : selectNode,
+        focus : focusNode,
         selected : selectedNode
     };
 

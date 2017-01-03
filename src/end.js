@@ -17,8 +17,10 @@
     exports.load = load;
     exports.node = {
         update : updateNode,
-        remove : removeNode,
         add : addChildNode,
+        remove : removeNode,
+        select : selectNode,
+        focus : focusNode,
         selected : selectedNode
     };
 
