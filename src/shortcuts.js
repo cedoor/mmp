@@ -1,6 +1,6 @@
     /****** Shortcuts functions  ******/
 
-    function setShortcuts( keys, cb ) {
+    function setShortcuts() {
         const map = {}, sc = function() {
             return shortcut( arguments, map );
         };
@@ -21,7 +21,7 @@
             else if ( sc('alt','i') ) png('mmap');
             else if ( sc('alt','c') ) center();
             else if ( sc('alt','n') ) newMap();
-            else if ( sc('alt','+') ) addNode();
+            else if ( sc('alt','+') ) addChildNode();
             else if ( sc('alt','-') ) removeNode();
             else if ( sc('alt','f') ) return !!focusNode();
             else if ( sc('esc') ) deselectNode();

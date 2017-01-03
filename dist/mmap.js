@@ -25,7 +25,32 @@
      * @description
      *
      */
-    function init() {
+    function init( opt ) {
+
+        // Default options
+        global.options = {
+            'center-onresize' : false,
+            'shortcuts' : true,
+            'node' : {
+                'name' : 'Node',
+                'background-color' : '#f9f9f9',
+                'text-color' : '#808080',
+                'branch-color' : '#9fad9c',
+                'font-size' : 16,
+                'italic' : false,
+                'bold' : false,
+                'fixed' : true
+            },
+            'root-node' : {
+                'name' : 'Root node',
+                'background-color' : '#e6ede6',
+                'text-color' : '#828c82',
+                'font-size' : 20,
+                'italic' : false,
+                'bold' : false,
+                'fixed' : false
+            }
+        };
 
         global.container = d3.select('mmap').style('display', 'block');
         global.history = { index : -1, snapshots : [] };
@@ -47,14 +72,18 @@
         global.nodes = d3.map();
         global.counter = 0;
 
-        createRootNode();
-        update();
-        saveSnapshot();
+        // If opt is correct update the default options
+        if ( opt !== undefined )
+            opt.constructor === Object
+                ? overwriteProperties( global.options, opt )
+                : error('mmap options invalid');
 
-        setShortcuts();
+        if ( global.options['center-onresize'] === true ) onresize = center;
+        if ( global.options['shortcuts'] === true ) setShortcuts();
+
         events.call('mmcreate');
-        window.onresize = center;
-        deselectNode();
+
+        createRootNode();
     }
 
     /****** Util functions ******/
@@ -129,6 +158,10 @@
         });
     }
 
+    function getNodeDom( key ) {
+        return document.getElementById( key );
+    }
+
     function selectNode( key ) {
         if( global.selected !== key || global.selected === 'node0' ) {
             d3.selectAll('.node > path').style('stroke', 'none');
@@ -191,6 +224,32 @@
         return bold ? 'bold' : 'normal';
     }
 
+    function createRootNode() {
+        const value = Object.assign( global.options['root-node'], {
+            'x' : parseInt( global.container.style('width') )/2,
+            'y' : parseInt( global.container.style('height') )/2
+        });
+        addNode('node' + global.counter, value );
+        selectNode('node0');
+    }
+
+    function overwriteProperties( target, source ) {
+        for ( let prop in target ) {
+            var t = target[ prop ], s = source[ prop ];
+            if ( s && s.constructor === t.constructor ) {
+                if ( s.constructor === Object ) overwriteProperties( t, s )
+                else target[ prop ] = s;
+            }
+        }
+    }
+
+    function addNode( key, value ) {
+        global.nodes.set( key, value );
+        update();
+        events.call('nodecreate', getNodeDom( key ), key, value );
+        saveSnapshot();
+    }
+
     function reEncode( data ) {
         data = encodeURIComponent( data );
         data = data.replace( /%([0-9A-F]{2})/g, function( match, p1 ) {
@@ -230,17 +289,6 @@
 
         const uri = window.btoa(reEncode( svg.outerHTML ));
         return 'data:image/svg+xml;base64,' + uri;
-    }
-
-    function createRootNode() {
-        global.nodes.set('node' + global.counter, {
-            name : 'Root node', fixed : false,
-            x : parseInt( global.container.style('width') )/2,
-            y : parseInt( global.container.style('height') )/2,
-            'background-color' : '#e6ede6',
-            'text-color' : '#828c82', 'font-size' : 20,
-            italic : false, bold : false
-        });
     }
 
     function setCounter() {
@@ -324,7 +372,7 @@
     }
 
     function updateName( sel, v, vis ) {
-        if ( sel.name != v ) {
+        if ( sel.name != v || vis ) {
             this.childNodes[1].innerHTML = v;
             d3.select( this.childNodes[0] ).attr('d', drawBackgroundShape );
             d3.selectAll('.branch').attr('d', drawBranch );
@@ -333,7 +381,7 @@
     }
 
     function updateBackgroundColor( sel, v, vis ) {
-        if ( sel['background-color'] !== v ) {
+        if ( sel['background-color'] !== v || vis ) {
             const bg = this.childNodes[0];
             bg.style['fill'] = v;
             if ( bg.style['stroke'] !== 'none' )
@@ -343,7 +391,7 @@
     }
 
     function updateTextColor( sel, v, vis ) {
-        if ( sel['text-color'] !== v ) {
+        if ( sel['text-color'] !== v || vis ) {
             this.childNodes[1].style['fill'] = v;
             if ( !vis ) sel['text-color'] = v;
         } else return false;
@@ -351,7 +399,7 @@
 
     function updateBranchColor( sel, v, vis ) {
         if( global.selected !== 'node0' ) {
-            if ( sel['branch-color'] !== v ) {
+            if ( sel['branch-color'] !== v || vis ) {
                 const branch = document.getElementById('branchOf'+ global.selected );
                 branch.style['fill'] = branch.style['stroke'] = v;
                 if ( !vis ) sel['branch-color'] = v;
@@ -360,7 +408,7 @@
     }
 
     function updateFontSize( sel, v, vis ) {
-        if ( sel['font-size'] != v ) {
+        if ( sel['font-size'] != v || vis ) {
             this.childNodes[1].style['font-size'] = v;
             d3.select( this.childNodes[0] ).attr('d', drawBackgroundShape );
             d3.selectAll('.branch').attr('d', drawBranch );
@@ -433,7 +481,7 @@
 
     /****** Shortcuts functions  ******/
 
-    function setShortcuts( keys, cb ) {
+    function setShortcuts() {
         const map = {}, sc = function() {
             return shortcut( arguments, map );
         };
@@ -454,7 +502,7 @@
             else if ( sc('alt','i') ) png('mmap');
             else if ( sc('alt','c') ) center();
             else if ( sc('alt','n') ) newMap();
-            else if ( sc('alt','+') ) addNode();
+            else if ( sc('alt','+') ) addChildNode();
             else if ( sc('alt','-') ) removeNode();
             else if ( sc('alt','f') ) return !!focusNode();
             else if ( sc('esc') ) deselectNode();
@@ -542,27 +590,16 @@
         'nodecreate', 'noderemove'
     );
 
-    function addNode( prop ) {
+    function addChildNode( prop ) {
         const s = global.nodes.get( global.selected ),
         root = global.nodes.get('node0'),
         key = 'node' + ( ++global.counter ),
-        value = {
-            name : prop && prop.name || 'Node',
-            'background-color' : prop && prop['background-color'] || '#f9f9f9',
-            'text-color' : prop && prop['text-color'] || '#808080',
-            'branch-color' : prop && prop['branch-color'] || s['branch-color'] || '#9fad9c',
-            'font-size' : prop && prop['font-size'] || 16,
-            italic : prop && prop.italic || false,
-            bold : prop && prop.bold || false,
-            fixed : prop && prop.fixed || true,
-            x : prop && prop.x || findXPosition( s, root ),
-            y : prop && prop.y || s.y - d3.randomUniform( 60, 100 )(),
-            parent : global.selected
-        };
-        global.nodes.set( key, value );
-        update();
-        events.call('nodecreate');
-        saveSnapshot();
+        value = Object.assign( global.options['node'], {
+            'x' : prop && prop.x || findXPosition( s, root ),
+            'y' : prop && prop.y || s.y - d3.randomUniform( 60, 100 )(),
+            'parent' : global.selected
+        });
+        addNode( key, value );
     }
 
     function removeNode() {
@@ -646,7 +683,6 @@
         center();
         saveSnapshot();
         events.call('mmcreate');
-        deselectNode();
     }
 
     function center() {
@@ -699,6 +735,7 @@
      *
      */
     exports.version = version;
+    exports.init = init;
     exports.center = center;
     exports.undo = undo;
     exports.repeat = repeat;
@@ -712,13 +749,10 @@
     exports.node = {
         update : updateNode,
         remove : removeNode,
-        add : addNode,
+        add : addChildNode,
         selected : selectedNode
     };
 
     Object.defineProperty( exports, '__esModule', { value: true } );
-
-    // Initialize the mind map
-    init();
 
 })));

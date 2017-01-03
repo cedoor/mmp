@@ -11,7 +11,32 @@
      * @description
      *
      */
-    function init() {
+    function init( opt ) {
+
+        // Default options
+        global.options = {
+            'center-onresize' : false,
+            'shortcuts' : true,
+            'node' : {
+                'name' : 'Node',
+                'background-color' : '#f9f9f9',
+                'text-color' : '#808080',
+                'branch-color' : '#9fad9c',
+                'font-size' : 16,
+                'italic' : false,
+                'bold' : false,
+                'fixed' : true
+            },
+            'root-node' : {
+                'name' : 'Root node',
+                'background-color' : '#e6ede6',
+                'text-color' : '#828c82',
+                'font-size' : 20,
+                'italic' : false,
+                'bold' : false,
+                'fixed' : false
+            }
+        };
 
         global.container = d3.select('mmap').style('display', 'block');
         global.history = { index : -1, snapshots : [] };
@@ -33,12 +58,16 @@
         global.nodes = d3.map();
         global.counter = 0;
 
-        createRootNode();
-        update();
-        saveSnapshot();
+        // If opt is correct update the default options
+        if ( opt !== undefined )
+            opt.constructor === Object
+                ? overwriteProperties( global.options, opt )
+                : error('mmap options invalid');
 
-        setShortcuts();
+        if ( global.options['center-onresize'] === true ) onresize = center;
+        if ( global.options['shortcuts'] === true ) setShortcuts();
+
         events.call('mmcreate');
-        window.onresize = center;
-        deselectNode();
+
+        createRootNode();
     }

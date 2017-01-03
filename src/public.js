@@ -6,27 +6,16 @@
         'nodecreate', 'noderemove'
     );
 
-    function addNode( prop ) {
+    function addChildNode( prop ) {
         const s = global.nodes.get( global.selected ),
         root = global.nodes.get('node0'),
         key = 'node' + ( ++global.counter ),
-        value = {
-            name : prop && prop.name || 'Node',
-            'background-color' : prop && prop['background-color'] || '#f9f9f9',
-            'text-color' : prop && prop['text-color'] || '#808080',
-            'branch-color' : prop && prop['branch-color'] || s['branch-color'] || '#9fad9c',
-            'font-size' : prop && prop['font-size'] || 16,
-            italic : prop && prop.italic || false,
-            bold : prop && prop.bold || false,
-            fixed : prop && prop.fixed || true,
-            x : prop && prop.x || findXPosition( s, root ),
-            y : prop && prop.y || s.y - d3.randomUniform( 60, 100 )(),
-            parent : global.selected
-        };
-        global.nodes.set( key, value );
-        update();
-        events.call('nodecreate');
-        saveSnapshot();
+        value = Object.assign( global.options['node'], {
+            'x' : prop && prop.x || findXPosition( s, root ),
+            'y' : prop && prop.y || s.y - d3.randomUniform( 60, 100 )(),
+            'parent' : global.selected
+        });
+        addNode( key, value );
     }
 
     function removeNode() {
@@ -110,7 +99,6 @@
         center();
         saveSnapshot();
         events.call('mmcreate');
-        deselectNode();
     }
 
     function center() {

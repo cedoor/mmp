@@ -4,6 +4,7 @@
      *
      */
     exports.version = version;
+    exports.init = init;
     exports.center = center;
     exports.undo = undo;
     exports.repeat = repeat;
@@ -17,13 +18,10 @@
     exports.node = {
         update : updateNode,
         remove : removeNode,
-        add : addNode,
+        add : addChildNode,
         selected : selectedNode
     };
 
     Object.defineProperty( exports, '__esModule', { value: true } );
-
-    // Initialize the mind map
-    init();
 
 })));

@@ -70,6 +70,10 @@
         });
     }
 
+    function getNodeDom( key ) {
+        return document.getElementById( key );
+    }
+
     function selectNode( key ) {
         if( global.selected !== key || global.selected === 'node0' ) {
             d3.selectAll('.node > path').style('stroke', 'none');
@@ -132,6 +136,32 @@
         return bold ? 'bold' : 'normal';
     }
 
+    function createRootNode() {
+        const value = Object.assign( global.options['root-node'], {
+            'x' : parseInt( global.container.style('width') )/2,
+            'y' : parseInt( global.container.style('height') )/2
+        });
+        addNode('node' + global.counter, value );
+        selectNode('node0');
+    }
+
+    function overwriteProperties( target, source ) {
+        for ( let prop in target ) {
+            var t = target[ prop ], s = source[ prop ];
+            if ( s && s.constructor === t.constructor ) {
+                if ( s.constructor === Object ) overwriteProperties( t, s )
+                else target[ prop ] = s;
+            }
+        }
+    }
+
+    function addNode( key, value ) {
+        global.nodes.set( key, value );
+        update();
+        events.call('nodecreate', getNodeDom( key ), key, value );
+        saveSnapshot();
+    }
+
     function reEncode( data ) {
         data = encodeURIComponent( data );
         data = data.replace( /%([0-9A-F]{2})/g, function( match, p1 ) {
@@ -171,17 +201,6 @@
 
         const uri = window.btoa(reEncode( svg.outerHTML ));
         return 'data:image/svg+xml;base64,' + uri;
-    }
-
-    function createRootNode() {
-        global.nodes.set('node' + global.counter, {
-            name : 'Root node', fixed : false,
-            x : parseInt( global.container.style('width') )/2,
-            y : parseInt( global.container.style('height') )/2,
-            'background-color' : '#e6ede6',
-            'text-color' : '#828c82', 'font-size' : 20,
-            italic : false, bold : false
-        });
     }
 
     function setCounter() {
