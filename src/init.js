@@ -11,7 +11,7 @@
      * @description
      *
      */
-    function init( opt ) {
+    function init( selector, options ) {
 
         // Default options
         global.options = {
@@ -38,7 +38,7 @@
             }
         };
 
-        global.container = d3.select('mmap').style('display', 'block');
+        global.container = d3.select( selector );
         global.history = { index : -1, snapshots : [] };
         global.svg = {};
 
@@ -52,16 +52,16 @@
             .attr("height", '100%')
             .attr("fill", "white")
             .attr("pointer-events", "all")
-            .on('click', deselectNode );
+            .on('click', clean );
 
         global.svg.mmap = global.svg.main.append('g');
         global.nodes = d3.map();
         global.counter = 0;
 
         // If opt is correct update the default options
-        if ( opt !== undefined )
-            opt.constructor === Object
-                ? overwriteProperties( global.options, opt )
+        if ( options !== undefined )
+            options.constructor === Object
+                ? overwriteProperties( global.options, options )
                 : error('mmap options invalid');
 
         if ( global.options['center-onresize'] === true ) onresize = center;

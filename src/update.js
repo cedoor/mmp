@@ -17,8 +17,8 @@
             .attr('transform', n => 'translate(' + n.value.x + ',' + n.value.y + ')')
             .call( drag )
             .on('dblclick', function( n ) {
-                events.call('nodefocus', this, n.key, n.value );
                 d3.event.stopPropagation();
+                events.call('nodedblclick', this, n.key, n.value );
             });
 
         node.append('text').text( n => n.value.name )
@@ -59,7 +59,7 @@
         if ( sel['background-color'] !== v || vis ) {
             const bg = this.childNodes[0];
             bg.style['fill'] = v;
-            if ( bg.style['stroke'] !== 'none' )
+            if ( bg.style['stroke'] !== '' )
                 bg.style['stroke'] = d3.color( v ).darker( .5 );
             if ( !vis ) sel['background-color'] = v;
         } else return false;

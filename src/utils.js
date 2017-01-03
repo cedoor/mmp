@@ -70,13 +70,23 @@
         });
     }
 
-    function getNodeDom( key ) {
-        return document.getElementById( key );
+    function $( s ) {
+        const k = s.substring( 0, 1 ), n = s.substring( 1 );
+        return k === '.' ? document.getElementsByClassName( n )
+            : k === '#' ? document.getElementById( n )
+            : s.includes('node') ? document.getElementById( s )
+            : document.getElementsByTagName( s );
     }
 
-    function deselectNode() {
+    function nodeStroke( node, value ) {
+        const bg = $( node ).childNodes[0];
+        if ( value !== 'string' ) return bg.style['stroke'] = value;
+        else return bg.style['stroke'];
+    }
+
+    function clean() {
         selectNode('node0');
-        d3.select('#node0 > path').style('stroke', 'none');
+        nodeStroke('node0', '');
     }
 
     function getNodeLevel( n ) {
@@ -121,12 +131,12 @@
     }
 
     function createRootNode() {
-        const value = Object.assign( global.options['root-node'], {
+        const value = Object.assign( {}, global.options['root-node'], {
             'x' : parseInt( global.container.style('width') )/2,
             'y' : parseInt( global.container.style('height') )/2
         });
         addNode('node' + global.counter, value );
-        selectNode('node0');
+        clean();
     }
 
     function overwriteProperties( target, source ) {
@@ -142,7 +152,7 @@
     function addNode( key, value ) {
         global.nodes.set( key, value );
         update();
-        events.call('nodecreate', getNodeDom( key ), key, value );
+        events.call('nodecreate', $( key ), key, value );
         saveSnapshot();
     }
 
@@ -216,5 +226,5 @@
         });
         redraw();
         setCounter();
-        deselectNode();
+        clean();
     }

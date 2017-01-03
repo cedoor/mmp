@@ -23,8 +23,7 @@
             else if ( sc('alt','n') ) newMap();
             else if ( sc('alt','+') ) addChildNode();
             else if ( sc('alt','-') ) removeNode();
-            else if ( sc('alt','f') ) return !!focusNode();
-            else if ( sc('esc') ) deselectNode();
+            else if ( sc('esc') ) clean();
         }
     }
 

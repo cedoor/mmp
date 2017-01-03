@@ -19,9 +19,7 @@
         update : updateNode,
         add : addChildNode,
         remove : removeNode,
-        select : selectNode,
-        focus : focusNode,
-        selected : selectedNode
+        select : selectNode
     };
 
     Object.defineProperty( exports, '__esModule', { value: true } );

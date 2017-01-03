@@ -1,7 +1,7 @@
     /****** Public functions ******/
 
     const events = d3.dispatch(
-        'mmcreate', 'mmcenter', 'nodefocus',
+        'mmcreate', 'mmcenter', 'nodedblclick',
         'nodeselect', 'nodeupdate',
         'nodecreate', 'noderemove'
     );
@@ -10,7 +10,7 @@
         const s = global.nodes.get( global.selected ),
         root = global.nodes.get('node0'),
         key = 'node' + ( ++global.counter ),
-        value = Object.assign( global.options['node'], {
+        value = Object.assign( {}, global.options['node'], {
             'x' : prop && prop.x || findXPosition( s, root ),
             'y' : prop && prop.y || s.y - d3.randomUniform( 60, 100 )(),
             'parent' : global.selected
@@ -33,25 +33,22 @@
     }
 
     function selectNode( key ) {
-        if( global.selected !== key || global.selected === 'node0' ) {
-            d3.selectAll('.node > path').style('stroke', 'none');
-            global.selected = key;
-            const node = d3.select('#'+ key ), bg = node.select('path');
-            bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
-            events.call('nodeselect', node.node(), key, global.nodes.get( key ));
-        }
-    }
-
-    function focusNode() {
-        const node = d3.select('#'+ global.selected ), bg = node.select('path');
-        bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
-        node.node().dispatchEvent( new MouseEvent('dblclick') );
-    }
-
-    function selectedNode() {
-        return {
-            key : global.selected,
-            value : cloneObject( global.nodes.get( global.selected ) )
+        const sel = global.selected;
+        if ( typeof key === 'string' )
+            if ( global.nodes.has( key ) ) {
+                const node = $( key ), bg = node.childNodes[0];
+                if ( bg.style['stroke'].length === 0 ) {
+                    if ( sel ) nodeStroke( sel, '');
+                    const color = d3.color( bg.style['fill'] ).darker( .5 );
+                    bg.style['stroke'] = color;
+                    if ( sel !== key ) {
+                        global.selected = key;
+                        events.call('nodeselect', node, key, global.nodes.get( key ) );
+                    }
+                }
+            } else error('The node with the key '+ key +' don\'t exist');
+        else return {
+            key : sel, value : cloneObject( global.nodes.get( sel ) )
         }
     }
 

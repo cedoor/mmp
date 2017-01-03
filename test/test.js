@@ -1,4 +1,6 @@
 
+// Dom elements
+
 const
 nodeName = document.getElementById('node-name'),
 fontSize = document.getElementById('font-size'),
@@ -13,17 +15,7 @@ backgroundColor = document.getElementsByClassName('color-btn')[0],
 branchColor = document.getElementsByClassName('color-btn')[1],
 textColor = document.getElementsByClassName('color-btn')[2];
 
-function selected( key, value ) {
-    nodeName.value = value['name'];
-    fontSize.value = value['font-size'];
-    backgroundColor.value = value['background-color'];
-    branchColor.value = value['branch-color'] || '#ffffff';
-    textColor.value = value['text-color'];
-    italicFont.checked = value['italic'];
-    boldFont.checked = value['bold'];
-    fixedNode.checked = value.fixed;
-    console.log('The node \"'+ key +'\" has been selected');
-}
+// Button events
 
 fontSize.oninput = function() {
     mmap.node.update('font-size', fontSize.value, true );
@@ -86,28 +78,30 @@ mmap.on('mmcreate', function(){
     console.log('Mindmap created!');
 });
 
-mmap.on('nodeselect',  selected );
+mmap.on('nodeselect',  function( key, value ) {
+    nodeName.value = value['name'];
+    fontSize.value = value['font-size'];
+    backgroundColor.value = value['background-color'];
+    branchColor.value = value['branch-color'] || '#ffffff';
+    textColor.value = value['text-color'];
+    italicFont.checked = value['italic'];
+    boldFont.checked = value['bold'];
+    fixedNode.checked = value.fixed;
+    console.log('The node \"'+ key +'\" has been selected');
+});
+
+mmap.on('nodedblclick', function( key, value ) {
+    nodeName.focus();    
+});
 
 mmap.on('nodeupdate', function( key, value, property ) {
     console.log('The node \"'+ key +'\" has updated its property \"'+ property + '\"');
-});
-
-mmap.on('nodefocus', function( key, value ) {
-    console.log('The node \"'+ key +'\" has been focused');
-    nodeName.focus();
 });
 
 mmap.on('nodecreate', function( key, value ) {
     console.log('The node \"'+ key +'\" has been created');
 });
 
-mmap.init({
-    'center-onresize' : true,
-    'root-node' : {
-        'name' : 'Ciao root'
-    },
-    'node' : {
-        'name' : 'Nodo figlio',
-        'font-size' : 14
-    }
+mmap.init('#mmap',{
+    'center-onresize' : true
 });

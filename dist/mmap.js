@@ -25,7 +25,7 @@
      * @description
      *
      */
-    function init( opt ) {
+    function init( selector, options ) {
 
         // Default options
         global.options = {
@@ -52,7 +52,7 @@
             }
         };
 
-        global.container = d3.select('mmap').style('display', 'block');
+        global.container = d3.select( selector );
         global.history = { index : -1, snapshots : [] };
         global.svg = {};
 
@@ -66,16 +66,16 @@
             .attr("height", '100%')
             .attr("fill", "white")
             .attr("pointer-events", "all")
-            .on('click', deselectNode );
+            .on('click', clean );
 
         global.svg.mmap = global.svg.main.append('g');
         global.nodes = d3.map();
         global.counter = 0;
 
         // If opt is correct update the default options
-        if ( opt !== undefined )
-            opt.constructor === Object
-                ? overwriteProperties( global.options, opt )
+        if ( options !== undefined )
+            options.constructor === Object
+                ? overwriteProperties( global.options, options )
                 : error('mmap options invalid');
 
         if ( global.options['center-onresize'] === true ) onresize = center;
@@ -158,13 +158,23 @@
         });
     }
 
-    function getNodeDom( key ) {
-        return document.getElementById( key );
+    function $( s ) {
+        const k = s.substring( 0, 1 ), n = s.substring( 1 );
+        return k === '.' ? document.getElementsByClassName( n )
+            : k === '#' ? document.getElementById( n )
+            : s.includes('node') ? document.getElementById( s )
+            : document.getElementsByTagName( s );
     }
 
-    function deselectNode() {
+    function nodeStroke( node, value ) {
+        const bg = $( node ).childNodes[0];
+        if ( value !== 'string' ) return bg.style['stroke'] = value;
+        else return bg.style['stroke'];
+    }
+
+    function clean() {
         selectNode('node0');
-        d3.select('#node0 > path').style('stroke', 'none');
+        nodeStroke('node0', '');
     }
 
     function getNodeLevel( n ) {
@@ -209,12 +219,12 @@
     }
 
     function createRootNode() {
-        const value = Object.assign( global.options['root-node'], {
+        const value = Object.assign( {}, global.options['root-node'], {
             'x' : parseInt( global.container.style('width') )/2,
             'y' : parseInt( global.container.style('height') )/2
         });
         addNode('node' + global.counter, value );
-        selectNode('node0');
+        clean();
     }
 
     function overwriteProperties( target, source ) {
@@ -230,7 +240,7 @@
     function addNode( key, value ) {
         global.nodes.set( key, value );
         update();
-        events.call('nodecreate', getNodeDom( key ), key, value );
+        events.call('nodecreate', $( key ), key, value );
         saveSnapshot();
     }
 
@@ -304,7 +314,7 @@
         });
         redraw();
         setCounter();
-        deselectNode();
+        clean();
     }
 
     /****** Update functions  ******/
@@ -326,8 +336,8 @@
             .attr('transform', n => 'translate(' + n.value.x + ',' + n.value.y + ')')
             .call( drag )
             .on('dblclick', function( n ) {
-                events.call('nodefocus', this, n.key, n.value );
                 d3.event.stopPropagation();
+                events.call('nodedblclick', this, n.key, n.value );
             });
 
         node.append('text').text( n => n.value.name )
@@ -368,7 +378,7 @@
         if ( sel['background-color'] !== v || vis ) {
             const bg = this.childNodes[0];
             bg.style['fill'] = v;
-            if ( bg.style['stroke'] !== 'none' )
+            if ( bg.style['stroke'] !== '' )
                 bg.style['stroke'] = d3.color( v ).darker( .5 );
             if ( !vis ) sel['background-color'] = v;
         } else return false;
@@ -488,8 +498,7 @@
             else if ( sc('alt','n') ) newMap();
             else if ( sc('alt','+') ) addChildNode();
             else if ( sc('alt','-') ) removeNode();
-            else if ( sc('alt','f') ) return !!focusNode();
-            else if ( sc('esc') ) deselectNode();
+            else if ( sc('esc') ) clean();
         }
     }
 
@@ -569,7 +578,7 @@
     /****** Public functions ******/
 
     const events = d3.dispatch(
-        'mmcreate', 'mmcenter', 'nodefocus',
+        'mmcreate', 'mmcenter', 'nodedblclick',
         'nodeselect', 'nodeupdate',
         'nodecreate', 'noderemove'
     );
@@ -578,7 +587,7 @@
         const s = global.nodes.get( global.selected ),
         root = global.nodes.get('node0'),
         key = 'node' + ( ++global.counter ),
-        value = Object.assign( global.options['node'], {
+        value = Object.assign( {}, global.options['node'], {
             'x' : prop && prop.x || findXPosition( s, root ),
             'y' : prop && prop.y || s.y - d3.randomUniform( 60, 100 )(),
             'parent' : global.selected
@@ -601,25 +610,22 @@
     }
 
     function selectNode( key ) {
-        if( global.selected !== key || global.selected === 'node0' ) {
-            d3.selectAll('.node > path').style('stroke', 'none');
-            global.selected = key;
-            const node = d3.select('#'+ key ), bg = node.select('path');
-            bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
-            events.call('nodeselect', node.node(), key, global.nodes.get( key ));
-        }
-    }
-
-    function focusNode() {
-        const node = d3.select('#'+ global.selected ), bg = node.select('path');
-        bg.style('stroke', d3.color( bg.style('fill') ).darker( .5 ) );
-        node.node().dispatchEvent( new MouseEvent('dblclick') );
-    }
-
-    function selectedNode() {
-        return {
-            key : global.selected,
-            value : cloneObject( global.nodes.get( global.selected ) )
+        const sel = global.selected;
+        if ( typeof key === 'string' )
+            if ( global.nodes.has( key ) ) {
+                const node = $( key ), bg = node.childNodes[0];
+                if ( bg.style['stroke'].length === 0 ) {
+                    if ( sel ) nodeStroke( sel, '');
+                    const color = d3.color( bg.style['fill'] ).darker( .5 );
+                    bg.style['stroke'] = color;
+                    if ( sel !== key ) {
+                        global.selected = key;
+                        events.call('nodeselect', node, key, global.nodes.get( key ) );
+                    }
+                }
+            } else error('The node with the key '+ key +' don\'t exist');
+        else return {
+            key : sel, value : cloneObject( global.nodes.get( sel ) )
         }
     }
 
@@ -750,9 +756,7 @@
         update : updateNode,
         add : addChildNode,
         remove : removeNode,
-        select : selectNode,
-        focus : focusNode,
-        selected : selectedNode
+        select : selectNode
     };
 
     Object.defineProperty( exports, '__esModule', { value: true } );

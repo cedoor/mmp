@@ -1,8 +1,8 @@
-html, body,mmap, .sidebar {
+html, body, #mmap, .sidebar {
     height: 100%;
 }
 
-mmap {
+#mmap {
     margin-left: 302px;
 }
 
