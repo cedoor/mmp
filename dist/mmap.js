@@ -1,764 +1,533 @@
-/**
- * @name mmap
- * @version 0.1.3
- * @author Omar Desogus
- * @license MIT
- */
-( function ( global, factory ) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory( exports ) :
-    typeof define === 'function' && define.amd ? define(['exports'], factory ) :
-    ( factory(( global.mmap = global.mmap || {} )) );
-}( this, ( function ( exports ) { 'use strict';
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'd3'], factory) :
+  (factory((global.mmap = global.mmap || {}),global.d3));
+}(this, (function (exports,d3) { 'use strict';
 
-    const version = "0.1.3";
+// ...
+var global$1 = {};
 
-    /**
-     * @name global
-     * @description
-     * Global dictionary that will contain all the properties of the
-     * map shared by all functions within the module.
-     */
-    const global = {};
+var zoom$1 = d3.zoom().scaleExtent([0.5, 2]).on('zoom', function () {
+    global$1.svg.mmap.attr('transform', d3.event.transform);
+});
 
-    /**
-     * @name init
-     * @description
-     *
-     */
-    function init( selector, options ) {
+function zoomIn() {
+    setZoom(true);
+}
 
-        // Default options
-        global.options = {
-            'center-onresize' : false,
-            'shortcuts' : true,
-            'node' : {
-                'name' : 'Node',
-                'background-color' : '#f9f9f9',
-                'text-color' : '#808080',
-                'branch-color' : '#9fad9c',
-                'font-size' : 16,
-                'italic' : false,
-                'bold' : false,
-                'fixed' : true
-            },
-            'root-node' : {
-                'name' : 'Root node',
-                'background-color' : '#e6ede6',
-                'text-color' : '#828c82',
-                'font-size' : 20,
-                'italic' : false,
-                'bold' : false,
-                'fixed' : false
-            }
-        };
+function zoomOut() {
+    setZoom(false);
+}
 
-        global.container = d3.select( selector );
-        global.history = { index : -1, snapshots : [] };
-        global.svg = {};
+function setZoom(inout) {
+    var main = global$1.svg.main;
+    var k = d3.zoomTransform(main.node()).k;
+    k += inout ? k / 5 : -k / 5;
+    zoom$1.scaleTo(main.transition().duration(100), k);
+}
 
-        global.svg.main = global.container.append('svg')
-            .attr('width', '100%')
-            .attr('height', '100%')
-            .call( zoom );
+var event$1 = d3.dispatch('mmcreate', 'mmcenter', 'nodedblclick', 'nodeselect', 'nodeupdate', 'nodecreate', 'noderemove');
 
-        global.svg.main.append("rect")
-            .attr("width", '100%')
-            .attr("height", '100%')
-            .attr("fill", "white")
-            .attr("pointer-events", "all")
-            .on('click', clean );
+function on(e, cb) {
+    event$1.on(e, cb);
+}
 
-        global.svg.mmap = global.svg.main.append('g');
-        global.nodes = d3.map();
-        global.counter = 0;
+function error$1(message) {
+    console.error(message);
+    return false;
+}
 
-        // If opt is correct update the default options
-        if ( options !== undefined )
-            options.constructor === Object
-                ? overwriteProperties( global.options, options )
-                : error('mmap options invalid');
+function cloneObject(obj) {
+    return Object.assign({}, obj);
+}
 
-        if ( global.options['center-onresize'] === true ) onresize = center;
-        if ( global.options['shortcuts'] === true ) setShortcuts();
+function orientation(x) {
+    return x < global$1.nodes.get('node0').x;
+}
 
-        events.call('mmcreate');
+function checkItalicFont(italic) {
+    return italic ? 'italic' : 'normal';
+}
 
-        createRootNode();
+function checkBoldFont(bold) {
+    return bold ? 'bold' : 'normal';
+}
+
+function overwriteProperties(target, source) {
+    for (var prop in target) {
+        var t = target[prop],
+            s = source[prop];
+        if (s && s.constructor === t.constructor) {
+            if (s.constructor === Object) overwriteProperties(t, s);else target[prop] = s;
+        }
     }
+}
 
-    /****** Util functions ******/
 
-    const zoom = d3.zoom().scaleExtent([0.5, 2]).on('zoom', zoomed );
 
-    const drag = d3.drag().on('drag', dragged ).on('start', function( n ) {
-        selectNode( n.key );
-    }).on('end', function() {
-        if ( global.dragged ) {
-            global.dragged = false;
-            saveSnapshot();
+function $(s) {
+    var k = s.substring(0, 1),
+        n = s.substring(1);
+    return k === '.' ? document.getElementsByClassName(n) : k === '#' ? document.getElementById(n) : s.includes('node') ? document.getElementById(s) : document.getElementsByTagName(s);
+}
+
+var toConsumableArray = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  } else {
+    return Array.from(arr);
+  }
+};
+
+function undo() {
+    var h = global$1.history;
+    if (h.index > 0) loadSnapshot(h.snapshots[--h.index]);
+}
+
+function repeat() {
+    var h = global$1.history;
+    if (h.index < h.snapshots.length - 1) loadSnapshot(h.snapshots[++h.index]);
+}
+
+
+
+
+
+function saveSnapshot() {
+    var h = global$1.history;
+    if (h.index < h.snapshots.length - 1) h.snapshots.splice(h.index + 1);
+    h.snapshots.push(mapClone());
+    h.index++;
+}
+
+function loadSnapshot(snapshot) {
+    global$1.nodes.clear();
+    snapshot.forEach(function (node) {
+        global$1.nodes.set(node.key, cloneObject(node.value));
+    });
+    redraw();
+    setCounter();
+    clear();
+}
+
+function mapClone() {
+    return global$1.nodes.entries().map(function (node) {
+        var value = cloneObject(node.value);
+        delete value.width;
+        delete value.height;
+        return { key: node.key, value: value };
+    });
+}
+
+function setCounter() {
+    var getIntOfKey = function getIntOfKey(k) {
+        return parseInt(k.substring(4));
+    },
+        keys = global$1.nodes.keys().map(getIntOfKey);
+    global$1.counter = Math.max.apply(Math, toConsumableArray(keys));
+}
+
+function drawBranch(node) {
+    var n = node.value;
+    var p = global$1.nodes.get(n.parent);
+    var nodeLevel = getNodeLevel(n);
+    var width = 22 - (nodeLevel < 5 ? nodeLevel : 5) * 3;
+    var middleX = (p.x + n.x) / 2;
+    var orY = p.y < n.y + n.height / 2 ? -1 : 1;
+    var orX = p.x > n.x ? -1 : 1;
+    var inv = orX * orY;
+
+    var path$$1 = d3.path();
+    path$$1.moveTo(p.x, p.y - width * .8);
+    path$$1.bezierCurveTo(middleX - width * inv, p.y - width / 2, p.x - width / 2 * inv, n.y + n.height / 2 - width / 3, n.x - n.width / 3 * orX, n.y + n.height / 2 + 3);
+    path$$1.bezierCurveTo(p.x + width / 2 * inv, n.y + n.height / 2 + width / 3, middleX + width * inv, p.y + width / 2, p.x, p.y + width * .8);
+    path$$1.closePath();
+
+    return path$$1;
+}
+
+function drawBackgroundShape(node) {
+
+    var n = node.value;
+    var path$$1 = d3.path();
+    var x = (n.width = this.nextSibling.getBBox().width + 45) / 2;
+    var y = (n.height = this.nextSibling.getBBox().height + 30) / 2;
+    var k = n.k = n.k || d3.randomUniform(-20, 20)();
+
+    path$$1.moveTo(-x, k / 3);
+    path$$1.bezierCurveTo(-x, -y + 10, -x + 10, -y, k, -y);
+    path$$1.bezierCurveTo(x - 10, -y, x, -y + 10, x, k / 3);
+    path$$1.bezierCurveTo(x, y - 10, x - 10, y, k, y);
+    path$$1.bezierCurveTo(-x + 10, y, -x, y - 10, -x, k / 3);
+    path$$1.closePath();
+
+    return path$$1;
+}
+
+function addChildNode(prop) {
+    var s = global$1.nodes.get(global$1.selected),
+        root = global$1.nodes.get('node0'),
+        key = 'node' + ++global$1.counter,
+        value = Object.assign({}, global$1.options['node'], {
+        'x': prop && prop.x || findXPosition(s, root),
+        'y': prop && prop.y || s.y - d3.randomUniform(60, 100)(),
+        'parent': global$1.selected
+    });
+    addNode(key, value);
+}
+
+function removeNode() {
+    var key = global$1.selected;
+    if (key !== 'node0') {
+        global$1.nodes.remove(key);
+        subnodes(key, function (n, k) {
+            global$1.nodes.remove(k);
+        });
+        selectNode('node0');
+        redraw();
+        saveSnapshot();
+        event$1.call('noderemove', this, key);
+    } else return error$1('The root node can not be deleted');
+}
+
+function selectNode(key) {
+    var sel = global$1.selected;
+    if (typeof key === 'string') {
+        if (global$1.nodes.has(key)) {
+            var node = $(key),
+                bg = node.childNodes[0];
+            if (bg.style['stroke'].length === 0) {
+                if (sel) nodeStroke(sel, '');
+                var color$$1 = d3.color(bg.style['fill']).darker(.5);
+                bg.style['stroke'] = color$$1;
+                if (sel !== key) {
+                    global$1.selected = key;
+                    event$1.call('nodeselect', node, key, global$1.nodes.get(key));
+                }
+            }
+        } else error$1('The node with the key ' + key + ' don\'t exist');
+    } else return {
+        key: sel, value: cloneObject(global$1.nodes.get(sel))
+    };
+}
+
+
+
+function createRootNode() {
+    var value = Object.assign({}, global$1.options['root-node'], {
+        'x': parseInt(global$1.container.style('width')) / 2,
+        'y': parseInt(global$1.container.style('height')) / 2
+    });
+    addNode('node' + global$1.counter, value);
+    clear();
+}
+
+function setNodeCoords(dom, x, y) {
+    dom.setAttribute('transform', 'translate(' + [x, y] + ')');
+}
+
+function getNodeLevel(n) {
+    var p = n.parent,
+        level = 0;
+    while (p) {
+        level++;
+        var _n = global$1.nodes.get(p);
+        p = _n.parent;
+    }
+    return level;
+}
+
+function nodeStroke(node, value) {
+    var bg = $(node).childNodes[0];
+    if (value !== 'string') return bg.style['stroke'] = value;else return bg.style['stroke'];
+}
+
+function addNode(key, value) {
+    global$1.nodes.set(key, value);
+    update();
+    event$1.call('nodecreate', $(key), key, value);
+    saveSnapshot();
+}
+
+function findXPosition(sel, root) {
+    var dir;
+    if (sel.x > root.x) dir = 1;else if (sel.x < root.x) dir = -1;else {
+        var f = function f(n) {
+            return n.parent === 'node0';
+        },
+            l = global$1.nodes.values().filter(f).length;
+        dir = l % 2 === 0 ? -1 : 1;
+    }
+    return sel.x + 200 * dir;
+}
+
+function subnodes(key, cb) {
+    global$1.nodes.each(function (n, k) {
+        if (n.parent === key) {
+            cb.call(document.getElementById(k), n, k);
+            subnodes(k, cb);
         }
     });
+}
 
-    function zoomed() {
-        global.svg.mmap.attr('transform', d3.event.transform );
-    }
-
-    function findXPosition( sel, root ) {
-        var dir;
-        if ( sel.x > root.x ) dir = 1;
-        else if ( sel.x < root.x ) dir = -1;
-        else {
-            const f = n => n.parent === 'node0',
-            l = global.nodes.values().filter( f ).length;
-            dir = l % 2 === 0 ? -1 : 1;
-        }
-        return sel.x + 200 * dir;
-    }
-
-    function orientation( x ) {
-        return x < global.nodes.get('node0').x;
-    }
-
-    function error( message ) {
-        console.error( message );
-        return false;
-    }
-
-    function setNodeCoords( dom, x, y ) {
-        dom.setAttribute('transform','translate('+[ x, y ]+')');
-    }
-
-    function setZoom( inout ) {
-        const main = global.svg.main;
-        var k = d3.zoomTransform( main.node() ).k;
-        k += inout ? k/5 : -k/5;
-        zoom.scaleTo( main.transition().duration( 100 ), k );
-    }
-
-    function dragged( n ) {
-        const dy = d3.event.dy, dx = d3.event.dx,
-        x = n.value.x += dx, y = n.value.y += dy, parent = n,
-        sameOrientation = orientation( x ) === orientation( x - dx );
-        setNodeCoords( this, x, y );
-        if ( n.value.fixed ) subnodes( n.key, function( n, k ) {
-            const x = n.x += dx, y = n.y += dy;
-            if ( !sameOrientation ) n.x += ( parent.value.x - n.x )*2;
-            setNodeCoords( this, x, y );
-        });
-        d3.selectAll('.branch').attr('d', drawBranch );
-        global.dragged = true;
-    }
-
-    function subnodes( key, cb ) {
-        global.nodes.each( function( n, k ) {
-            if ( n.parent === key ) {
-                cb.call( document.getElementById( k ), n, k );
-                subnodes( k, cb );
-            }
-        });
-    }
-
-    function $( s ) {
-        const k = s.substring( 0, 1 ), n = s.substring( 1 );
-        return k === '.' ? document.getElementsByClassName( n )
-            : k === '#' ? document.getElementById( n )
-            : s.includes('node') ? document.getElementById( s )
-            : document.getElementsByTagName( s );
-    }
-
-    function nodeStroke( node, value ) {
-        const bg = $( node ).childNodes[0];
-        if ( value !== 'string' ) return bg.style['stroke'] = value;
-        else return bg.style['stroke'];
-    }
-
-    function clean() {
-        selectNode('node0');
-        nodeStroke('node0', '');
-    }
-
-    function getNodeLevel( n ) {
-        var p = n.parent, level = 0;
-        while ( p ) {
-            level++;
-            const n = global.nodes.get( p );
-            p = n.parent;
-        }
-        return level;
-    }
-
-    function clearObject( obj ) {
-        for ( var member in obj ) delete obj[member];
-    }
-
-    function cloneObject( obj ) {
-        return Object.assign( {}, obj );
-    }
-
-    function styles( el ) {
-        var css = "";
-        const sheets = document.styleSheets;
-        for (var i = 0; i < sheets.length; i++) {
-            const rules = sheets[i].cssRules;
-            for (var j = 0; j < rules.length; j++) {
-                const rule = rules[j],
-                fontFace = rule.cssText.match(/^@font-face/);
-                if ( el.querySelector( rule.selectorText ) || fontFace )
-                    css += rule.cssText;
-            }
-        }
-        return css;
-    }
-
-    function checkItalicFont( italic ) {
-        return italic ? 'italic' : 'normal';
-    }
-
-    function checkBoldFont( bold ) {
-        return bold ? 'bold' : 'normal';
-    }
-
-    function createRootNode() {
-        const value = Object.assign( {}, global.options['root-node'], {
-            'x' : parseInt( global.container.style('width') )/2,
-            'y' : parseInt( global.container.style('height') )/2
-        });
-        addNode('node' + global.counter, value );
-        clean();
-    }
-
-    function overwriteProperties( target, source ) {
-        for ( let prop in target ) {
-            var t = target[ prop ], s = source[ prop ];
-            if ( s && s.constructor === t.constructor ) {
-                if ( s.constructor === Object ) overwriteProperties( t, s )
-                else target[ prop ] = s;
-            }
-        }
-    }
-
-    function addNode( key, value ) {
-        global.nodes.set( key, value );
-        update();
-        events.call('nodecreate', $( key ), key, value );
+var drag$1 = d3.drag().on('drag', dragged).on('start', function (n) {
+    selectNode(n.key);
+}).on('end', function () {
+    if (global$1.dragged) {
+        global$1.dragged = false;
         saveSnapshot();
     }
+});
 
-    function reEncode( data ) {
-        data = encodeURIComponent( data );
-        data = data.replace( /%([0-9A-F]{2})/g, function( match, p1 ) {
-            const c = String.fromCharCode('0x'+p1);
-            return c === '%' ? '%25' : c;
-        });
-        return decodeURIComponent( data );
-    }
+function dragged(n) {
+    var dy = d3.event.dy,
+        dx = d3.event.dx,
+        x = n.value.x += dx,
+        y = n.value.y += dy,
+        parent = n,
+        sameOrientation = orientation(x) === orientation(x - dx);
+    setNodeCoords(this, x, y);
+    if (n.value.fixed) subnodes(n.key, function (n) {
+        var x = n.x += dx,
+            y = n.y += dy;
+        if (!sameOrientation) n.x += (parent.value.x - n.x) * 2;
+        setNodeCoords(this, x, y);
+    });
+    d3.selectAll('.branch').attr('d', drawBranch);
+    global$1.dragged = true;
+}
 
-    function getDataURI() {
-        const el = global.svg.mmap.node(),
-        svg = document.createElementNS('http://www.w3.org/2000/svg','svg'),
-        xmlns = "http://www.w3.org/2000/xmlns/",
-        box = el.getBBox(), padding = 15,
-        x = box.x - padding, y = box.y - padding,
-        w = box.width + padding*2, h = box.height + padding*2;
+function newMap() {
+    global$1.counter = 0;
+    global$1.nodes.clear();
+    createRootNode();
+    redraw();
+    center();
+    saveSnapshot();
+    event$1.call('mmcreate');
+}
 
-        svg.setAttributeNS( xmlns, "xmlns", "http://www.w3.org/2000/svg");
-        svg.setAttributeNS( xmlns, "xmlns:xlink", "http://www.w3.org/1999/xlink");
-        svg.setAttribute("version", "1.1");
-        svg.setAttribute("width", w );
-        svg.setAttribute("height", h );
-        svg.setAttribute("viewBox", [ x, y, w, h ].join(" ") );
+function clear() {
+    selectNode('node0');
+    nodeStroke('node0', '');
+}
 
-        const css = styles( el ),
-        s = document.createElement('style'),
-        defs = document.createElement('defs');
+/**
+ * @name image
+ * @param {function} cb callback
+ * @param {string} type type of image, default png
+ * @param {string} background color of map background
+ * @description
+ * Get a DOMString containing the data URI of map image and
+ * pass it to callback function.
+*/
 
-        s.setAttribute('type', 'text/css');
-        s.innerHTML = "<![CDATA[\n" + css + "\n]]>";
-        defs.appendChild( s );
-        svg.appendChild( defs );
 
-        const clone = el.cloneNode( true );
-        clone.setAttribute('transform', 'translate(0,0)');
-        svg.appendChild( clone );
+function center() {
+    var root = global$1.nodes.get('node0'),
+        center = {
+        x: parseInt(global$1.container.style('width')) / 2,
+        y: parseInt(global$1.container.style('height')) / 2
+    },
+        zoomId = d3.zoomIdentity.translate(center.x - root.x, center.y - root.y);
+    global$1.svg.main.transition().duration(500).call(zoom$1.transform, zoomId);
+    event$1.call('mmcenter');
+}
 
-        const uri = window.btoa(reEncode( svg.outerHTML ));
-        return 'data:image/svg+xml;base64,' + uri;
-    }
+function redraw() {
+    d3.selectAll('.node, .branch').remove();
+    update();
+}
 
-    function setCounter() {
-        const getIntOfKey = k => parseInt( k.substring(4) ),
-        keys = global.nodes.keys().map( getIntOfKey );
-        global.counter = Math.max(...keys);
-    }
+function update() {
+    var map$$1 = global$1.nodes.entries(),
+        nodes = global$1.svg.mmap.selectAll('.node').data(map$$1),
+        branches = global$1.svg.mmap.selectAll('.branch').data(map$$1.slice(1));
 
-    function mapClone() {
-        return global.nodes.entries().map( function( node ) {
-            const value = cloneObject( node.value );
-            delete value.width;
-            delete value.height;
-            return { key : node.key, value : value };
-        });
-    }
+    var node = nodes.enter().append('g').style('cursor', 'pointer').attr('class', 'node').attr('id', function (n) {
+        return n.key;
+    }).attr('transform', function (n) {
+        return 'translate(' + n.value.x + ',' + n.value.y + ')';
+    }).call(drag$1).on('dblclick', function (n) {
+        d3.event.stopPropagation();
+        event$1.call('nodedblclick', this, n.key, n.value);
+    });
 
-    function saveSnapshot() {
-        const h = global.history;
-        if ( h.index < h.snapshots.length - 1 ) h.snapshots.splice( h.index + 1 );
-        h.snapshots.push( mapClone() );
-        h.index++;
-    }
+    node.append('text').text(function (n) {
+        return n.value.name;
+    }).style('font-family', 'sans-serif').style('text-anchor', 'middle').style('alignment-baseline', 'middle').style('fill', function (n) {
+        return n.value['text-color'];
+    }).style('font-size', function (n) {
+        return n.value['font-size'];
+    }).style('font-style', function (n) {
+        return checkItalicFont(n.value.italic);
+    }).style('font-weight', function (n) {
+        return checkBoldFont(n.value.bold);
+    });
 
-    function loadSnapshot( snapshot ) {
-        global.nodes.clear();
-        snapshot.forEach( function( node ) {
-            global.nodes.set( node.key, cloneObject( node.value ) );
-        });
-        redraw();
-        setCounter();
-        clean();
-    }
+    node.insert('path', 'text').style('fill', function (n) {
+        return n.value['background-color'];
+    }).style('stroke-width', 3).attr('d', drawBackgroundShape);
 
-    /****** Update functions  ******/
+    branches.enter().insert('path', 'g').style('fill', function (n) {
+        return n.value['branch-color'];
+    }).style('stroke', function (n) {
+        return n.value['branch-color'];
+    }).attr('class', 'branch').attr('id', function (n) {
+        return 'branchOf' + n.key;
+    }).attr('d', drawBranch);
 
-    function redraw() {
-        d3.selectAll('.node, .branch').remove();
-        update();
-    }
+    nodes.exit().remove();
+    branches.exit().remove();
+}
 
-    function update() {
-        const map = global.nodes.entries(),
-        nodes = global.svg.mmap.selectAll('.node').data( map ),
-        branches = global.svg.mmap.selectAll('.branch').data( map.slice(1) );
+function setShortcuts() {
+    var map$$1 = {},
+        sc = function sc() {
+        return shortcut(arguments, map$$1);
+    };
+    window.onkeyup = window.onkeydown = function (e) {
+        map$$1[e.keyCode] = e.type === 'keydown';
+        if (sc('ctrl', 'maiusc', 'z')) return !!repeat();else if (sc('ctrl', 'z')) return !!undo();else if (sc('alt', 'maiusc', 'up')) moveNode('up');else if (sc('alt', 'maiusc', 'down')) moveNode('down');else if (sc('alt', 'maiusc', 'left')) moveNode('left');else if (sc('alt', 'maiusc', 'right')) moveNode('right');else if (sc('alt', 'maiusc', '+')) zoomIn();else if (sc('alt', 'maiusc', '-')) zoomOut();else if (sc('alt', 'up')) return !!moveSelection('up');else if (sc('alt', 'down')) return !!moveSelection('down');else if (sc('alt', 'right')) return !!moveSelection('right');else if (sc('alt', 'left')) return !!moveSelection('left');else if (sc('alt', 'c')) center();else if (sc('alt', 'n')) newMap();else if (sc('alt', '+')) addChildNode();else if (sc('alt', '-')) removeNode();else if (sc('esc')) clear();
+    };
+}
 
-        const node = nodes.enter().append('g')
-            .style('cursor', 'pointer')
-            .attr('class', 'node')
-            .attr('id', n => n.key )
-            .attr('transform', n => 'translate(' + n.value.x + ',' + n.value.y + ')')
-            .call( drag )
-            .on('dblclick', function( n ) {
-                d3.event.stopPropagation();
-                events.call('nodedblclick', this, n.key, n.value );
-            });
+function shortcut(keys, map$$1) {
+    var alias = {
+        'up': 38, 'down': 40, 'right': 39, 'left': 37,
+        'ctrl': 17, 'alt': 18, 'maiusc': 16, 'esc': 27, 'f': 70,
+        'c': 67, 'n': 78, '+': 187, '-': 189, 'i': 73, 'z': 90
+    };
+    for (var i = 0; i < keys.length; i++) {
+        if (!map$$1[alias[keys[i]]]) return false;
+    }return true;
+}
 
-        node.append('text').text( n => n.value.name )
-            .style('font-family', 'sans-serif')
-            .style('text-anchor', 'middle')
-            .style('alignment-baseline', 'middle')
-            .style('fill', n => n.value['text-color'])
-            .style('font-size', n => n.value['font-size'])
-            .style('font-style', n => checkItalicFont( n.value.italic ) )
-            .style('font-weight', n => checkBoldFont( n.value.bold ));
-
-        node.insert('path', 'text')
-            .style('fill', n => n.value['background-color'])
-            .style('stroke-width', 3 )
-            .attr('d', drawBackgroundShape );
-
-        branches.enter().insert('path', 'g')
-            .style('fill', n => n.value['branch-color'])
-            .style('stroke', n => n.value['branch-color'])
-            .attr('class', 'branch')
-            .attr('id', n => 'branchOf' + n.key )
-            .attr('d', drawBranch );
-
-        nodes.exit().remove();
-        branches.exit().remove();
-    }
-
-    function updateName( sel, v, vis ) {
-        if ( sel.name != v || vis ) {
-            this.childNodes[1].innerHTML = v;
-            d3.select( this.childNodes[0] ).attr('d', drawBackgroundShape );
-            d3.selectAll('.branch').attr('d', drawBranch );
-            if ( !vis ) sel.name = v;
-        } else return false;
-    }
-
-    function updateBackgroundColor( sel, v, vis ) {
-        if ( sel['background-color'] !== v || vis ) {
-            const bg = this.childNodes[0];
-            bg.style['fill'] = v;
-            if ( bg.style['stroke'] !== '' )
-                bg.style['stroke'] = d3.color( v ).darker( .5 );
-            if ( !vis ) sel['background-color'] = v;
-        } else return false;
-    }
-
-    function updateTextColor( sel, v, vis ) {
-        if ( sel['text-color'] !== v || vis ) {
-            this.childNodes[1].style['fill'] = v;
-            if ( !vis ) sel['text-color'] = v;
-        } else return false;
-    }
-
-    function updateBranchColor( sel, v, vis ) {
-        if( global.selected !== 'node0' ) {
-            if ( sel['branch-color'] !== v || vis ) {
-                const branch = document.getElementById('branchOf'+ global.selected );
-                branch.style['fill'] = branch.style['stroke'] = v;
-                if ( !vis ) sel['branch-color'] = v;
-            } else return false;
-        } else return error('The root node has no branches');
-    }
-
-    function updateFontSize( sel, v, vis ) {
-        if ( sel['font-size'] != v || vis ) {
-            this.childNodes[1].style['font-size'] = v;
-            d3.select( this.childNodes[0] ).attr('d', drawBackgroundShape );
-            d3.selectAll('.branch').attr('d', drawBranch );
-            if ( !vis ) sel['font-size'] = v;
-        } else return false;
-    }
-
-    function updateItalicFont( sel ) {
-        const style = checkItalicFont( sel.italic = !sel.italic );
-        this.childNodes[1].style['font-style'] = style;
-    }
-
-    function updateBoldFont( sel ) {
-        const style = checkBoldFont( sel.bold = !sel.bold );
-        this.childNodes[1].style['font-weight'] = style;
-    }
-
-    function updateFixStatus( sel ) {
-        if ( global.selected !== 'node0' ) sel.fixed = !sel.fixed;
-        else return error('The root node can not be fixed');
-    }
-
-    /****** Shape functions  ******/
-
-    function drawBranch( node ) {
-
-        const n = node.value;
-        const p = global.nodes.get( n.parent );
-        const nodeLevel = getNodeLevel( n );
-        const width = 22 - ( nodeLevel < 5 ? nodeLevel : 5 ) * 3;
-        const middleX = ( p.x + n.x ) / 2;
-        const orY = p.y < n.y + n.height/2 ? -1 : 1;
-        const orX = p.x > n.x ? -1 : 1;
-        const inv = orX*orY;
-
-        const path = d3.path();
-        path.moveTo( p.x, p.y - width*.8 );
-        path.bezierCurveTo(
-            middleX - width*inv, p.y - width/2,
-            p.x - width/2*inv, n.y + n.height/2 - width/3,
-            n.x - n.width/3*orX, n.y + n.height/2 + 3
-        );
-        path.bezierCurveTo(
-            p.x + width/2*inv, n.y + n.height/2 + width/3,
-            middleX + width*inv, p.y + width/2,
-            p.x, p.y + width*.8
-        );
-        path.closePath();
-
-        return path;
-    }
-
-    function drawBackgroundShape( node ) {
-
-        const n = node.value;
-        const path = d3.path();
-        const x = ( n.width = this.nextSibling.getBBox().width + 45 )/2;
-        const y = ( n.height = this.nextSibling.getBBox().height + 30 )/2;
-        const k = n.k = n.k || d3.randomUniform( -20, 20 )();
-
-        path.moveTo( -x, k/3 );
-        path.bezierCurveTo( -x, -y +10, -x + 10, -y, k, -y );
-        path.bezierCurveTo( x - 10, -y, x, -y + 10, x, k/3 );
-        path.bezierCurveTo( x, y - 10, x - 10, y, k, y );
-        path.bezierCurveTo( -x + 10, y, -x, y - 10, -x, k/3 );
-        path.closePath();
-
-        return path;
-    }
-
-    /****** Shortcuts functions  ******/
-
-    function setShortcuts() {
-        const map = {}, sc = function() {
-            return shortcut( arguments, map );
-        };
-        onkeyup = onkeydown = function( e ) {
-            map[e.keyCode] = e.type === 'keydown';
-            if ( sc('ctrl','maiusc','z') ) return !!repeat();
-            else if ( sc('ctrl','z') ) return !!undo();
-            else if ( sc('alt','maiusc','up') ) moveNode('up');
-            else if ( sc('alt','maiusc','down') ) moveNode('down');
-            else if ( sc('alt','maiusc','left') ) moveNode('left');
-            else if ( sc('alt','maiusc','right') ) moveNode('right');
-            else if ( sc('alt','maiusc','+') ) zoomIn();
-            else if ( sc('alt','maiusc','-') ) zoomOut();
-            else if ( sc('alt','up') ) return !!moveSelection('up');
-            else if ( sc('alt','down') ) return !!moveSelection('down');
-            else if ( sc('alt','right') ) return !!moveSelection('right');
-            else if ( sc('alt','left') ) return !!moveSelection('left');
-            else if ( sc('alt','i') ) png('mmap');
-            else if ( sc('alt','c') ) center();
-            else if ( sc('alt','n') ) newMap();
-            else if ( sc('alt','+') ) addChildNode();
-            else if ( sc('alt','-') ) removeNode();
-            else if ( sc('esc') ) clean();
+function moveSelectionOnLevel(dir) {
+    var sel = global$1.nodes.get(global$1.selected),
+        lev = getNodeLevel(sel),
+        or = orientation(sel.x);
+    var key,
+        tmp = Number.MAX_VALUE;
+    global$1.nodes.each(function (n, k) {
+        var d = dir ? sel.y - n.y : n.y - sel.y,
+            sameLevel = lev === getNodeLevel(n),
+            sameNode = global$1.selected === k,
+            sameOrientation = or === orientation(n.x);
+        if (sameOrientation && sameLevel && !sameNode && d > 0 && d < tmp) {
+            tmp = d;
+            key = k;
         }
-    }
+    });
+    if (key !== undefined) selectNode(key);
+}
 
-    function shortcut( keys, map ) {
-        const alias = {
-            'up' : 38, 'down' : 40, 'right' : 39, 'left' : 37,
-            'ctrl' : 17, 'alt' : 18, 'maiusc' : 16, 'esc' : 27, 'f' : 70,
-            'c' : 67, 'n' : 78, '+' : 187, '-' : 189, 'i' : 73, 'z' : 90
+function moveSelectionOnBranch(dir) {
+    var sel = global$1.nodes.get(global$1.selected),
+        root = global$1.nodes.get('node0');
+    var key,
+        checks,
+        tmp = Number.MIN_VALUE;
+    global$1.nodes.each(function (n, k) {
+        if (sel.x < root.x) checks = dir ? n.parent === global$1.selected : sel.parent === k;else if (sel.x > root.x) checks = !dir ? n.parent === global$1.selected : sel.parent === k;else checks = (dir ? n.x < root.x : n.x > root.x) && n.parent === global$1.selected;
+        if (checks && n.y > tmp) {
+            tmp = n.y;
+            key = k;
         }
-        for ( var i = 0; i < keys.length; i++ )
-            if( ! map[alias[keys[i]]] ) return false;
-        return true;
-    }
+    });
+    if (key !== undefined) selectNode(key);
+}
 
-    function moveSelectionOnLevel( dir ) {
-        const sel = global.nodes.get( global.selected ),
-        lev = getNodeLevel( sel ), or = orientation( sel.x );
-        var key, tmp = Number.MAX_VALUE;
-        global.nodes.each( function( n, k ) {
-            const d = dir ? sel.y - n.y : n.y - sel.y,
-            sameLevel = lev === getNodeLevel( n ),
-            sameNode = global.selected === k,
-            sameOrientation = or === orientation( n.x );
-            if ( sameOrientation && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
-                tmp = d;
-                key = k;
-            }
-        });
-        if ( key !== undefined ) selectNode( key );
-    }
+function moveSelection(dir) {
+    var d = dir === 'up' || dir === 'left';
+    if (dir === 'up' || dir === 'down') moveSelectionOnLevel(d);else moveSelectionOnBranch(d);
+}
 
-    function moveSelectionOnBranch( dir ) {
-        const sel = global.nodes.get( global.selected ),
-        root = global.nodes.get('node0');
-        var key, checks, tmp = Number.MIN_VALUE;
-        global.nodes.each( function( n, k ) {
-            if ( sel.x < root.x )
-                checks = dir ? n.parent === global.selected : sel.parent === k;
-            else if ( sel.x > root.x )
-                checks = !dir ? n.parent === global.selected : sel.parent === k;
-            else checks = ( dir ? n.x < root.x : n.x > root.x ) && n.parent === global.selected;
-            if ( checks && n.y > tmp ) {
-                tmp = n.y;
-                key = k;
-            }
-        });
-        if ( key !== undefined ) selectNode( key );
-    }
-
-    function moveSelection( dir ) {
-        const d = dir === 'up' || dir === 'left';
-        if ( dir === 'up' || dir === 'down' ) moveSelectionOnLevel( d );
-        else moveSelectionOnBranch( d );
-    }
-
-    function moveNode( dir ) {
-        const s = global.nodes.get( global.selected ),
-        range = 10, oldOr = orientation( s.x ),
+function moveNode(dir) {
+    var s = global$1.nodes.get(global$1.selected),
+        range = 10,
+        oldOr = orientation(s.x),
         setCoord = {
-            up: n => n.y -= range,
-            down: n => n.y += range,
-            right: n => n.x += range,
-            left: n => n.x -= range
-        };
-        setCoord[ dir ]( s );
-        const newOr = orientation( s.x );
-        setNodeCoords( document.getElementById( global.selected ), s.x, s.y );
-        if ( s.fixed ) subnodes( global.selected, function( n, k ) {
-            setCoord[ dir ]( n );
-            if ( newOr !== oldOr ) n.x += ( s.x - n.x )*2;
-            setNodeCoords( this, n.x, n.y );
-        });
-        d3.selectAll('.branch').attr('d', drawBranch );
-        saveSnapshot();
-    }
-
-    /****** Public functions ******/
-
-    const events = d3.dispatch(
-        'mmcreate', 'mmcenter', 'nodedblclick',
-        'nodeselect', 'nodeupdate',
-        'nodecreate', 'noderemove'
-    );
-
-    function addChildNode( prop ) {
-        const s = global.nodes.get( global.selected ),
-        root = global.nodes.get('node0'),
-        key = 'node' + ( ++global.counter ),
-        value = Object.assign( {}, global.options['node'], {
-            'x' : prop && prop.x || findXPosition( s, root ),
-            'y' : prop && prop.y || s.y - d3.randomUniform( 60, 100 )(),
-            'parent' : global.selected
-        });
-        addNode( key, value );
-    }
-
-    function removeNode() {
-        const key = global.selected;
-        if( key !== 'node0' ) {
-            global.nodes.remove( key );
-            subnodes( key, function( n, k ) {
-                global.nodes.remove( k );
-            });
-            selectNode('node0');
-            redraw();
-            saveSnapshot();
-            events.call('noderemove', this, key );
-        } else return error('The root node can not be deleted');
-    }
-
-    function selectNode( key ) {
-        const sel = global.selected;
-        if ( typeof key === 'string' )
-            if ( global.nodes.has( key ) ) {
-                const node = $( key ), bg = node.childNodes[0];
-                if ( bg.style['stroke'].length === 0 ) {
-                    if ( sel ) nodeStroke( sel, '');
-                    const color = d3.color( bg.style['fill'] ).darker( .5 );
-                    bg.style['stroke'] = color;
-                    if ( sel !== key ) {
-                        global.selected = key;
-                        events.call('nodeselect', node, key, global.nodes.get( key ) );
-                    }
-                }
-            } else error('The node with the key '+ key +' don\'t exist');
-        else return {
-            key : sel, value : cloneObject( global.nodes.get( sel ) )
-        }
-    }
-
-    function updateNode( k, v, vis ) {
-        const sel = global.nodes.get( global.selected ),
-        dom = document.getElementById( global.selected ),
-        prop = {
-            'name' : updateName,
-            'fixed' : updateFixStatus,
-            'background-color' : updateBackgroundColor,
-            'branch-color' : updateBranchColor,
-            'text-color' : updateTextColor,
-            'font-size' : updateFontSize,
-            'italic' : updateItalicFont,
-            'bold' : updateBoldFont
+        up: function up(n) {
+            return n.y -= range;
         },
-        upd = prop[k];
-        if ( upd !== undefined ) {
-            if ( upd.call( dom, sel, v, vis ) !== false ) {
-                if ( !vis ) saveSnapshot();
-                events.call('nodeupdate', dom, global.selected, sel, k );
-            }
-        }
-        else return error('"'+ k +'" is not a valid node property');
-    }
-
-    /**
-     * @name image
-     * @param {function} cb callback
-     * @param {string} type type of image, default png
-     * @param {string} background color of map background
-     * @description
-     * Get a DOMString containing the data URI of map image and
-     * pass it to callback function.
-    */
-    function image( cb, type, background ) {
-        const image = new Image();
-        image.src = getDataURI();
-        image.onload = function() {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            const a = document.createElement('a');
-
-            canvas.width = image.width;
-            canvas.height = image.height;
-            context.drawImage( image, 0, 0 );
-
-            context.globalCompositeOperation = 'destination-over';
-            context.fillStyle = background || '#ffffff';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-
-            cb( canvas.toDataURL( type ) );
-        }
-    }
-
-    function newMap() {
-        global.counter = 0;
-        global.nodes.clear();
-        createRootNode();
-        redraw();
-        center();
-        saveSnapshot();
-        events.call('mmcreate');
-    }
-
-    function center() {
-        const root = global.nodes.get('node0'), center = {
-            x : parseInt( global.container.style('width') )/2,
-            y : parseInt( global.container.style('height') )/2
+        down: function down(n) {
+            return n.y += range;
         },
-        zoomId = d3.zoomIdentity.translate( center.x - root.x, center.y - root.y );
-        global.svg.main.transition().duration(500).call( zoom.transform, zoomId );
-        events.call('mmcenter');
-    }
+        right: function right(n) {
+            return n.x += range;
+        },
+        left: function left(n) {
+            return n.x -= range;
+        }
+    };
+    setCoord[dir](s);
+    var newOr = orientation(s.x);
+    setNodeCoords(document.getElementById(global$1.selected), s.x, s.y);
+    if (s.fixed) subnodes(global$1.selected, function (n) {
+        setCoord[dir](n);
+        if (newOr !== oldOr) n.x += (s.x - n.x) * 2;
+        setNodeCoords(this, n.x, n.y);
+    });
+    d3.selectAll('.branch').attr('d', drawBranch);
+    saveSnapshot();
+}
 
-    function undo() {
-        const h = global.history;
-        if( h.index > 0 )
-            loadSnapshot( h.snapshots[ --h.index ] );
-    }
+var init = function (selector, options) {
 
-    function repeat() {
-        const h = global.history;
-        if( h.index < h.snapshots.length - 1 )
-            loadSnapshot( h.snapshots[ ++h.index ] );
-    }
-
-    function on( e, cb ) {
-        events.on( e, cb );
-    }
-
-    function zoomIn() {
-        setZoom( true );
-    }
-
-    function zoomOut() {
-        setZoom( false );
-    }
-
-    function data() {
-        return global.history.snapshots[ global.history.index ];
-    }
-
-    function load( data ) {
-        loadSnapshot( data );
-        center();
-        saveSnapshot();
-    }
-
-    /**
-     * @description
-     * Make visible public functions outside
-     *
-     */
-    exports.version = version;
-    exports.init = init;
-    exports.center = center;
-    exports.undo = undo;
-    exports.repeat = repeat;
-    exports.zoomIn = zoomIn;
-    exports.zoomOut = zoomOut;
-    exports.new = newMap;
-    exports.on = on;
-    exports.image = image;
-    exports.data = data;
-    exports.load = load;
-    exports.node = {
-        update : updateNode,
-        add : addChildNode,
-        remove : removeNode,
-        select : selectNode
+    // Default options
+    global$1.options = {
+        'center-onresize': false,
+        'shortcuts': true,
+        'node': {
+            'name': 'Node',
+            'background-color': '#f9f9f9',
+            'text-color': '#808080',
+            'branch-color': '#9fad9c',
+            'font-size': 16,
+            'italic': false,
+            'bold': false,
+            'fixed': true
+        },
+        'root-node': {
+            'name': 'Root node',
+            'background-color': '#e6ede6',
+            'text-color': '#828c82',
+            'font-size': 20,
+            'italic': false,
+            'bold': false,
+            'fixed': false
+        }
     };
 
-    Object.defineProperty( exports, '__esModule', { value: true } );
+    global$1.container = d3.select(selector);
+    global$1.history = { index: -1, snapshots: [] };
+    global$1.svg = {};
+
+    global$1.svg.main = global$1.container.append('svg').attr('width', '100%').attr('height', '100%').call(zoom$1);
+
+    global$1.svg.main.append("rect").attr("width", '100%').attr("height", '100%').attr("fill", "white").attr("pointer-events", "all").on('click', clear);
+
+    global$1.svg.mmap = global$1.svg.main.append('g');
+    global$1.nodes = d3.map();
+    global$1.counter = 0;
+
+    // If opt is correct update the default options
+    if (options !== undefined) options.constructor === Object ? overwriteProperties(global$1.options, options) : error$1('mmap options invalid');
+
+    if (global$1.options['center-onresize'] === true) onresize = center;
+    if (global$1.options['shortcuts'] === true) setShortcuts();
+
+    event$1.call('mmcreate');
+
+    createRootNode();
+};
+
+exports.init = init;
+exports.on = on;
+
+Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
