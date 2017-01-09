@@ -1,8 +1,15 @@
+/**
+ * mmap v0.1.3 https://github.com/cedoor/mmap
+ * Copyright 2017 Omar Desogus
+ * Lincensed under MIT
+ */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'd3'], factory) :
-  (factory((global.mmap = global.mmap || {}),global.d3));
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'd3'], factory) :
+	(factory((global.mmap = global.mmap || {}),global.d3));
 }(this, (function (exports,d3) { 'use strict';
+
+var version = "0.1.3";
 
 // ...
 var global$1 = {};
@@ -475,6 +482,11 @@ function moveNode(dir) {
     saveSnapshot();
 }
 
+/**
+ * @name init
+ * @description
+ *
+ */
 var init = function (selector, options) {
 
     // Default options
@@ -525,6 +537,14 @@ var init = function (selector, options) {
     createRootNode();
 };
 
+var node = {
+    add: addChildNode,
+    remove: removeNode,
+    select: selectNode
+};
+
+exports.node = node;
+exports.version = version;
 exports.init = init;
 exports.on = on;
 
