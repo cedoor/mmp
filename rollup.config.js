@@ -1,6 +1,7 @@
 // Rollup plugins
 import json from 'rollup-plugin-json'
 import babel from 'rollup-plugin-babel'
+import eslint from 'rollup-plugin-eslint'
 
 const pkg = require('./package.json')
 
@@ -11,16 +12,17 @@ export default {
     moduleName: pkg.name,
     external: ['d3'],
     globals: { d3: 'd3' },
-    //sourceMap: 'inline',
     plugins: [
         json(),
-        babel({
-            presets: ["es2015-rollup"]
-        })
+        eslint(),
+        babel({ presets: ["es2015-rollup"] })
     ],
     banner : `/**
- * ${pkg.name} v${pkg.version} ${pkg.homepage}
- * Copyright ${new Date().getFullYear()} ${pkg.author.name}
- * Lincensed under ${pkg.license}
+ * @module ${pkg.name}
+ * @version ${pkg.version}
+ * @file ${pkg.description}
+ * @copyright ${pkg.author.name} ${new Date().getFullYear()}
+ * @license ${pkg.license}
+ * @see {@link ${pkg.homepage}|GitHub}
  */`
 }
