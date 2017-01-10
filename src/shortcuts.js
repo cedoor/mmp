@@ -1,20 +1,20 @@
 import * as d3 from "d3"
 import global from './global'
-import { undo, repeat, saveSnapshot } from './snapshots'
+import * as snapshots from './snapshots'
 import { zoomIn, zoomOut } from './zoom'
 import { center, newMap, clear } from './map'
-import { addChildNode, removeNode, getNodeLevel, selectNode, setNodeCoords, subnodes } from './node'
 import { orientation } from './utils'
-import { drawBranch } from './draw'
+import * as draw from './draw'
+import * as node from './node'
 
-export function setShortcuts() {
+export default function() {
     const map = {}, sc = function() {
         return shortcut( arguments, map );
     };
     window.onkeyup = window.onkeydown = function( e ) {
         map[e.keyCode] = e.type === 'keydown';
-        if ( sc('ctrl','maiusc','z') ) return !!repeat();
-        else if ( sc('ctrl','z') ) return !!undo();
+        if ( sc('ctrl','maiusc','z') ) return !!snapshots.repeat();
+        else if ( sc('ctrl','z') ) return !!snapshots.undo();
         else if ( sc('alt','maiusc','up') ) moveNode('up');
         else if ( sc('alt','maiusc','down') ) moveNode('down');
         else if ( sc('alt','maiusc','left') ) moveNode('left');
@@ -27,8 +27,8 @@ export function setShortcuts() {
         else if ( sc('alt','left') ) return !!moveSelection('left');
         else if ( sc('alt','c') ) center();
         else if ( sc('alt','n') ) newMap();
-        else if ( sc('alt','+') ) addChildNode();
-        else if ( sc('alt','-') ) removeNode();
+        else if ( sc('alt','+') ) node.addChildNode();
+        else if ( sc('alt','-') ) node.removeNode();
         else if ( sc('esc') ) clear();
     }
 }
@@ -46,11 +46,11 @@ function shortcut( keys, map ) {
 
 function moveSelectionOnLevel( dir ) {
     const sel = global.nodes.get( global.selected ),
-    lev = getNodeLevel( sel ), or = orientation( sel.x );
+    lev = node.level( sel ), or = orientation( sel.x );
     var key, tmp = Number.MAX_VALUE;
     global.nodes.each( function( n, k ) {
         const d = dir ? sel.y - n.y : n.y - sel.y,
-        sameLevel = lev === getNodeLevel( n ),
+        sameLevel = lev === node.level( n ),
         sameNode = global.selected === k,
         sameOrientation = or === orientation( n.x );
         if ( sameOrientation && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
@@ -58,7 +58,7 @@ function moveSelectionOnLevel( dir ) {
             key = k;
         }
     });
-    if ( key !== undefined ) selectNode( key );
+    if ( key !== undefined ) node.select( key );
 }
 
 function moveSelectionOnBranch( dir ) {
@@ -76,7 +76,7 @@ function moveSelectionOnBranch( dir ) {
             key = k;
         }
     });
-    if ( key !== undefined ) selectNode( key );
+    if ( key !== undefined ) node.select( key );
 }
 
 function moveSelection( dir ) {
@@ -96,12 +96,12 @@ function moveNode( dir ) {
     };
     setCoord[ dir ]( s );
     const newOr = orientation( s.x );
-    setNodeCoords( document.getElementById( global.selected ), s.x, s.y );
-    if ( s.fixed ) subnodes( global.selected, function( n ) {
+    node.moveTo( document.getElementById( global.selected ), s.x, s.y );
+    if ( s.fixed ) node.subnodes( global.selected, function( n ) {
         setCoord[ dir ]( n );
         if ( newOr !== oldOr ) n.x += ( s.x - n.x )*2;
-        setNodeCoords( this, n.x, n.y );
+        node.moveTo( this, n.x, n.y );
     });
-    d3.selectAll('.branch').attr('d', drawBranch );
-    saveSnapshot();
+    d3.selectAll('.branch').attr('d', draw.branch );
+    snapshots.save();
 }

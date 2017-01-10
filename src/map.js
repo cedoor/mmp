@@ -1,12 +1,22 @@
 import * as d3 from 'd3'
 import global from './global'
-import { event } from './dispatch'
+import { call } from './dispatch'
 import { zoom } from './zoom'
-import { drag } from './drag'
-import { createRootNode, nodeStroke, selectNode } from './node'
-import { saveSnapshot } from './snapshots'
+import { default as drag } from './drag'
+import * as snapshots from './snapshots'
+import * as draw from './draw'
+import { createRootNode, nodeStroke, select } from './node'
 import { getDataURI, checkItalicFont, checkBoldFont } from './utils'
-import { drawBranch, drawBackgroundShape } from './draw'
+
+export function data() {
+    return global.history.snapshots[ global.history.index ];
+}
+
+export function load( data ) {
+    snapshots.load( data );
+    center();
+    snapshots.save();
+}
 
 export function newMap() {
     global.counter = 0;
@@ -14,12 +24,12 @@ export function newMap() {
     createRootNode();
     redraw();
     center();
-    saveSnapshot();
-    event.call('mmcreate');
+    snapshots.save();
+    call('mmcreate');
 }
 
 export function clear() {
-    selectNode('node0')
+    select('node0')
     nodeStroke('node0', '')
 }
 
@@ -58,7 +68,7 @@ export function center() {
     },
     zoomId = d3.zoomIdentity.translate( center.x - root.x, center.y - root.y );
     global.svg.main.transition().duration(500).call( zoom.transform, zoomId );
-    event.call('mmcenter');
+    call('mmcenter');
 }
 
 export function redraw() {
@@ -79,7 +89,7 @@ export function update() {
         .call( drag )
         .on('dblclick', function( n ) {
             d3.event.stopPropagation();
-            event.call('nodedblclick', this, n.key, n.value );
+            call('nodedblclick', this, n.key, n.value );
         });
 
     node.append('text').text( n => n.value.name )
@@ -94,14 +104,14 @@ export function update() {
     node.insert('path', 'text')
         .style('fill', n => n.value['background-color'])
         .style('stroke-width', 3 )
-        .attr('d', drawBackgroundShape );
+        .attr('d', draw.background );
 
     branches.enter().insert('path', 'g')
         .style('fill', n => n.value['branch-color'])
         .style('stroke', n => n.value['branch-color'])
         .attr('class', 'branch')
         .attr('id', n => 'branchOf' + n.key )
-        .attr('d', drawBranch );
+        .attr('d', draw.branch );
 
     nodes.exit().remove();
     branches.exit().remove();

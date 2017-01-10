@@ -1,37 +1,27 @@
 import global from './global'
-import { center, redraw, clear } from './map'
+import { redraw, clear } from './map'
 import { cloneObject } from './utils'
 
 export function undo() {
         const h = global.history;
         if( h.index > 0 )
-            loadSnapshot( h.snapshots[ --h.index ] );
+            load( h.snapshots[ --h.index ] );
     }
 
 export function repeat() {
         const h = global.history;
         if( h.index < h.snapshots.length - 1 )
-            loadSnapshot( h.snapshots[ ++h.index ] );
+            load( h.snapshots[ ++h.index ] );
     }
 
-export function mmapData() {
-    return global.history.snapshots[ global.history.index ];
-}
-
-export function loadMmap( data ) {
-    loadSnapshot( data );
-    center();
-    saveSnapshot();
-}
-
-export function saveSnapshot() {
+export function save() {
     const h = global.history;
     if ( h.index < h.snapshots.length - 1 ) h.snapshots.splice( h.index + 1 );
     h.snapshots.push( mapClone() );
     h.index++;
 }
 
-function loadSnapshot( snapshot ) {
+export function load( snapshot ) {
     global.nodes.clear();
     snapshot.forEach( function( node ) {
         global.nodes.set( node.key, cloneObject( node.value ) );

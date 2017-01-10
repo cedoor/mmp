@@ -1,48 +1,59 @@
 import * as d3 from "d3"
-import global from './global'
-import { getNodeLevel } from './node'
+import glob from './global'
+import { level as nodeLevel } from './node'
 
-export function drawBranch( node ) {
-    const n = node.value;
-    const p = global.nodes.get( n.parent );
-    const nodeLevel = getNodeLevel( n );
-    const width = 22 - ( nodeLevel < 5 ? nodeLevel : 5 ) * 3;
-    const middleX = ( p.x + n.x ) / 2;
-    const orY = p.y < n.y + n.height/2 ? -1 : 1;
-    const orX = p.x > n.x ? -1 : 1;
-    const inv = orX*orY;
+/**
+ * @name branch
+ * @param {Object} n - Mind map node.
+ * @desc Draw the branch of the node.
+*/
+export function branch( node ) {
+    let
+        path = d3.path(),
+        n = node.value,
+        p = glob.nodes.get( n.parent )
+    const
+        level = nodeLevel( n ),
+        width = 22 - ( level < 5 ? level : 5 ) * 3,
+        middleX = ( p.x + n.x ) / 2,
+        orY = p.y < n.y + n.height/2 ? -1 : 1,
+        orX = p.x > n.x ? -1 : 1,
+        inv = orX*orY
 
-    const path = d3.path();
-    path.moveTo( p.x, p.y - width*.8 );
+    path.moveTo( p.x, p.y - width*.8 )
     path.bezierCurveTo(
         middleX - width*inv, p.y - width/2,
         p.x - width/2*inv, n.y + n.height/2 - width/3,
         n.x - n.width/3*orX, n.y + n.height/2 + 3
-    );
+    )
     path.bezierCurveTo(
         p.x + width/2*inv, n.y + n.height/2 + width/3,
         middleX + width*inv, p.y + width/2,
         p.x, p.y + width*.8
-    );
-    path.closePath();
+    )
+    path.closePath()
 
-    return path;
+    return path
 }
 
-export function drawBackgroundShape( node ) {
+/**
+ * @name background
+ * @param {Object} n - Mind map node.
+ * @desc Draw the background shape of the node.
+*/
+export function background( node ) {
+    let n = node.value, path = d3.path()
+    const
+        x = ( n.width = this.nextSibling.getBBox().width + 45 )/2,
+        y = ( n.height = this.nextSibling.getBBox().height + 30 )/2,
+        k = n.k = n.k || d3.randomUniform( -20, 20 )()
 
-    const n = node.value;
-    const path = d3.path();
-    const x = ( n.width = this.nextSibling.getBBox().width + 45 )/2;
-    const y = ( n.height = this.nextSibling.getBBox().height + 30 )/2;
-    const k = n.k = n.k || d3.randomUniform( -20, 20 )();
+    path.moveTo( -x, k/3 )
+    path.bezierCurveTo( -x, -y +10, -x + 10, -y, k, -y )
+    path.bezierCurveTo( x - 10, -y, x, -y + 10, x, k/3 )
+    path.bezierCurveTo( x, y - 10, x - 10, y, k, y )
+    path.bezierCurveTo( -x + 10, y, -x, y - 10, -x, k/3 )
+    path.closePath()
 
-    path.moveTo( -x, k/3 );
-    path.bezierCurveTo( -x, -y +10, -x + 10, -y, k, -y );
-    path.bezierCurveTo( x - 10, -y, x, -y + 10, x, k/3 );
-    path.bezierCurveTo( x, y - 10, x - 10, y, k, y );
-    path.bezierCurveTo( -x + 10, y, -x, y - 10, -x, k/3 );
-    path.closePath();
-
-    return path;
+    return path
 }

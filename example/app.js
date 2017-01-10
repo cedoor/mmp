@@ -91,7 +91,7 @@ mmap.on('nodeselect',  function( key, value ) {
 });
 
 mmap.on('nodedblclick', function( key, value ) {
-    nodeName.focus();    
+    nodeName.focus();
 });
 
 mmap.on('nodeupdate', function( key, value, property ) {
@@ -103,5 +103,5 @@ mmap.on('nodecreate', function( key, value ) {
 });
 
 mmap.init('#mmap',{
-    'center-onresize' : true
+    'center-onresize': true
 });

@@ -1,10 +1,10 @@
 import * as d3 from 'd3'
 import global from './global'
 import { redraw, update, clear } from './map'
-import { saveSnapshot } from './snapshots'
-import { event } from './dispatch'
+import * as snapshots from './snapshots'
+import { call } from './dispatch'
 import { error, $, cloneObject, checkBoldFont, checkItalicFont } from './utils'
-import { drawBranch, drawBackgroundShape } from './draw'
+import * as draw from './draw'
 
 export function addChildNode( prop ) {
     const s = global.nodes.get( global.selected ),
@@ -25,15 +25,15 @@ export function removeNode() {
         subnodes( key, function( n, k ) {
             global.nodes.remove( k );
         });
-        selectNode('node0');
+        select('node0');
         redraw();
-        saveSnapshot();
-        event.call('noderemove', this, key );
+        snapshots.save();
+        call('noderemove', this, key );
     } else return error('The root node can not be deleted');
 }
 
 
-export function selectNode( key ) {
+export function select( key ) {
     const sel = global.selected;
     if ( typeof key === 'string' )
         if ( global.nodes.has( key ) ) {
@@ -44,7 +44,7 @@ export function selectNode( key ) {
                 bg.style['stroke'] = color;
                 if ( sel !== key ) {
                     global.selected = key;
-                    event.call('nodeselect', node, key, global.nodes.get( key ) );
+                    call('nodeselect', node, key, global.nodes.get( key ) );
                 }
             }
         } else error('The node with the key '+ key +' don\'t exist');
@@ -69,8 +69,8 @@ export function updateNode( k, v, vis ) {
     upd = prop[k];
     if ( upd !== undefined ) {
         if ( upd.call( dom, sel, v, vis ) !== false ) {
-            if ( !vis ) saveSnapshot();
-            event.call('nodeupdate', dom, global.selected, sel, k );
+            if ( !vis ) snapshots.save();
+            call('nodeupdate', dom, global.selected, sel, k );
         }
     }
     else return error('"'+ k +'" is not a valid node property');
@@ -85,11 +85,11 @@ export function createRootNode() {
     clear();
 }
 
-export function setNodeCoords( dom, x, y ) {
+export function moveTo( dom, x, y ) {
     dom.setAttribute('transform','translate('+[ x, y ]+')');
 }
 
-export function getNodeLevel( n ) {
+export function level( n ) {
     var p = n.parent, level = 0;
     while ( p ) {
         level++;
@@ -108,8 +108,8 @@ export function nodeStroke( node, value ) {
 function addNode( key, value ) {
     global.nodes.set( key, value );
     update();
-    event.call('nodecreate', $( key ), key, value );
-    saveSnapshot();
+    call('nodecreate', $( key ), key, value );
+    snapshots.save();
 }
 
 function findXPosition( sel, root ) {
@@ -136,8 +136,8 @@ export function subnodes( key, cb ) {
 function updateName( sel, v, vis ) {
     if ( sel.name != v || vis ) {
         this.childNodes[1].innerHTML = v;
-        d3.select( this.childNodes[0] ).attr('d', drawBackgroundShape );
-        d3.selectAll('.branch').attr('d', drawBranch );
+        d3.select( this.childNodes[0] ).attr('d', draw.background );
+        d3.selectAll('.branch').attr('d', draw.branch );
         if ( !vis ) sel.name = v;
     } else return false;
 }
@@ -172,8 +172,8 @@ function updateBranchColor( sel, v, vis ) {
 function updateFontSize( sel, v, vis ) {
     if ( sel['font-size'] != v || vis ) {
         this.childNodes[1].style['font-size'] = v;
-        d3.select( this.childNodes[0] ).attr('d', drawBackgroundShape );
-        d3.selectAll('.branch').attr('d', drawBranch );
+        d3.select( this.childNodes[0] ).attr('d', draw.background );
+        d3.selectAll('.branch').attr('d', draw.branch );
         if ( !vis ) sel['font-size'] = v;
     } else return false;
 }

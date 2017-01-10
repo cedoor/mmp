@@ -1,6 +1,11 @@
-import * as d3 from "d3"
+import { dispatch } from "d3"
 
-export const event = d3.dispatch(
+// Export some d3-dispatch functions
+export let call = ( e, ...p ) => dispatcher.call( e, ...p )
+export let on = ( e, cb ) => dispatcher.on( e, cb )
+
+// All events of mmap
+let dispatcher = dispatch(
     'mmcreate',
     'mmcenter',
     'nodedblclick',
@@ -9,7 +14,3 @@ export const event = d3.dispatch(
     'nodecreate',
     'noderemove'
 )
-
-export function on( e, cb ) {
-    event.on( e, cb )
-}
