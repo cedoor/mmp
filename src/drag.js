@@ -2,7 +2,6 @@ import * as d3 from "d3"
 import glob from './global'
 import * as node from './node'
 import { save as saveSnapshot } from './snapshots'
-import { orientation } from './utils'
 import * as draw from './draw'
 
 // Export all d3-drag functions
@@ -32,7 +31,7 @@ function dragged( n ) {
         // Set new coordinates and save them
         x = n.value.x += dx, y = n.value.y += dy,
         // Check if old and new orientation are equal
-        c = orientation( x ) === orientation( x - dx )
+        c = node.orientation( x ) === node.orientation( x - dx )
     // Move graphically the node in new coordinates
     node.moveTo( this, x, y )
     // If the node isn't fixed move also subnodes

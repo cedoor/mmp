@@ -69,7 +69,7 @@ saveImg.onclick = function() {
         a.download = 'mmap';
         a.href = url;
         a.click();
-    });
+    }, 'jpeg');
 }
 
 // mmap events
@@ -102,6 +102,6 @@ mmap.on('nodecreate', function( key, value ) {
     console.log('The node \"'+ key +'\" has been created');
 });
 
-mmap.init('#mmap',{
+mmap.init({
     'center-onresize': true
 });

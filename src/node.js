@@ -1,29 +1,29 @@
 import * as d3 from 'd3'
-import global from './global'
+import glob from './global'
 import { redraw, update, clear } from './map'
 import * as snapshots from './snapshots'
 import { call } from './dispatch'
-import { error, $, cloneObject, checkBoldFont, checkItalicFont } from './utils'
+import { error, $, cloneObject, fontStyle, fontWeight } from './utils'
 import * as draw from './draw'
 
 export function addChildNode( prop ) {
-    const s = global.nodes.get( global.selected ),
-    root = global.nodes.get('node0'),
-    key = 'node' + ( ++global.counter ),
-    value = Object.assign( {}, global.options['node'], {
+    const s = glob.nodes.get( glob.selected ),
+    root = glob.nodes.get('node0'),
+    key = 'node' + ( ++glob.counter ),
+    value = Object.assign( {}, glob.options['node'], {
         'x' : prop && prop.x || findXPosition( s, root ),
         'y' : prop && prop.y || s.y - d3.randomUniform( 60, 100 )(),
-        'parent' : global.selected
+        'parent' : glob.selected
     });
     addNode( key, value );
 }
 
 export function removeNode() {
-    const key = global.selected;
+    const key = glob.selected;
     if( key !== 'node0' ) {
-        global.nodes.remove( key );
+        glob.nodes.remove( key );
         subnodes( key, function( n, k ) {
-            global.nodes.remove( k );
+            glob.nodes.remove( k );
         });
         select('node0');
         redraw();
@@ -34,28 +34,28 @@ export function removeNode() {
 
 
 export function select( key ) {
-    const sel = global.selected;
+    const sel = glob.selected;
     if ( typeof key === 'string' )
-        if ( global.nodes.has( key ) ) {
+        if ( glob.nodes.has( key ) ) {
             const node = $( key ), bg = node.childNodes[0];
             if ( bg.style['stroke'].length === 0 ) {
                 if ( sel ) nodeStroke( sel, '');
                 const color = d3.color( bg.style['fill'] ).darker( .5 );
                 bg.style['stroke'] = color;
                 if ( sel !== key ) {
-                    global.selected = key;
-                    call('nodeselect', node, key, global.nodes.get( key ) );
+                    glob.selected = key;
+                    call('nodeselect', node, key, glob.nodes.get( key ) );
                 }
             }
         } else error('The node with the key '+ key +' don\'t exist');
     else return {
-        key : sel, value : cloneObject( global.nodes.get( sel ) )
+        key : sel, value : cloneObject( glob.nodes.get( sel ) )
     }
 }
 
 export function updateNode( k, v, vis ) {
-    const sel = global.nodes.get( global.selected ),
-    dom = document.getElementById( global.selected ),
+    const sel = glob.nodes.get( glob.selected ),
+    dom = document.getElementById( glob.selected ),
     prop = {
         'name' : updateName,
         'fixed' : updateFixStatus,
@@ -70,18 +70,18 @@ export function updateNode( k, v, vis ) {
     if ( upd !== undefined ) {
         if ( upd.call( dom, sel, v, vis ) !== false ) {
             if ( !vis ) snapshots.save();
-            call('nodeupdate', dom, global.selected, sel, k );
+            call('nodeupdate', dom, glob.selected, sel, k );
         }
     }
     else return error('"'+ k +'" is not a valid node property');
 }
 
-export function createRootNode() {
-    const value = Object.assign( {}, global.options['root-node'], {
-        'x' : parseInt( global.container.style('width') )/2,
-        'y' : parseInt( global.container.style('height') )/2
+export function addRoot() {
+    const value = Object.assign( {}, glob.options['root-node'], {
+        'x' : parseInt( glob.container.style('width') )/2,
+        'y' : parseInt( glob.container.style('height') )/2
     });
-    addNode('node' + global.counter, value );
+    addNode('node' + glob.counter, value );
     clear();
 }
 
@@ -93,7 +93,7 @@ export function level( n ) {
     var p = n.parent, level = 0;
     while ( p ) {
         level++;
-        const n = global.nodes.get( p );
+        const n = glob.nodes.get( p );
         p = n.parent;
     }
     return level;
@@ -105,8 +105,12 @@ export function nodeStroke( node, value ) {
     else return bg.style['stroke'];
 }
 
+export function orientation( x ) {
+    return x < glob.nodes.get('node0').x
+}
+
 function addNode( key, value ) {
-    global.nodes.set( key, value );
+    glob.nodes.set( key, value );
     update();
     call('nodecreate', $( key ), key, value );
     snapshots.save();
@@ -118,14 +122,14 @@ function findXPosition( sel, root ) {
     else if ( sel.x < root.x ) dir = -1;
     else {
         const f = n => n.parent === 'node0',
-        l = global.nodes.values().filter( f ).length;
+        l = glob.nodes.values().filter( f ).length;
         dir = l % 2 === 0 ? -1 : 1;
     }
     return sel.x + 200 * dir;
 }
 
 export function subnodes( key, cb ) {
-    global.nodes.each( function( n, k ) {
+    glob.nodes.each( function( n, k ) {
         if ( n.parent === key ) {
             cb.call( document.getElementById( k ), n, k );
             subnodes( k, cb );
@@ -160,9 +164,9 @@ function updateTextColor( sel, v, vis ) {
 }
 
 function updateBranchColor( sel, v, vis ) {
-    if( global.selected !== 'node0' ) {
+    if( glob.selected !== 'node0' ) {
         if ( sel['branch-color'] !== v || vis ) {
-            const branch = document.getElementById('branchOf'+ global.selected );
+            const branch = document.getElementById('branchOf'+ glob.selected );
             branch.style['fill'] = branch.style['stroke'] = v;
             if ( !vis ) sel['branch-color'] = v;
         } else return false;
@@ -179,16 +183,16 @@ function updateFontSize( sel, v, vis ) {
 }
 
 function updateItalicFont( sel ) {
-    const style = checkItalicFont( sel.italic = !sel.italic );
+    const style = fontStyle( sel.italic = !sel.italic );
     this.childNodes[1].style['font-style'] = style;
 }
 
 function updateBoldFont( sel ) {
-    const style = checkBoldFont( sel.bold = !sel.bold );
+    const style = fontWeight( sel.bold = !sel.bold );
     this.childNodes[1].style['font-weight'] = style;
 }
 
 function updateFixStatus( sel ) {
-    if ( global.selected !== 'node0' ) sel.fixed = !sel.fixed;
+    if ( glob.selected !== 'node0' ) sel.fixed = !sel.fixed;
     else return error('The root node can not be fixed');
 }

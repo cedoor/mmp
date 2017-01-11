@@ -3,7 +3,6 @@ import global from './global'
 import * as snapshots from './snapshots'
 import { zoomIn, zoomOut } from './zoom'
 import { center, newMap, clear } from './map'
-import { orientation } from './utils'
 import * as draw from './draw'
 import * as node from './node'
 
@@ -46,13 +45,13 @@ function shortcut( keys, map ) {
 
 function moveSelectionOnLevel( dir ) {
     const sel = global.nodes.get( global.selected ),
-    lev = node.level( sel ), or = orientation( sel.x );
+    lev = node.level( sel ), or = node.orientation( sel.x );
     var key, tmp = Number.MAX_VALUE;
     global.nodes.each( function( n, k ) {
         const d = dir ? sel.y - n.y : n.y - sel.y,
         sameLevel = lev === node.level( n ),
         sameNode = global.selected === k,
-        sameOrientation = or === orientation( n.x );
+        sameOrientation = or === node.orientation( n.x );
         if ( sameOrientation && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
             tmp = d;
             key = k;
@@ -87,7 +86,7 @@ function moveSelection( dir ) {
 
 function moveNode( dir ) {
     const s = global.nodes.get( global.selected ),
-    range = 10, oldOr = orientation( s.x ),
+    range = 10, oldOr = node.orientation( s.x ),
     setCoord = {
         up: n => n.y -= range,
         down: n => n.y += range,
@@ -95,7 +94,7 @@ function moveNode( dir ) {
         left: n => n.x -= range
     };
     setCoord[ dir ]( s );
-    const newOr = orientation( s.x );
+    const newOr = node.orientation( s.x );
     node.moveTo( document.getElementById( global.selected ), s.x, s.y );
     if ( s.fixed ) node.subnodes( global.selected, function( n ) {
         setCoord[ dir ]( n );

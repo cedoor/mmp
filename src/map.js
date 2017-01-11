@@ -5,8 +5,8 @@ import { zoom } from './zoom'
 import { default as drag } from './drag'
 import * as snapshots from './snapshots'
 import * as draw from './draw'
-import { createRootNode, nodeStroke, select } from './node'
-import { getDataURI, checkItalicFont, checkBoldFont } from './utils'
+import { addRoot, nodeStroke, select } from './node'
+import { fontStyle, fontWeight } from './utils'
 
 export function data() {
     return global.history.snapshots[ global.history.index ];
@@ -21,7 +21,7 @@ export function load( data ) {
 export function newMap() {
     global.counter = 0;
     global.nodes.clear();
-    createRootNode();
+    addRoot();
     redraw();
     center();
     snapshots.save();
@@ -31,34 +31,6 @@ export function newMap() {
 export function clear() {
     select('node0')
     nodeStroke('node0', '')
-}
-
-/**
- * @name image
- * @param {function} cb callback
- * @param {string} type type of image, default png
- * @param {string} background color of map background
- * @description
- * Get a DOMString containing the data URI of map image and
- * pass it to callback function.
-*/
-export function image( cb, type, background ) {
-    const image = new Image();
-    image.src = getDataURI();
-    image.onload = function() {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-
-        canvas.width = image.width;
-        canvas.height = image.height;
-        context.drawImage( image, 0, 0 );
-
-        context.globalCompositeOperation = 'destination-over';
-        context.fillStyle = background || '#ffffff';
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
-        cb( canvas.toDataURL( type ) );
-    }
 }
 
 export function center() {
@@ -98,8 +70,8 @@ export function update() {
         .style('alignment-baseline', 'middle')
         .style('fill', n => n.value['text-color'])
         .style('font-size', n => n.value['font-size'])
-        .style('font-style', n => checkItalicFont( n.value.italic ) )
-        .style('font-weight', n => checkBoldFont( n.value.bold ));
+        .style('font-style', n => fontStyle( n.value.italic ) )
+        .style('font-weight', n => fontWeight( n.value.bold ));
 
     node.insert('path', 'text')
         .style('fill', n => n.value['background-color'])
