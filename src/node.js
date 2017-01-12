@@ -1,140 +1,225 @@
 import * as d3 from 'd3'
 import glob from './global'
-import { redraw, update, clear } from './map'
-import * as snapshots from './snapshots'
-import { call } from './dispatch'
-import { error, $, cloneObject, fontStyle, fontWeight } from './utils'
 import * as draw from './draw'
+import { call as callEvent } from './dispatch'
+import * as snapshots from './snapshots'
+import * as map from './map'
+import { error, cloneObject, fontStyle, fontWeight } from './utils'
 
-export function addChildNode( prop ) {
-    const s = glob.nodes.get( glob.selected ),
-    root = glob.nodes.get('node0'),
-    key = 'node' + ( ++glob.counter ),
-    value = Object.assign( {}, glob.options['node'], {
-        'x' : prop && prop.x || findXPosition( s, root ),
-        'y' : prop && prop.y || s.y - d3.randomUniform( 60, 100 )(),
-        'parent' : glob.selected
-    });
-    addNode( key, value );
+/**
+ * @name addChild
+ * @return {Object} prop - The properties of node.
+ * @desc Add a child node to selected node.
+*/
+export function addChild( prop ) {
+    let parent = glob.nodes.get( glob.selected ),
+        key = 'node' + ( ++glob.counter ),
+        opt = glob.options.node,
+        value = Object.assign( {}, {
+            'name': prop && prop['name'] || opt['name'],
+            'background-color': prop && prop['background-color'] || opt['background-color'],
+            'text-color': prop && prop['text-color'] || opt['text-color'],
+            'branch-color': prop && prop['branch-color'] || parent['branch-color'] || opt['branch-color'],
+            'font-size': prop && prop['font-size'] || opt['font-size'],
+            'italic': prop && prop['italic'] || opt['italic'],
+            'bold': prop && prop['bold'] || opt['bold'],
+            'fixed': prop && prop['fixed'] || opt['fixed'],
+            'x': prop && prop.x || calcX( parent.x ),
+            'y': prop && prop.y || parent.y - d3.randomUniform( 60, 100 )(),
+            'parent': glob.selected
+        })
+    add( key, value )
 }
 
-export function removeNode() {
-    const key = glob.selected;
+/**
+ * @name remove
+ * @return {boolean} error - False.
+ * @desc Remove the selected node.
+*/
+export function remove() {
+    const key = glob.selected
     if( key !== 'node0' ) {
-        glob.nodes.remove( key );
-        subnodes( key, function( n, k ) {
-            glob.nodes.remove( k );
-        });
-        select('node0');
-        redraw();
-        snapshots.save();
-        call('noderemove', this, key );
-    } else return error('The root node can not be deleted');
+        glob.nodes.remove( key )
+        subnodes( key, ( n, k ) => {
+            glob.nodes.remove( k )
+        })
+        select('node0')
+        map.redraw()
+        snapshots.save()
+        callEvent('noderemove', this, key )
+    } else return error('The root node can not be deleted')
 }
 
-
+/**
+ * @name select
+ * @param {string} [key] - The key of node to select.
+ * @return {Object} [node] - The selected node.
+ * @desc Select a node or return the selected node.
+*/
 export function select( key ) {
-    const sel = glob.selected;
+    const s = glob.selected
     if ( typeof key === 'string' )
         if ( glob.nodes.has( key ) ) {
-            const node = $( key ), bg = node.childNodes[0];
+            const node = dom( key ), bg = node.childNodes[0]
             if ( bg.style['stroke'].length === 0 ) {
-                if ( sel ) nodeStroke( sel, '');
-                const color = d3.color( bg.style['fill'] ).darker( .5 );
-                bg.style['stroke'] = color;
-                if ( sel !== key ) {
-                    glob.selected = key;
-                    call('nodeselect', node, key, glob.nodes.get( key ) );
+                if ( s ) stroke( s, '')
+                const color = d3.color( bg.style['fill'] ).darker( .5 )
+                bg.style['stroke'] = color
+                if ( s !== key ) {
+                    glob.selected = key
+                    callEvent('nodeselect', node, key, glob.nodes.get( key ) )
                 }
             }
-        } else error('The node with the key '+ key +' don\'t exist');
+        } else error('The node with the key '+ key +' don\'t exist')
     else return {
-        key : sel, value : cloneObject( glob.nodes.get( sel ) )
+        key : s, value : cloneObject( glob.nodes.get( s ) )
     }
 }
 
-export function updateNode( k, v, vis ) {
-    const sel = glob.nodes.get( glob.selected ),
-    dom = document.getElementById( glob.selected ),
-    prop = {
-        'name' : updateName,
-        'fixed' : updateFixStatus,
-        'background-color' : updateBackgroundColor,
-        'branch-color' : updateBranchColor,
-        'text-color' : updateTextColor,
-        'font-size' : updateFontSize,
-        'italic' : updateItalicFont,
-        'bold' : updateBoldFont
-    },
-    upd = prop[k];
-    if ( upd !== undefined ) {
-        if ( upd.call( dom, sel, v, vis ) !== false ) {
-            if ( !vis ) snapshots.save();
-            call('nodeupdate', dom, glob.selected, sel, k );
+/**
+ * @name update
+ * @param {string} k - The key of property.
+ * @param {Object} v - The value of property.
+ * @param {boolean} [vis] - Only visual change.
+ * @return {boolean} error - False.
+ * @desc Update the properties of the selected node.
+*/
+export function update( k, v, vis ) {
+    let s = glob.nodes.get( glob.selected ),
+        d = dom( glob.selected ),
+        prop = {
+            'name' : updateName,
+            'fixed' : updateFixStatus,
+            'background-color' : updateBackgroundColor,
+            'branch-color' : updateBranchColor,
+            'text-color' : updateTextColor,
+            'font-size' : updateFontSize,
+            'italic' : updateItalicFont,
+            'bold' : updateBoldFont
+        },
+        upd = prop[k]
+    if ( upd !== undefined )
+        if ( upd.call( d, s, v, vis ) !== false ) {
+            if ( !vis ) snapshots.save()
+            callEvent('nodeupdate', d, glob.selected, s, k )
         }
-    }
-    else return error('"'+ k +'" is not a valid node property');
+    else return error('"'+ k +'" is not a valid node property')
 }
 
+/**
+ * @name addRoot
+ * @desc Add the root node in the mind map.
+*/
 export function addRoot() {
-    const value = Object.assign( {}, glob.options['root-node'], {
-        'x' : parseInt( glob.container.style('width') )/2,
-        'y' : parseInt( glob.container.style('height') )/2
-    });
-    addNode('node' + glob.counter, value );
-    clear();
+    let value = Object.assign({
+        x : parseInt( glob.container.style('width') )/2,
+        y : parseInt( glob.container.style('height') )/2
+    }, glob.options['root-node'])
+    add('node' + glob.counter, value )
+    map.clear()
 }
 
+/**
+ * @name moveTo
+ * @param {Object} dom
+ * @param {number} x
+ * @param {number} y
+ * @desc Move graphically a node.
+*/
 export function moveTo( dom, x, y ) {
     dom.setAttribute('transform','translate('+[ x, y ]+')');
 }
 
+/**
+ * @name level
+ * @param {Object} n - The node.
+ * @return {number} level - The level of node.
+ * @desc Find the level of a node.
+*/
 export function level( n ) {
-    var p = n.parent, level = 0;
+    let p = n.parent, level = 0
     while ( p ) {
-        level++;
-        const n = glob.nodes.get( p );
-        p = n.parent;
+        level++
+        p = glob.nodes.get( p ).parent
     }
-    return level;
+    return level
 }
 
-export function nodeStroke( node, value ) {
-    const bg = $( node ).childNodes[0];
-    if ( value !== 'string' ) return bg.style['stroke'] = value;
-    else return bg.style['stroke'];
+/**
+ * @name stroke
+ * @param {Object} n - The node.
+ * @param {string} [v] - The value of stroke color.
+ * @return {string} value - The value of stroke color.
+ * @desc Set color of node stroke if v is defined and return its value.
+*/
+export function stroke( n, v ) {
+    let bg = dom( n ).childNodes[0]
+    return v ? bg.style['stroke'] = v : bg.style['stroke']
 }
 
-export function orientation( x ) {
-    return x < glob.nodes.get('node0').x
-}
-
-function addNode( key, value ) {
-    glob.nodes.set( key, value );
-    update();
-    call('nodecreate', $( key ), key, value );
-    snapshots.save();
-}
-
-function findXPosition( sel, root ) {
-    var dir;
-    if ( sel.x > root.x ) dir = 1;
-    else if ( sel.x < root.x ) dir = -1;
-    else {
-        const f = n => n.parent === 'node0',
-        l = glob.nodes.values().filter( f ).length;
-        dir = l % 2 === 0 ? -1 : 1;
-    }
-    return sel.x + 200 * dir;
-}
-
+/**
+ * @name subnodes
+ * @param {string} key - The key of the parent node.
+ * @param {requestCallback} cb - A callback.
+ * @desc Iterate all subnodes of a node and exec a callback for each subnode.
+*/
 export function subnodes( key, cb ) {
     glob.nodes.each( function( n, k ) {
         if ( n.parent === key ) {
-            cb.call( document.getElementById( k ), n, k );
-            subnodes( k, cb );
+            cb.call( document.getElementById( k ), n, k )
+            subnodes( k, cb )
         }
-    });
+    })
+}
+
+/**
+ * @name orientation
+ * @param {number} x - The key of the parent node.
+ * @return {boolean} orientation
+ * @desc Return the orientation of a node in the mind map ( true: on left )
+*/
+export function orientation( x ) {
+    let root = glob.nodes.get('node0')
+    return x < root.x ? true : x > root.x ? false : undefined
+}
+
+/**
+ * @name dom
+ * @param {string} k - The key of node.
+ * @return {Object} dom
+ * @desc Return the dom node of a mind map node.
+*/
+export let dom = k => document.getElementById( k )
+
+/**
+ * @name add
+ * @param {string} k - The key of node.
+ * @param {Object} v - The value of node.
+ * @desc Add a node in the mind map.
+*/
+function add( k, v ) {
+    glob.nodes.set( k, v )
+    map.update()
+    callEvent('nodecreate', dom( k ), k, v )
+    snapshots.save()
+}
+
+/**
+ * @name calcX
+ * @param {number} x - x coordinate of parent node.
+ * @return {number} x - x coordinate of child node.
+ * @desc Return the x coordinate of a node based on parent x coordinate.
+*/
+function calcX( x ) {
+    let dir, or = orientation( x )
+    if ( or === true ) dir = -1
+    else if ( or === false ) dir = 1
+    else {
+        let f = n => n.parent === 'node0',
+        l = glob.nodes.values().filter( f ).length
+        dir = l % 2 === 0 ? -1 : 1
+    }
+    return x + 200 * dir
 }
 
 function updateName( sel, v, vis ) {
@@ -148,7 +233,7 @@ function updateName( sel, v, vis ) {
 
 function updateBackgroundColor( sel, v, vis ) {
     if ( sel['background-color'] !== v || vis ) {
-        const bg = this.childNodes[0];
+        const bg = this.childNodes[0]
         bg.style['fill'] = v;
         if ( bg.style['stroke'] !== '' )
             bg.style['stroke'] = d3.color( v ).darker( .5 );

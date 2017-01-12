@@ -5,7 +5,7 @@ import { call as callEvent } from './dispatch'
 import * as map from './map'
 import { addRoot as addRootNode } from './node'
 import { default as shortcuts } from './shortcuts'
-import { overwriteProperties, error } from './utils'
+import { overwriteObject, error } from './utils'
 
 /**
  * @name init
@@ -32,7 +32,7 @@ export default function( options ) {
     // If there are external options, then update the default options
     if ( options !== undefined )
         options.constructor === Object
-            ? overwriteProperties( glob.options, options )
+            ? overwriteObject( glob.options, options )
             : error('mmap options invalid')
 
     // Set the optional settings

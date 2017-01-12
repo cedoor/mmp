@@ -2,33 +2,33 @@ import * as d3 from "d3"
 import global from './global'
 import * as snapshots from './snapshots'
 import { zoomIn, zoomOut } from './zoom'
-import { center, newMap, clear } from './map'
+import { center, reset, clear } from './map'
 import * as draw from './draw'
 import * as node from './node'
 
 export default function() {
     const map = {}, sc = function() {
-        return shortcut( arguments, map );
-    };
+        return shortcut( arguments, map )
+    }
     window.onkeyup = window.onkeydown = function( e ) {
-        map[e.keyCode] = e.type === 'keydown';
-        if ( sc('ctrl','maiusc','z') ) return !!snapshots.repeat();
-        else if ( sc('ctrl','z') ) return !!snapshots.undo();
-        else if ( sc('alt','maiusc','up') ) moveNode('up');
-        else if ( sc('alt','maiusc','down') ) moveNode('down');
-        else if ( sc('alt','maiusc','left') ) moveNode('left');
-        else if ( sc('alt','maiusc','right') ) moveNode('right');
-        else if ( sc('alt','maiusc','+') ) zoomIn();
-        else if ( sc('alt','maiusc','-') ) zoomOut();
-        else if ( sc('alt','up') ) return !!moveSelection('up');
-        else if ( sc('alt','down') ) return !!moveSelection('down');
-        else if ( sc('alt','right') ) return !!moveSelection('right');
-        else if ( sc('alt','left') ) return !!moveSelection('left');
-        else if ( sc('alt','c') ) center();
-        else if ( sc('alt','n') ) newMap();
-        else if ( sc('alt','+') ) node.addChildNode();
-        else if ( sc('alt','-') ) node.removeNode();
-        else if ( sc('esc') ) clear();
+        map[e.keyCode] = e.type === 'keydown'
+        if ( sc('ctrl','maiusc','z') ) return !!snapshots.repeat()
+        else if ( sc('ctrl','z') ) return !!snapshots.undo()
+        else if ( sc('alt','maiusc','up') ) moveNode('up')
+        else if ( sc('alt','maiusc','down') ) moveNode('down')
+        else if ( sc('alt','maiusc','left') ) moveNode('left')
+        else if ( sc('alt','maiusc','right') ) moveNode('right')
+        else if ( sc('alt','maiusc','+') ) zoomIn()
+        else if ( sc('alt','maiusc','-') ) zoomOut()
+        else if ( sc('alt','up') ) return !!moveSelection('up')
+        else if ( sc('alt','down') ) return !!moveSelection('down')
+        else if ( sc('alt','right') ) return !!moveSelection('right')
+        else if ( sc('alt','left') ) return !!moveSelection('left')
+        else if ( sc('alt','c') ) center()
+        else if ( sc('alt','n') ) reset()
+        else if ( sc('alt','+') ) node.addChild()
+        else if ( sc('alt','-') ) node.remove()
+        else if ( sc('esc') ) clear()
     }
 }
 

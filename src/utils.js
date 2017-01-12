@@ -18,42 +18,30 @@ export function cloneObject( obj ) {
 
 /**
  * @name fontStyle
- * @param {boolean} b - .
- * @desc Clone an object.
+ * @param {boolean} b
+ * @desc Translate a boolean value in a font style value (italic/normal).
 */
 export let fontStyle = b => b ? 'italic' : 'normal'
 
 /**
  * @name fontWeight
- * @param {boolean} b - .
- * @desc Clone an object.
+ * @param {boolean} b
+ * @desc Translate a boolean value in a font weight value (bold/normal).
 */
 export let fontWeight = b => b ? 'bold' : 'normal'
 
 /**
- * @name fontWeight
- * @param {boolean} b - .
- * @desc Clone an object.
+ * @name overwriteObject
+ * @param {Object} target
+ * @param {Object} source
+ * @desc Overwrite in depth an object with another Object.
 */
-export function overwriteProperties( target, source ) {
+export function overwriteObject( target, source ) {
     for ( let prop in target ) {
-        var t = target[ prop ], s = source[ prop ];
+        let t = target[ prop ], s = source[ prop ]
         if ( s && s.constructor === t.constructor ) {
-            if ( s.constructor === Object ) overwriteProperties( t, s )
-            else target[ prop ] = s;
+            if ( s.constructor === Object ) overwriteObject( t, s )
+            else target[ prop ] = s
         }
     }
-}
-
-/**
- * @name fontWeight
- * @param {boolean} b - .
- * @desc Clone an object.
-*/
-export function $( s ) {
-    const k = s.substring( 0, 1 ), n = s.substring( 1 );
-    return k === '.' ? document.getElementsByClassName( n )
-        : k === '#' ? document.getElementById( n )
-        : s.includes('node') ? document.getElementById( s )
-        : document.getElementsByTagName( s );
 }
