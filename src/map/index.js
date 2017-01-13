@@ -1,0 +1,5 @@
+export { default as image } from './image'
+export { undo, repeat, load, save, data } from './snapshots'
+export { default as zoom, center, zoomIn, zoomOut } from './zoom'
+export { update, redraw } from './update'
+export { default as reset } from './new'

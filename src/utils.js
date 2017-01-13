@@ -17,6 +17,17 @@ export function cloneObject( obj ) {
 }
 
 /**
+ * @name fromObjectToArray
+ * @param {Object} obj - The object to be converted.
+ * @desc Convert an Object to an array.
+*/
+export function fromObjectToArray( obj ) {
+    let array = []
+    for ( let p in obj ) array.push([ p, obj[ p ] ])
+    return array
+}
+
+/**
  * @name fontStyle
  * @param {boolean} b
  * @desc Translate a boolean value in a font style value (italic/normal).
@@ -40,7 +51,8 @@ export function overwriteObject( target, source ) {
     for ( let prop in target ) {
         let t = target[ prop ], s = source[ prop ]
         if ( s && s.constructor === t.constructor ) {
-            if ( s.constructor === Object ) overwriteObject( t, s )
+            if ( s.constructor === Object && !Array.isArray( s ) )
+                overwriteObject( t, s )
             else target[ prop ] = s
         }
     }

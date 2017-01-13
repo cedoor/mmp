@@ -1,6 +1,6 @@
 import * as d3 from "d3"
-import glob from './global'
-import { level as nodeLevel } from './node'
+import glob from '../global'
+import { level as nodeLevel } from '../node/index'
 
 /**
  * @name branch

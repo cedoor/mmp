@@ -1,8 +1,8 @@
 import * as d3 from "d3"
-import glob from './global'
-import * as node from './node'
-import { save as saveSnapshot } from './snapshots'
-import * as draw from './draw'
+import glob from '../global'
+import { save as saveSnapshot } from '../map/snapshots'
+import * as draw from '../draw/draw'
+import * as node from './index'
 
 // Export all d3-drag functions
 export default d3.drag()
@@ -33,7 +33,7 @@ function dragged( n ) {
         // Check if old and new orientation are equal
         c = node.orientation( x ) === node.orientation( x - dx )
     // Move graphically the node in new coordinates
-    node.moveTo( this, x, y )
+    this.setAttribute('transform','translate('+[ x, y ]+')')
     // If the node isn't fixed move also subnodes
     if ( n.value.fixed ) {
         let parent = n
@@ -41,7 +41,7 @@ function dragged( n ) {
             const x = n.x += dx, y = n.y += dy
             // If c is false change the orientation of subnodes
             if ( !c ) n.x += ( parent.value.x - n.x )*2
-            node.moveTo( this, x, y )
+            this.setAttribute('transform','translate('+[ x, y ]+')')
         })
     }
     // Update all mind map branches

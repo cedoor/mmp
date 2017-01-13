@@ -6,7 +6,7 @@ import eslint from 'rollup-plugin-eslint'
 const pkg = require('./package.json')
 
 export default {
-    entry: 'index.js',
+    entry: 'src/index.js',
     dest: 'build/'+ pkg.name +'.js',
     format: 'umd',
     moduleName: pkg.name,

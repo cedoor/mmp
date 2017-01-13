@@ -1,106 +1,93 @@
-import * as d3 from "d3"
-import global from './global'
-import * as snapshots from './snapshots'
-import { zoomIn, zoomOut } from './zoom'
-import { center, reset, clear } from './map'
-import * as draw from './draw'
-import * as node from './node'
+import glob from './global'
+import { undo, repeat } from './map/snapshots'
+import { center, reset, zoomIn, zoomOut } from './map/index'
+import { fromObjectToArray } from './utils'
+import * as node from './node/index'
 
+/**
+ * @name shortcuts
+ * @desc Set all shortcuts of the mind map.
+*/
 export default function() {
-    const map = {}, sc = function() {
-        return shortcut( arguments, map )
-    }
-    window.onkeyup = window.onkeydown = function( e ) {
-        map[e.keyCode] = e.type === 'keydown'
-        if ( sc('ctrl','maiusc','z') ) return !!snapshots.repeat()
-        else if ( sc('ctrl','z') ) return !!snapshots.undo()
-        else if ( sc('alt','maiusc','up') ) moveNode('up')
-        else if ( sc('alt','maiusc','down') ) moveNode('down')
-        else if ( sc('alt','maiusc','left') ) moveNode('left')
-        else if ( sc('alt','maiusc','right') ) moveNode('right')
-        else if ( sc('alt','maiusc','+') ) zoomIn()
-        else if ( sc('alt','maiusc','-') ) zoomOut()
-        else if ( sc('alt','up') ) return !!moveSelection('up')
-        else if ( sc('alt','down') ) return !!moveSelection('down')
-        else if ( sc('alt','right') ) return !!moveSelection('right')
-        else if ( sc('alt','left') ) return !!moveSelection('left')
-        else if ( sc('alt','c') ) center()
-        else if ( sc('alt','n') ) reset()
-        else if ( sc('alt','+') ) node.addChild()
-        else if ( sc('alt','-') ) node.remove()
-        else if ( sc('esc') ) clear()
-    }
-}
-
-function shortcut( keys, map ) {
-    const alias = {
-        'up' : 38, 'down' : 40, 'right' : 39, 'left' : 37,
-        'ctrl' : 17, 'alt' : 18, 'maiusc' : 16, 'esc' : 27, 'f' : 70,
-        'c' : 67, 'n' : 78, '+' : 187, '-' : 189, 'i' : 73, 'z' : 90
-    }
-    for ( var i = 0; i < keys.length; i++ )
-        if( ! map[alias[keys[i]]] ) return false;
-    return true;
-}
-
-function moveSelectionOnLevel( dir ) {
-    const sel = global.nodes.get( global.selected ),
-    lev = node.level( sel ), or = node.orientation( sel.x );
-    var key, tmp = Number.MAX_VALUE;
-    global.nodes.each( function( n, k ) {
-        const d = dir ? sel.y - n.y : n.y - sel.y,
-        sameLevel = lev === node.level( n ),
-        sameNode = global.selected === k,
-        sameOrientation = or === node.orientation( n.x );
-        if ( sameOrientation && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
-            tmp = d;
-            key = k;
+    let map = {}, shortcuts = fromObjectToArray( glob.options.shortcuts )
+    // Order the array based on the number of keys
+    shortcuts = shortcuts.sort( ( a, b ) => b[1].length - a[1].length )
+    // ...
+    window.onkeyup = e => map[ e.keyCode ] = false
+    window.onkeydown = function( e ) {
+        map[ e.keyCode ] = true
+        for ( let i in shortcuts ) {
+            let keys = shortcuts[i][1], f = shortcuts[i][0]
+            if ( checkKeys( map, keys ) ) {
+                exec( f )
+                return false
+            }
         }
-    });
-    if ( key !== undefined ) node.select( key );
+    }
 }
 
-function moveSelectionOnBranch( dir ) {
-    const sel = global.nodes.get( global.selected ),
-    root = global.nodes.get('node0');
-    var key, checks, tmp = Number.MIN_VALUE;
-    global.nodes.each( function( n, k ) {
-        if ( sel.x < root.x )
-            checks = dir ? n.parent === global.selected : sel.parent === k;
-        else if ( sel.x > root.x )
-            checks = !dir ? n.parent === global.selected : sel.parent === k;
-        else checks = ( dir ? n.x < root.x : n.x > root.x ) && n.parent === global.selected;
-        if ( checks && n.y > tmp ) {
-            tmp = n.y;
-            key = k;
-        }
-    });
-    if ( key !== undefined ) node.select( key );
+function exec( f ) {
+    let functions = {
+        'repeat': repeat,
+        'undo': undo,
+        'center': center,
+        'new': reset,
+        'zoom-in': zoomIn,
+        'zoom-out': zoomOut,
+        'add-node': node.add,
+        'remove-node': node.remove,
+        'move-node-up': () => node.moveTo('up'),
+        'move-node-down': () => node.moveTo('down'),
+        'move-node-left': () => node.moveTo('left'),
+        'move-node-right': () => node.moveTo('right'),
+
+    }
+    functions[ f ]()
 }
 
-function moveSelection( dir ) {
-    const d = dir === 'up' || dir === 'left';
-    if ( dir === 'up' || dir === 'down' ) moveSelectionOnLevel( d );
-    else moveSelectionOnBranch( d );
+function checkKeys( map, keys ) {
+    for ( let p in keys ) if ( ! map[ keys[p] ] ) return false
+    return true
 }
 
-function moveNode( dir ) {
-    const s = global.nodes.get( global.selected ),
-    range = 10, oldOr = node.orientation( s.x ),
-    setCoord = {
-        up: n => n.y -= range,
-        down: n => n.y += range,
-        right: n => n.x += range,
-        left: n => n.x -= range
-    };
-    setCoord[ dir ]( s );
-    const newOr = node.orientation( s.x );
-    node.moveTo( document.getElementById( global.selected ), s.x, s.y );
-    if ( s.fixed ) node.subnodes( global.selected, function( n ) {
-        setCoord[ dir ]( n );
-        if ( newOr !== oldOr ) n.x += ( s.x - n.x )*2;
-        node.moveTo( this, n.x, n.y );
-    });
-    d3.selectAll('.branch').attr('d', draw.branch );
-    snapshots.save();
-}
+// function moveSelectionOnLevel( dir ) {
+//     const sel = glob.nodes.get( glob.selected ),
+//     lev = node.level( sel ), or = node.orientation( sel.x );
+//     var key, tmp = Number.MAX_VALUE;
+//     glob.nodes.each( function( n, k ) {
+//         const d = dir ? sel.y - n.y : n.y - sel.y,
+//         sameLevel = lev === node.level( n ),
+//         sameNode = glob.selected === k,
+//         sameOrientation = or === node.orientation( n.x );
+//         if ( sameOrientation && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
+//             tmp = d;
+//             key = k;
+//         }
+//     });
+//     if ( key !== undefined ) node.select( key );
+// }
+//
+// function moveSelectionOnBranch( dir ) {
+//     const sel = glob.nodes.get( glob.selected ),
+//     root = glob.nodes.get('node0');
+//     var key, checks, tmp = Number.MIN_VALUE;
+//     glob.nodes.each( function( n, k ) {
+//         if ( sel.x < root.x )
+//             checks = dir ? n.parent === glob.selected : sel.parent === k;
+//         else if ( sel.x > root.x )
+//             checks = !dir ? n.parent === glob.selected : sel.parent === k;
+//         else checks = ( dir ? n.x < root.x : n.x > root.x ) && n.parent === glob.selected;
+//         if ( checks && n.y > tmp ) {
+//             tmp = n.y;
+//             key = k;
+//         }
+//     });
+//     if ( key !== undefined ) node.select( key );
+// }
+//
+// function moveSelection( dir ) {
+//     const d = dir === 'up' || dir === 'left';
+//     if ( dir === 'up' || dir === 'down' ) moveSelectionOnLevel( d );
+//     else moveSelectionOnBranch( d );
+// }
+//

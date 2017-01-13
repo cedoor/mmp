@@ -1,4 +1,4 @@
-import glob from './global'
+import glob from '../global'
 
 /**
  * @name image
