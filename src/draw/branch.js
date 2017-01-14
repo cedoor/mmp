@@ -1,9 +1,13 @@
+import * as d3 from "d3"
+import glob from '../global'
+import { level as nodeLevel } from '../node/index'
+
 /**
  * @name drawBranch
  * @param {Object} node - Mind map node.
  * @desc Draw the branch of the node.
 */
-export default function( node ) {
+export function branch( node ) {
     let
         path = d3.path(),
         n = node.value,

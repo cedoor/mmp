@@ -1,16 +1,14 @@
 import glob from '../global'
-import { call as callEvent } from '../events'
-import { save as saveSnapshot } from '../map/snapshots'
+import { call } from '../events'
 import * as map from '../map/index'
-import { dom, calcX, calcY } from './utils'
-import { clear } from './index'
+import * as node from './index'
 
 /**
- * @name addChild
+ * @name add
  * @return {Object} prop - The properties of node.
  * @desc Add a child node to selected node.
 */
-export default function( prop ) {
+export function add( prop ) {
     let parent = glob.nodes.get( glob.selected ),
         key = 'node' + ( ++glob.counter ),
         opt = glob.options.node,
@@ -23,11 +21,11 @@ export default function( prop ) {
             'italic': prop && prop['italic'] || opt['italic'],
             'bold': prop && prop['bold'] || opt['bold'],
             'fixed': prop && prop['fixed'] || opt['fixed'],
-            'x': prop && prop.x || calcX( parent.x ),
-            'y': prop && prop.y || calcY( parent.y ),
+            'x': prop && prop.x || node.calcX( parent.x ),
+            'y': prop && prop.y || node.calcY( parent.y ),
             'parent': glob.selected
         })
-    add( key, value )
+    addToMap( key, value )
 }
 
 /**
@@ -39,19 +37,19 @@ export function addRoot() {
         x : parseInt( glob.container.style('width') )/2,
         y : parseInt( glob.container.style('height') )/2
     }, glob.options['root-node'])
-    add('node' + glob.counter, value )
-    clear()
+    addToMap('node' + glob.counter, value )
+    node.deselect()
 }
 
 /**
- * @name add
+ * @name addToMap
  * @param {string} k - The key of node.
  * @param {Object} v - The value of node.
  * @desc Add a node in the mind map.
 */
-function add( k, v ) {
+function addToMap( k, v ) {
     glob.nodes.set( k, v )
     map.update()
-    callEvent('nodecreate', dom( k ), k, v )
-    saveSnapshot()
+    call('nodecreate', node.dom( k ), k, v )
+    map.save()
 }

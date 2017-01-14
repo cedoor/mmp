@@ -1,19 +1,18 @@
 
 // Dom elements
 
-const
-nodeName = document.getElementById('node-name'),
-fontSize = document.getElementById('font-size'),
-fixedNode = document.getElementById('fixed-node'),
-italicFont = document.getElementById('italic-font'),
-boldFont = document.getElementById('bold-font'),
-saveMap = document.getElementById('save-map'),
-saveImg = document.getElementById('save-img'),
-uploadMap = document.getElementById('upload-map'),
-upload = document.getElementById('upload'),
-backgroundColor = document.getElementsByClassName('color-btn')[0],
-branchColor = document.getElementsByClassName('color-btn')[1],
-textColor = document.getElementsByClassName('color-btn')[2];
+var nodeName = document.getElementById('node-name'),
+    fontSize = document.getElementById('font-size'),
+    fixedNode = document.getElementById('fixed-node'),
+    italicFont = document.getElementById('italic-font'),
+    boldFont = document.getElementById('bold-font'),
+    saveMap = document.getElementById('save-map'),
+    saveImg = document.getElementById('save-img'),
+    uploadMap = document.getElementById('upload-map'),
+    upload = document.getElementById('upload'),
+    backgroundColor = document.getElementsByClassName('color-btn')[0],
+    branchColor = document.getElementsByClassName('color-btn')[1],
+    textColor = document.getElementsByClassName('color-btn')[2];
 
 // Button events
 
@@ -42,10 +41,11 @@ nodeName.onkeyup = function( e ) {
 }
 
 saveMap.onclick = function() {
-    const data = mmap.data();
-    const json = JSON.stringify( data );
-    const blob = new Blob([ json ], { type: "application/json" });
-    const a = document.createElement('a');
+    var data = mmap.data(),
+        json = JSON.stringify( data ),
+        blob = new Blob([ json ], { type: "application/json" }),
+        a = document.createElement('a');
+
     a.download = "mymap.mmap";
     a.href = URL.createObjectURL( blob );
     a.click();
@@ -59,13 +59,13 @@ upload.onchange = function( e ) {
     reader.readAsText( e.target.files[0] );
     reader.onload = function( e ) {
         var data = JSON.parse( event.target.result );
-        mmap.load( data );
+        mmap.data( data );
     };
 }
 
 saveImg.onclick = function() {
     mmap.image( function( url ) {
-        const a = document.createElement('a');
+        var a = document.createElement('a');
         a.download = 'mmap';
         a.href = url;
         a.click();

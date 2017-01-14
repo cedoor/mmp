@@ -7,7 +7,7 @@ import glob from '../global'
  * @param {string} [bg] - Color of mind map background.
  * @desc Set image settings and pass the its data URL in a callback function.
 */
-export default function ( cb, type, bg ) {
+export function image( cb, type, bg ) {
     let image = new Image()
     image.src = dataURI()
     image.onload = function() {

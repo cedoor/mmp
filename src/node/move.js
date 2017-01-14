@@ -1,7 +1,7 @@
 import * as d3 from "d3"
 import glob from '../global'
 import { save as saveSnapshot } from '../map/snapshots'
-import { branch as drawBranch } from '../draw/draw'
+import { branch as drawBranch } from '../draw/index'
 import { dom, orientation, subnodes } from './utils'
 
 /**
@@ -10,7 +10,7 @@ import { dom, orientation, subnodes } from './utils'
  * @param {number} range - The shift range.
  * @desc Move the node in the direction passed as parameter.
 */
-export default function( dir, range = 10 ) {
+export function moveTo( dir, range = 10 ) {
     let s = glob.nodes.get( glob.selected ),
         d = dom( glob.selected ),
         move = {

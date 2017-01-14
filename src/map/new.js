@@ -1,16 +1,16 @@
 import glob from '../global'
-import * as node from '../node/index'
-import * as map from './index'
+import { addRoot } from '../node/index'
 import { call } from '../events'
+import * as map from './index'
 
 /**
  * @name reset
  * @desc Replace old mind map with a new one.
 */
-export default function() {
+export function reset() {
     glob.counter = 0
     glob.nodes.clear()
-    node.addRoot()
+    addRoot()
     map.redraw()
     map.center()
     map.save()

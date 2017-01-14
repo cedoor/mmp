@@ -2,19 +2,17 @@ import { dispatch } from "d3"
 
 /**
  * @name call
- * @param {Object} e -
- * @param {Object} p -
- * @return
- * @desc .
+ * @param {Object} e - The name of the event.
+ * @param {Object} [p] - Optional parameters.
+ * @desc  Invoke each registered callback for the specified event ( d3 function ).
 */
 export let call = ( e, ...p ) => dispatcher.call( e, ...p )
 
 /**
- * @name call
- * @param {Object} e -
- * @param {} cb -
- * @return
- * @desc .
+ * @name on
+ * @param {Object} e - The name of the event.
+ * @param {requestCallback} [cb] - Callback called on event.
+ * @desc Adds, removes or gets the callback for the specified event ( d3 function ).
 */
 export let on = ( e, cb ) => dispatcher.on( e, cb )
 

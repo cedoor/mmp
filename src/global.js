@@ -35,7 +35,7 @@ export default {
         // Default root node properties
         'root-node': {
             'name': 'Root node',
-            'background-color': '#ebf4eb',
+            'background-color': '#f0f6f5',
             'text-color': '#828c82',
             'font-size': 20,
             'italic': false,
@@ -43,10 +43,6 @@ export default {
             'fixed': false
         }
     },
-    history : {
-        index : -1,
-        snapshots : []
-    },
-    svg : {},
-    counter : 0
+    history : {},
+    svg : {}
 }

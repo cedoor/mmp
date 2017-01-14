@@ -1,9 +1,11 @@
+import * as d3 from "d3"
+
 /**
- * @name drawNode
+ * @name background
  * @param {Object} node - Mind map node.
  * @desc Draw the background shape of the node.
 */
-export default function( node ) {
+export function background( node ) {
     let n = node.value, path = d3.path()
     const
         x = ( n.width = this.nextSibling.getBBox().width + 45 )/2,

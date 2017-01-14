@@ -1,9 +1,9 @@
 import * as d3 from 'd3'
 import glob from '../global'
-import * as node from '../node/index'
-import * as draw from '../draw/draw'
+import { drag } from '../node/index'
+import { call } from '../events'
+import * as draw from '../draw/index'
 import { fontStyle, fontWeight } from '../utils'
-import { call as callEvent } from '../events'
 
 /**
  * @name update
@@ -19,10 +19,10 @@ export function update() {
         .attr('class', 'node')
         .attr('id', n => n.key )
         .attr('transform', n => 'translate(' + n.value.x + ',' + n.value.y + ')')
-        .call( node.drag )
+        .call( drag )
         .on('dblclick', function( n ) {
             d3.event.stopPropagation()
-            callEvent('nodedblclick', this, n.key, n.value )
+            call('nodedblclick', this, n.key, n.value )
         });
 
     outer.append('text').text( n => n.value.name )

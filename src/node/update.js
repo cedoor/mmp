@@ -1,10 +1,10 @@
 import * as d3 from 'd3'
 import glob from '../global'
-import { call as callEvent } from '../events'
+import { call } from '../events'
 import { save as saveSnapshot } from '../map/snapshots'
-import  * as draw from '../draw/draw'
+import  * as draw from '../draw/index'
 import { error, fontStyle, fontWeight } from '../utils'
-import { dom } from './index'
+import { dom as nodeDom } from './index'
 
 /**
  * @name update
@@ -14,9 +14,9 @@ import { dom } from './index'
  * @return {boolean} error - False.
  * @desc Update the properties of the selected node.
 */
-export default function( k, v, vis ) {
+export function update( k, v, vis ) {
     let s = glob.nodes.get( glob.selected ),
-        d = dom( glob.selected ),
+        d = nodeDom( glob.selected ),
         prop = {
             'name' : updateName,
             'fixed' : updateFixStatus,
@@ -31,7 +31,7 @@ export default function( k, v, vis ) {
     if ( upd !== undefined )
         if ( upd.call( d, s, v, vis ) !== false ) {
             if ( !vis ) saveSnapshot()
-            callEvent('nodeupdate', d, glob.selected, s, k )
+            call('nodeupdate', d, glob.selected, s, k )
         }
     else return error('"'+ k +'" is not a valid node property')
 }

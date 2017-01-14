@@ -1,8 +1,7 @@
 import glob from './global'
-import { undo, repeat } from './map/snapshots'
-import { center, reset, zoomIn, zoomOut } from './map/index'
-import { fromObjectToArray } from './utils'
+import * as map from './map/index'
 import * as node from './node/index'
+import { fromObjectToArray } from './utils'
 
 /**
  * @name shortcuts
@@ -12,7 +11,8 @@ export default function() {
     let map = {}, shortcuts = fromObjectToArray( glob.options.shortcuts )
     // Order the array based on the number of keys
     shortcuts = shortcuts.sort( ( a, b ) => b[1].length - a[1].length )
-    // ...
+    // Catch keys, check if they are a correct shortcut
+    // and exec the associated function
     window.onkeyup = e => map[ e.keyCode ] = false
     window.onkeydown = function( e ) {
         map[ e.keyCode ] = true
@@ -26,68 +26,40 @@ export default function() {
     }
 }
 
+/**
+ * @name checkKeys
+ * @param {Object} map - Pressed keys.
+ * @param {Object} keys - Shortcut keys.
+ * @desc Check if the key combination is present in map.
+*/
+function checkKeys( map, keys ) {
+    for ( let p in keys ) if ( ! map[ keys[p] ] ) return false
+    return true
+}
+
+/**
+ * @name exec
+ * @param {string} f - Type of shortcut.
+ * @desc Execute the function associated with the type of shortcut.
+*/
 function exec( f ) {
     let functions = {
-        'repeat': repeat,
-        'undo': undo,
-        'center': center,
-        'new': reset,
-        'zoom-in': zoomIn,
-        'zoom-out': zoomOut,
+        'repeat': map.repeat,
+        'undo': map.undo,
+        'center': map.center,
+        'new': map.reset,
+        'zoom-in': map.zoomIn,
+        'zoom-out': map.zoomOut,
         'add-node': node.add,
         'remove-node': node.remove,
         'move-node-up': () => node.moveTo('up'),
         'move-node-down': () => node.moveTo('down'),
         'move-node-left': () => node.moveTo('left'),
         'move-node-right': () => node.moveTo('right'),
-
+        'move-selection-up': () => node.moveSelectionTo('up'),
+        'move-selection-down': () => node.moveSelectionTo('down'),
+        'move-selection-left': () => node.moveSelectionTo('left'),
+        'move-selection-right': () => node.moveSelectionTo('right'),
     }
     functions[ f ]()
 }
-
-function checkKeys( map, keys ) {
-    for ( let p in keys ) if ( ! map[ keys[p] ] ) return false
-    return true
-}
-
-// function moveSelectionOnLevel( dir ) {
-//     const sel = glob.nodes.get( glob.selected ),
-//     lev = node.level( sel ), or = node.orientation( sel.x );
-//     var key, tmp = Number.MAX_VALUE;
-//     glob.nodes.each( function( n, k ) {
-//         const d = dir ? sel.y - n.y : n.y - sel.y,
-//         sameLevel = lev === node.level( n ),
-//         sameNode = glob.selected === k,
-//         sameOrientation = or === node.orientation( n.x );
-//         if ( sameOrientation && sameLevel && !sameNode &&  d > 0 && d < tmp ) {
-//             tmp = d;
-//             key = k;
-//         }
-//     });
-//     if ( key !== undefined ) node.select( key );
-// }
-//
-// function moveSelectionOnBranch( dir ) {
-//     const sel = glob.nodes.get( glob.selected ),
-//     root = glob.nodes.get('node0');
-//     var key, checks, tmp = Number.MIN_VALUE;
-//     glob.nodes.each( function( n, k ) {
-//         if ( sel.x < root.x )
-//             checks = dir ? n.parent === glob.selected : sel.parent === k;
-//         else if ( sel.x > root.x )
-//             checks = !dir ? n.parent === glob.selected : sel.parent === k;
-//         else checks = ( dir ? n.x < root.x : n.x > root.x ) && n.parent === glob.selected;
-//         if ( checks && n.y > tmp ) {
-//             tmp = n.y;
-//             key = k;
-//         }
-//     });
-//     if ( key !== undefined ) node.select( key );
-// }
-//
-// function moveSelection( dir ) {
-//     const d = dir === 'up' || dir === 'left';
-//     if ( dir === 'up' || dir === 'down' ) moveSelectionOnLevel( d );
-//     else moveSelectionOnBranch( d );
-// }
-//

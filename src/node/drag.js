@@ -1,11 +1,14 @@
 import * as d3 from "d3"
 import glob from '../global'
 import { save as saveSnapshot } from '../map/snapshots'
-import * as draw from '../draw/draw'
+import { branch as drawBranch } from '../draw/index'
 import * as node from './index'
 
-// Export all d3-drag functions
-export default d3.drag()
+/**
+ * @name drag
+ * @desc d3 drag function.
+*/
+export let drag = d3.drag()
     .on('start', started )
     .on('drag', dragged )
     .on('end', ended )
@@ -45,7 +48,7 @@ function dragged( n ) {
         })
     }
     // Update all mind map branches
-    d3.selectAll('.branch').attr('d', draw.branch )
+    d3.selectAll('.branch').attr('d', drawBranch )
     // This is here and not in started function
     // because started function is also executed
     // when there is no drag events

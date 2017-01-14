@@ -1,59 +1,121 @@
 import glob from '../global'
-import { cloneObject } from '../utils'
+import { cloneObject, error } from '../utils'
 import { center, redraw } from './index'
-import { clear } from '../node/index'
-
-export function undo() {
-        const h = glob.history;
-        if( h.index > 0 )
-            load( h.snapshots[ --h.index ] );
-    }
-
-export function repeat() {
-    const h = glob.history;
-    if( h.index < h.snapshots.length - 1 )
-        load( h.snapshots[ ++h.index ] )
-}
+import { deselect } from '../node/index'
 
 /**
  * @name data
- * @return {Object} snapshot - Last snapshot of the mind map.
+ * @param {Object} [snapshot] - A snapshot of mind map.
+ * @return {Object} [snapshot] - Last snapshot of the mind map.
+ * @desc
+ * Load the snapshot passed as parameter or return
+ * last snapshot of the current mind map.
+*/
+export function data( snapshot ) {
+    // ** external snapshot to control **
+    if ( check( snapshot ) ) {
+        load( snapshot )
+        center()
+        save()
+    } else return glob.history.snapshots[ glob.history.index ]
+}
+
+/**
+ * @name undo
+ * @desc Undo last changes.
+*/
+export function undo() {
+    let h = glob.history
+    if ( h.index > 0 ) load( h.snapshots[ --h.index ] )
+}
+
+/**
+ * @name repeat
+ * @desc Repeat last changes.
+*/
+export function repeat() {
+    let h = glob.history
+    if ( h.index < h.snapshots.length - 1 ) load( h.snapshots[ ++h.index ] )
+}
+
+/**
+ * @name save
+ * @desc Save the current snapshot of the mind map.
+*/
+export function save() {
+    let h = glob.history
+    if ( h.index < h.snapshots.length - 1 ) h.snapshots.splice( h.index + 1 )
+    h.snapshots.push( mapClone() )
+    h.index++
+}
+
+/**
+ * @name load
+ * @param {Object} snapshot - Last snapshot of the mind map.
  * @desc Return last snapshot of the mind map.
 */
-export function data() {
-    return glob.history.snapshots[ glob.history.index ]
-}
-
-export function save() {
-    const h = glob.history;
-    if ( h.index < h.snapshots.length - 1 ) h.snapshots.splice( h.index + 1 );
-    h.snapshots.push( mapClone() );
-    h.index++;
-}
-
-export function load( snapshot ) {
+function load( snapshot ) {
     glob.nodes.clear()
     snapshot.forEach( function( node ) {
         glob.nodes.set( node.key, cloneObject( node.value ) )
     })
     redraw()
     setCounter()
-    clear()
-    center()
-    save()
+    deselect()
 }
 
+/**
+ * @name mapClone
+ * @return {Object} nodes - Copy of nodes.
+ * @desc Return a copy of all nodes without necessary properties.
+*/
 function mapClone() {
     return glob.nodes.entries().map( function( node ) {
-        const value = cloneObject( node.value );
-        delete value.width;
-        delete value.height;
-        return { key : node.key, value : value };
-    });
+        let value = cloneObject( node.value )
+        delete value.width
+        delete value.height
+        return { key : node.key, value : value }
+    })
 }
 
+/**
+ * @name setCounter
+ * @desc Set the right value of global counter.
+*/
 function setCounter() {
-    const getIntOfKey = k => parseInt( k.substring(4) ),
-    keys = glob.nodes.keys().map( getIntOfKey );
-    glob.counter = Math.max(...keys);
+    let keys = glob.nodes.keys().map( k => parseInt( k.substring(4) ) )
+    glob.counter = Math.max( ...keys )
+}
+
+/**
+ * @name check
+ * @param {Object} snapshot - A snapshot of mind map.
+ * @return {boolean} result
+ * @desc Check the snapshot structure and return true if it is authentic.
+*/
+function check( snapshot ) {
+    return snapshot !== undefined ?
+        snapshot.constructor === Array &&
+        snapshot[0].key === 'node0' &&
+        checkNodes( snapshot ) ? true
+        : error('The loaded mind map is incorrect')
+    : false
+}
+
+/**
+ * @name checkNodes
+ * @param {Object} snapshot - A snapshot of mind map.
+ * @return {boolean} result
+ * @desc Check the snapshot nodes and return true if they are authentic.
+*/
+function checkNodes( snapshot ) {
+    for ( let i in snapshot ) {
+        let node = snapshot[i]
+        if (
+            typeof node.key !== 'string' ||
+            node.value.constructor !== Object
+            // ... to improve?
+        ) return false
+    }
+    return true
 }

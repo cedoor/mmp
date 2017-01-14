@@ -1,24 +1,24 @@
 import glob from '../global'
-import { call as callEvent } from '../events'
-import { save as saveSnapshot, redraw } from '../map/index'
+import { call } from '../events'
 import { error } from '../utils'
-import { select, subnodes } from './index'
+import * as map from '../map/index'
+import * as node from './index'
 
 /**
  * @name remove
  * @return {boolean} error - False.
  * @desc Remove the selected node.
 */
-export default function () {
+export function remove() {
     const key = glob.selected
     if( key !== 'node0' ) {
         glob.nodes.remove( key )
-        subnodes( key, ( n, k ) => {
+        node.subnodes( key, ( n, k ) => {
             glob.nodes.remove( k )
         })
-        select('node0')
-        redraw()
-        saveSnapshot()
-        callEvent('noderemove', this, key )
+        node.select('node0')
+        map.redraw()
+        map.save()
+        call('noderemove', this, key )
     } else return error('The root node can not be deleted')
 }

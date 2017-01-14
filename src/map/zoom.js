@@ -2,17 +2,24 @@ import * as d3 from "d3"
 import glob from '../global'
 import { call } from '../events'
 
-let zoom = d3.zoom().scaleExtent([ 0.5, 2 ]).on('zoom', zoomed )
+/**
+ * @name zoom
+ * @desc d3 zoom function.
+*/
+export let zoom = d3.zoom().scaleExtent([ 0.5, 2 ]).on('zoom', zoomed )
 
-// Export all d3-zoom functions
-export default zoom
-
+/**
+ * @name zoomIn
+*/
 export function zoomIn() {
-    setZoom( true )
+    move( true )
 }
 
+/**
+ * @name zoomOut
+*/
 export function zoomOut() {
-    setZoom( false )
+    move( false )
 }
 
 /**
@@ -28,13 +35,22 @@ export function center() {
     call('mmcenter')
 }
 
+/**
+ * @name zoomed
+ * @desc Set the transform of the mind map when the zoom change.
+*/
 function zoomed() {
     glob.svg.mmap.attr('transform', d3.event.transform )
 }
 
-function setZoom( flag ) {
-    const main = glob.svg.main
-    var k = d3.zoomTransform( main.node() ).k
-    k += flag ? k/5 : -k/5
+/**
+ * @name move
+ * @param {boolean} dir - Direction of the zoom
+ * @desc Move the zoom in a direction ( true: in, false: out ).
+*/
+function move( dir ) {
+    let main = glob.svg.main,
+        k = d3.zoomTransform( main.node() ).k
+    k += dir ? k/5 : -k/5
     zoom.scaleTo( main.transition().duration( 100 ), k )
 }
