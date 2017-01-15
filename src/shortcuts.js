@@ -56,10 +56,10 @@ function exec( f ) {
         'move-node-down': () => node.moveTo('down'),
         'move-node-left': () => node.moveTo('left'),
         'move-node-right': () => node.moveTo('right'),
-        'move-selection-up': () => node.moveSelectionTo('up'),
-        'move-selection-down': () => node.moveSelectionTo('down'),
-        'move-selection-left': () => node.moveSelectionTo('left'),
-        'move-selection-right': () => node.moveSelectionTo('right'),
+        'move-selection-up': () => node.selectTo('up'),
+        'move-selection-down': () => node.selectTo('down'),
+        'move-selection-left': () => node.selectTo('left'),
+        'move-selection-right': () => node.selectTo('right'),
     }
     functions[ f ]()
 }

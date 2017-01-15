@@ -13,11 +13,12 @@ export {
 } from './map/index'
 
 // Node functions
-import { add, remove, select, moveTo, update } from './node/index'
+import { add, remove, select, moveTo, selectTo, update } from './node/index'
 export let node = {
     add: add,
     select: select,
     remove: remove,
     moveTo: moveTo,
-    update: update,
+    selectTo: selectTo,
+    update: update
 }

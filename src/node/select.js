@@ -40,11 +40,11 @@ export function deselect() {
 }
 
 /**
- * @name moveSelection
+ * @name selectTo
  * @param {string} dir - Direction ( up, down, left, right ).
  * @desc Move the node selection in the direction passed as parameter.
 */
-export function moveSelectionTo( dir ) {
+export function selectTo( dir ) {
     const d = dir === 'up' || dir === 'left'
     if ( dir === 'up' || dir === 'down' ) moveSelectionOnLevel( d )
     else moveSelectionOnBranch( d )
