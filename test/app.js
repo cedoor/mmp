@@ -1,60 +1,24 @@
-
 // Dom elements
-
 var nodeName = document.getElementById('node-name'),
     fontSize = document.getElementById('font-size'),
-    fixedNode = document.getElementById('fixed-node'),
-    italicFont = document.getElementById('italic-font'),
-    boldFont = document.getElementById('bold-font'),
     saveMap = document.getElementById('save-map'),
     saveImg = document.getElementById('save-img'),
     uploadMap = document.getElementById('upload-map'),
-    upload = document.getElementById('upload'),
-    backgroundColor = document.getElementsByClassName('color-btn')[0],
-    branchColor = document.getElementsByClassName('color-btn')[1],
-    textColor = document.getElementsByClassName('color-btn')[2];
-
-// Button events
-
-fontSize.oninput = function() {
-    mmap.node.update('font-size', fontSize.value, true );
-}
-
-fontSize.onchange = function() {
-    mmap.node.update('font-size', fontSize.value );
-}
-
-nodeName.oninput = function() {
-    mmap.node.update('name', nodeName.value, true );
-}
-
-nodeName.onchange = function() {
-    mmap.node.update('name', nodeName.value );
-}
-
-nodeName.onkeyup = function( e ) {
-    if ( e.key === "Enter" ) {
-        nodeName.blur();
-        if( nodeName.value === '' )
-            mmap.node.update('name', nodeName.value = 'Node');
-    }
-}
+    backgroundColor = document.getElementById('background-color'),
+    branchColor = document.getElementById('branch-color'),
+    textColor = document.getElementById('text-color');
 
 saveMap.onclick = function() {
     var data = mmap.data(),
         json = JSON.stringify( data ),
         blob = new Blob([ json ], { type: "application/json" }),
         a = document.createElement('a');
-
-    a.download = "mymap.mmap";
+    a.download = "example.mmp";
     a.href = URL.createObjectURL( blob );
     a.click();
 }
 
-uploadMap.onclick = function() {
-    upload.click();
-}
-upload.onchange = function( e ) {
+uploadMap.onchange = function( e ) {
     var reader = new FileReader();
     reader.readAsText( e.target.files[0] );
     reader.onload = function( e ) {
@@ -66,7 +30,7 @@ upload.onchange = function( e ) {
 saveImg.onclick = function() {
     mmap.image( function( url ) {
         var a = document.createElement('a');
-        a.download = 'mmap';
+        a.download = 'example';
         a.href = url;
         a.click();
     }, 'jpeg');
@@ -84,9 +48,6 @@ mmap.on('nodeselect',  function( key, value ) {
     backgroundColor.value = value['background-color'];
     branchColor.value = value['branch-color'] || '#ffffff';
     textColor.value = value['text-color'];
-    italicFont.checked = value['italic'];
-    boldFont.checked = value['bold'];
-    fixedNode.checked = value.fixed;
     console.log('The node \"'+ key +'\" has been selected');
 });
 

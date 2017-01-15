@@ -5,96 +5,52 @@
         <meta charset="UTF-8">
         <title>Mmap</title>
         <meta name="description" content="JavaScript UMD module to create mind maps">
+        <link rel='shortcut icon' type='image/png' href='img/favicon.png'/>
         <link href="../node_modules/mocha/mocha.css" rel="stylesheet">
         <link href="layout.css" rel="stylesheet">
     </head>
     <body>
-
-        <div class="sidebar">
+        <div id="sidebar">
             <div id="mocha"></div>
-            <!--<h3>mmap.js</h3>
-            <table>
-                <tr>
-                    <td>Node name :</td>
-                    <td><input id="node-name" type="text" name="node-name"></td>
-                </tr>
-                <tr>
-                    <td>Add node :</td>
-                    <td><img onclick="mmap.node.add()" src="img/add.svg"></td>
-                </tr>
-                <tr>
-                    <td>Remove node :</td>
-                    <td><img onclick="mmap.node.remove()" src="img/remove.svg"></td>
-                </tr>
-                <tr>
-                    <td>Zoom in :</td>
-                    <td><img onclick="mmap.zoomIn()" src="img/zoomin.svg"></td>
-                </tr>
-                <tr>
-                    <td>Zoom out :</td>
-                    <td><img onclick="mmap.zoomOut()" src="img/zoomout.svg"></td>
-                </tr>
-                <tr>
-                    <td>Undo :</td>
-                    <td><img onclick="mmap.undo()" src="img/undo.svg"></td>
-                </tr>
-                <tr>
-                    <td>Repeat :</td>
-                    <td><img onclick="mmap.repeat()" src="img/repeat.svg"></td>
-                </tr>
-                <tr>
-                    <td>Center :</td>
-                    <td><img onclick="mmap.center()" src="img/center.svg"></td>
-                </tr>
-                <tr>
-                    <td>New map :</td>
-                    <td><img onclick="mmap.new()" src="img/new.svg"></td>
-                </tr>
-                <tr>
-                    <td>Get image :</td>
-                    <td><img id="save-img" src="img/img.svg"></td>
-                </tr>
-                <tr>
-                    <td>Save map :</td>
-                    <td><img id="save-map" src="img/save.svg"></td>
-                </tr>
-                <tr>
-                    <td>Upload map :</td>
-                    <td><img id="upload-map" src="img/upload.svg"></td>
-                </tr>
-                <tr>
-                    <td>Node color :</td>
-                    <td><input class="color-btn" type="color" name="background-color"
-                        onchange="mmap.node.update('background-color', value)"></td>
-                </tr>
-                <tr>
-                    <td>Branch color :</td>
-                    <td><input class="color-btn" type="color" name="branch-color"
-                        onchange="mmap.node.update('branch-color', value)"></td>
-                </tr>
-                <tr>
-                    <td>Text color :</td>
-                    <td><input class="color-btn" type="color" name="text-color"
-                        onchange="mmap.node.update('text-color', value)"></td>
-                </tr>
-                <tr>
-                    <td>Font size :</td>
-                    <td><input id="font-size" type="text" name="font-size"></td>
-                </tr>
-                <tr>
-                    <td>Bold font :</td>
-                    <td><input id="bold-font" onchange="mmap.node.update('bold')" type="checkbox"></td>
-                </tr>
-                <tr>
-                    <td>Italic font :</td>
-                    <td><input id="italic-font" onchange="mmap.node.update('italic')" type="checkbox"></td>
-                </tr>
-                <tr>
-                    <td>Fixed node :</td>
-                    <td><input id="fixed-node" onchange="mmap.node.update('fixed')" type="checkbox"></td>
-                </tr>
-                <input style="display:none" type="file" id="upload" accept=".mmap">
-            </table>-->
+            <div id="commands">
+                <input
+                    id="node-name" type="text" name="node-name"
+                    oninput="mmap.node.update('name', value, true)"
+                    onchange="mmap.node.update('name', value)">
+                <br>
+                <input
+                    id="font-size" type="range" name="font-size" min="10" max="50"
+                    oninput="mmap.node.update('font-size', value, true)"
+                    onchange="mmap.node.update('font-size', value)">
+                <br>
+                <input id="background-color" type="color" name="background-color"
+                    onchange="mmap.node.update('background-color', value)">
+                <input id="branch-color" type="color" name="branch-color"
+                    onchange="mmap.node.update('branch-color', value)">
+                <input id="text-color" type="color" name="text-color"
+                    onchange="mmap.node.update('text-color', value)">
+                <br>
+                <img onclick="mmap.node.update('fixed')" src="img/material-icons/fixed.svg">
+                <img onclick="mmap.node.update('bold')" src="img/material-icons/bold.svg">
+                <img onclick="mmap.node.update('italic')" src="img/material-icons/italic.svg">
+                <br>
+                <img id="save-img" src="img/material-icons/img.svg">
+                <img onclick="getElementById('upload-map').click()" src="img/material-icons/upload.svg">
+                <input style="display:none" type="file" id="upload-map" accept=".mmp">
+                <img id="save-map" src="img/material-icons/save.svg">
+                <br>
+                <img onclick="mmap.undo()" src="img/material-icons/undo.svg">
+                <img onclick="mmap.repeat()" src="img/material-icons/repeat.svg">
+                <br>
+                <img onclick="mmap.node.add()" src="img/material-icons/add.svg">
+                <img onclick="mmap.node.remove()" src="img/material-icons/remove.svg">
+                <br>
+                <img onclick="mmap.zoomIn()" src="img/material-icons/zoomin.svg">
+                <img onclick="mmap.zoomOut()" src="img/material-icons/zoomout.svg">
+                <br>
+                <img onclick="mmap.center()" src="img/material-icons/center.svg">
+                <img onclick="mmap.new()" src="img/material-icons/new.svg">
+            </div>
         </div>
 
         <div id="mmap"></div>
@@ -104,17 +60,10 @@
         <script src="../node_modules/d3/build/d3.min.js"></script>
         <script src="../build/mmap.min.js"></script>
 
+        <script src="app.js"></script>
+
         <script>mocha.setup('bdd')</script>
-        <!-- Tests -->
-        <script src="init.js"></script>
-
-        <script>
-            mocha.checkLeaks();
-            mocha.globals(['d3']);
-            mocha.run();
-        </script>
-
-        <!--<script src="app.js"></script>-->
-
+        <script src="tests.js"></script>
+        <script>mocha.run()</script>
     </body>
 </html>

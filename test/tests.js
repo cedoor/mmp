@@ -10,11 +10,8 @@ describe('Tests', function() {
 
     describe('#mmap.init()', function() {
         it('should initialize the mind map', function() {
-            mmap.init({
-                'root-node': { 'name': 'Hello world' }
-            });
             var selected = mmap.node.select();
-            assert.equal( selected.value.name, 'Hello world' );
+            assert.equal( selected.value.name, 'Root node');
         });
     });
 
@@ -24,6 +21,14 @@ describe('Tests', function() {
             mmap.node.select('node1');
             var selected = mmap.node.select();
             assert.equal( selected.key, 'node1' );
+        });
+    });
+
+    describe('#mmap.node.remove()', function() {
+        it('should initialize the mind map', function() {
+            mmap.node.remove();
+            var selected = mmap.node.select();
+            assert.equal( selected.key, 'node0' );
         });
     });
 })

@@ -28,9 +28,9 @@
     "prepublish": "rollup -c && uglifyjs build/mmap.js --comments -c -m -o build/mmap.min.js"
   },
   "devDependencies": {
-    "http-server": "0.9",
     "babel-preset-es2015-rollup": "3",
     "chai": "3",
+    "http-server": "0.9",
     "mocha": "3",
     "rollup": "0.41",
     "rollup-plugin-babel": "2",
