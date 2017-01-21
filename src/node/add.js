@@ -17,6 +17,7 @@ export function add( prop ) {
             'background-color': prop && prop['background-color'] || opt['background-color'],
             'text-color': prop && prop['text-color'] || opt['text-color'],
             'branch-color': prop && prop['branch-color'] || parent['branch-color'] || opt['branch-color'],
+            'image': prop && prop['image'] || opt['image'],
             'font-size': prop && prop['font-size'] || opt['font-size'],
             'italic': prop && prop['italic'] || opt['italic'],
             'bold': prop && prop['bold'] || opt['bold'],

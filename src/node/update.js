@@ -114,9 +114,11 @@ function updateBranchColor( sel, v, vis ) {
 */
 function updateFontSize( sel, v, vis ) {
     if ( sel['font-size'] != v || vis ) {
+        let image = this.childNodes[2]
         this.childNodes[1].style['font-size'] = v
         d3.select( this.childNodes[0] ).attr('d', draw.background )
         d3.selectAll('.branch').attr('d', draw.branch )
+        image.setAttribute('y', - ( image.getBBox().height + sel.height/2 + 5 ) )
         if ( !vis ) sel['font-size'] = v
     } else return false
 }

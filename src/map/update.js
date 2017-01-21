@@ -40,6 +40,21 @@ export function update() {
         .style('stroke-width', 3 )
         .attr('d', draw.background )
 
+    outer.each( function( n ) {
+        let href = n.value.image
+        if ( href !== '' ) {
+            let img = new Image(), node = d3.select( this )
+            img.src = href
+            img.onload = function() {
+                let h = 100, w = this.width * h / this.height
+                node.append('image')
+                    .attr('href', href ).attr('height', h )
+                    .attr('y', - ( h + n.value.height/2 + 5 ) )
+                    .attr('x', - w/2 )
+            }
+        }
+    })
+
     branches.enter().insert('path', 'g')
         .style('fill', n => n.value['branch-color'])
         .style('stroke', n => n.value['branch-color'])

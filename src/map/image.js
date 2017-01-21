@@ -1,4 +1,5 @@
 import glob from '../global'
+import { deselect } from '../node/index'
 
 /**
  * @name image
@@ -8,31 +9,34 @@ import glob from '../global'
  * @desc Set image settings and pass the its data URL in a callback function.
 */
 export function image( cb, type, bg ) {
-    let image = new Image()
-    image.src = dataURI()
-    image.onload = function() {
-        let canvas = document.createElement('canvas'),
-            context = canvas.getContext('2d')
+    deselect()
+    dataURI( uri => {
+        let image = new Image()
+        image.src = uri
+        image.onload = function() {
+            let canvas = document.createElement('canvas'),
+                context = canvas.getContext('2d')
 
-        canvas.width = image.width
-        canvas.height = image.height
-        context.drawImage( image, 0, 0 )
+            canvas.width = image.width
+            canvas.height = image.height
+            context.drawImage( image, 0, 0 )
 
-        context.globalCompositeOperation = 'destination-over'
-        context.fillStyle = bg || '#ffffff'
-        context.fillRect( 0, 0, canvas.width, canvas.height )
+            context.globalCompositeOperation = 'destination-over'
+            context.fillStyle = bg || '#ffffff'
+            context.fillRect( 0, 0, canvas.width, canvas.height )
 
-        if ( typeof type === 'string' ) type = 'image/' + type
-        cb( canvas.toDataURL( type ) )
-    }
+            if ( typeof type === 'string' ) type = 'image/' + type
+            cb( canvas.toDataURL( type ) )
+        }
+    })
 }
 
 /**
  * @name dataURI
- * @return {Object} dataURI -
+ * @param {requestCallback} cb - A callback with uri as parameter
  * @desc Translate the mind map svg in data URI.
 */
-function dataURI() {
+function dataURI( cb ) {
     let element = glob.svg.mmap.node(),
         clone = element.cloneNode( true ),
         svg = document.createElementNS('http://www.w3.org/2000/svg','svg'),
@@ -64,8 +68,10 @@ function dataURI() {
     clone.setAttribute('transform', 'translate(0,0)')
     svg.appendChild( clone )
 
-    let uri = window.btoa( reEncode( svg.outerHTML ) )
-    return 'data:image/svg+xml;base64,' + uri
+    checkImages( clone, function() {
+        let uri = window.btoa( reEncode( svg.outerHTML ) )
+        cb( 'data:image/svg+xml;base64,' + uri )
+    })
 }
 
 /**
@@ -76,7 +82,6 @@ function dataURI() {
 */
 function cssRules( element ) {
     let css = "", sheets = document.styleSheets
-
     for ( let i = 0; i < sheets.length; i++ ) {
         let rules = sheets[i].cssRules
         for ( let j = 0; j < rules.length; j++ ) {
@@ -85,7 +90,6 @@ function cssRules( element ) {
                 css += rule.cssText
         }
     }
-
     return css
 }
 
@@ -102,4 +106,35 @@ function reEncode( data ) {
         return c === '%' ? '%25' : c
     })
     return decodeURIComponent( data )
+}
+
+/**
+ * @name checkImages
+ * @param {Object} element - The DOM element to check.
+ * @return {requestCallback} cb - A callback to execute after check.
+ * @desc If there are images in the map convert their href in dataURL.
+*/
+function checkImages( element, cb ) {
+    let images = element.querySelectorAll('image'),
+        l = images.length, counter = l
+
+    if ( l > 0 ) for ( let image of images ) {
+
+        let canvas = document.createElement('canvas'),
+            ctx = canvas.getContext('2d'),
+            img = new Image(),
+            href = image.getAttribute('href')
+
+        img.crossOrigin = "Anonymous"
+        img.src = href
+        img.onload = function() {
+            canvas.width = this.width
+            canvas.height = this.height
+            ctx.drawImage( this, 0, 0 )
+            image.setAttribute("href", canvas.toDataURL('image/png') )
+            counter--
+            if ( counter === 0 ) cb()
+        }
+
+    } else cb()
 }
