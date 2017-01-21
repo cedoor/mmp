@@ -17,7 +17,6 @@ export default function( options ) {
     glob.container = d3.select('#mmap')
     glob.svg.main = glob.container.append('svg')
         .attr('width', '100%').attr('height', '100%')
-        .call( zoom )
     glob.svg.main.append("rect")
         .attr("width", '100%').attr("height", '100%')
         .attr("fill", "white")
@@ -39,6 +38,7 @@ export default function( options ) {
     // Set the optional settings
     if ( glob.options['center-onresize'] === true ) onresize = center
     if ( glob.options['shortcuts'] !== false ) shortcuts()
+    if ( glob.options['zoom'] === true ) glob.svg.main.call( zoom )
 
     call('mmcreate')
     addRoot()

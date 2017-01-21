@@ -50,7 +50,7 @@ export let fontWeight = b => b ? 'bold' : 'normal'
 export function overwriteObject( target, source ) {
     for ( let prop in target ) {
         let t = target[ prop ], s = source[ prop ]
-        if ( s && s.constructor === t.constructor ) {
+        if ( s !== undefined && s.constructor === t.constructor ) {
             if ( s.constructor === Object && !Array.isArray( s ) )
                 overwriteObject( t, s )
             else target[ prop ] = s

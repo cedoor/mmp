@@ -63,6 +63,4 @@ mmap.on('nodecreate', function( key, value ) {
     console.log('The node \"'+ key +'\" has been created');
 });
 
-mmap.init({
-    'center-onresize': true
-});
+mmap.init();

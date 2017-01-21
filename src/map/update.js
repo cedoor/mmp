@@ -19,11 +19,12 @@ export function update() {
         .attr('class', 'node')
         .attr('id', n => n.key )
         .attr('transform', n => 'translate(' + n.value.x + ',' + n.value.y + ')')
-        .call( drag )
         .on('dblclick', function( n ) {
             d3.event.stopPropagation()
             call('nodedblclick', this, n.key, n.value )
-        });
+        })
+
+    if ( glob.options['drag'] === true ) outer.call( drag )
 
     outer.append('text').text( n => n.value.name )
         .style('font-family', 'sans-serif')

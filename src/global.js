@@ -1,7 +1,9 @@
 // Global mind map parameters
 export default {
     options: {
-        'center-onresize': false,
+        'center-onresize': true,
+        'drag': true,
+        'zoom': true,
         // Mind map shortcuts
         'shortcuts': {
             'repeat': [ 17, 16, 90 ], // ctrl shift z
