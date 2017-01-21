@@ -14,11 +14,4 @@ export {
 
 // Node functions
 import { add, remove, select, moveTo, selectTo, update } from './node/index'
-export let node = {
-    add: add,
-    select: select,
-    remove: remove,
-    moveTo: moveTo,
-    selectTo: selectTo,
-    update: update
-}
+export let node = { add, select, remove, moveTo, selectTo, update }

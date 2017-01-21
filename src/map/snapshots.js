@@ -109,8 +109,7 @@ function check( snapshot ) {
  * @desc Check the snapshot nodes and return true if they are authentic.
 */
 function checkNodes( snapshot ) {
-    for ( let i in snapshot ) {
-        let node = snapshot[i]
+    for ( let node of snapshot ) {
         if (
             typeof node.key !== 'string' ||
             node.value.constructor !== Object
