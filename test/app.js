@@ -65,6 +65,6 @@ mmap.on('nodecreate', function( key, value ) {
 
 mmap.init({
     'root-node': {
-        'image': 'img/tux.png'
+        'image': 'img/logo.png'
     }
 });
