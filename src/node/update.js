@@ -4,7 +4,7 @@ import { call } from '../events'
 import * as map from '../map/index'
 import  * as draw from '../draw/index'
 import { error, fontStyle, fontWeight } from '../utils'
-import { dom as nodeDom, insertImage } from './index'
+import { dom as nodeDom, setImage } from './index'
 
 /**
  * @name update
@@ -156,7 +156,7 @@ function updateImageSize( sel, v, vis ) {
 function updateImageSrc( sel, v ) {
     if ( sel['image-src'] !== v ) {
         sel['image-src'] = v
-        insertImage( this, sel )
+        setImage( d3.select( this ), sel )
     } else return false
 }
 

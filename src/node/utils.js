@@ -13,24 +13,28 @@ export function orientation( x ) {
 }
 
 /**
- * @name insertImage
- * @param {number} x - The key of the parent node.
- * @return {boolean} orientation
- * @desc Return the orientation of a node in the mind map ( true: on left )
+ * @name setImage
+ * @param {Object} dom - The d3 DOM element of node.
+ * @return {Object} node - The node values.
+ * @desc Set main properties of image in the node
+ * and create it if it doesn't exist
 */
-export function insertImage( dom, node ) {
-    let img = new Image(), d = d3.select( dom ), href = node['image-src']
-    img.src = href
-    img.onload = function() {
+export function setImage( dom, node ) {
+    let i = new Image(),
+        href = node['image-src'],
+        image = dom.select('image')
+    if ( image.empty() ) image = dom.append('image')
+    i.src = href
+    i.onload = function() {
         let h = node['image-size'],
             w = this.width * h / this.height
-        d.append('image')
-            .attr('href', href ).attr('height', h )
+        image.attr('href', href ).attr('height', h )
             .attr('y', - ( h + node.height/2 + 5 ) )
             .attr('x', - w/2 )
     }
-    img.onerror = function() {
-        d.append('image').attr('href', '')
+    i.onerror = function() {
+        image.remove()
+        node['image-src'] = ''
     }
 }
 

@@ -1,6 +1,6 @@
 import * as d3 from 'd3'
 import glob from '../global'
-import { drag, insertImage } from '../node/index'
+import { drag, setImage } from '../node/index'
 import { call } from '../events'
 import * as draw from '../draw/index'
 import { fontStyle, fontWeight } from '../utils'
@@ -41,7 +41,7 @@ export function update() {
         .attr('d', draw.background )
 
     outer.each( function( n ) {
-        insertImage( this, n.value )
+        setImage( d3.select( this ), n.value )
     })
 
     branches.enter().insert('path', 'g')
