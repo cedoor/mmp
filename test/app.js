@@ -1,6 +1,8 @@
 // Dom elements
 var nodeName = document.getElementById('node-name'),
     fontSize = document.getElementById('font-size'),
+    imageSize = document.getElementById('image-size'),
+    imageSrc = document.getElementById('image-src'),
     saveMap = document.getElementById('save-map'),
     saveImg = document.getElementById('save-img'),
     uploadMap = document.getElementById('upload-map'),
@@ -36,6 +38,14 @@ saveImg.onclick = function() {
     }, 'jpeg');
 }
 
+imageSrc.onclick = function() {
+    var src = mmap.node.select().value['image-src'];
+    if ( src === '' ) {
+        var v = prompt("Please enter your name", "logo.png");
+        mmap.node.update('image-src', 'img/' + v );
+    } else mmap.node.update('image-src', '');
+}
+
 // mmap events
 
 mmap.on('mmcreate', function(){
@@ -45,6 +55,7 @@ mmap.on('mmcreate', function(){
 mmap.on('nodeselect',  function( key, value ) {
     nodeName.value = value['name'];
     fontSize.value = value['font-size'];
+    imageSize.value = value['image-size'];
     backgroundColor.value = value['background-color'];
     branchColor.value = value['branch-color'] || '#ffffff';
     textColor.value = value['text-color'];
@@ -65,6 +76,7 @@ mmap.on('nodecreate', function( key, value ) {
 
 mmap.init({
     'root-node': {
-        'image': 'img/logo.png'
+        'image-src': 'img/logo.png',
+        'image-size': 150
     }
 });

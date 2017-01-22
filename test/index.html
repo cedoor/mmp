@@ -23,6 +23,11 @@
                     oninput="mmap.node.update('font-size', value, true)"
                     onchange="mmap.node.update('font-size', value)">
                 <br>
+                <input
+                    id="image-size" type="range" name="image-size" min="50" max="200"
+                    oninput="mmap.node.update('image-size', value, true)"
+                    onchange="mmap.node.update('image-size', value)">
+                <br>
                 <input id="background-color" type="color" name="background-color"
                     onchange="mmap.node.update('background-color', value)">
                 <input id="branch-color" type="color" name="branch-color"
@@ -33,6 +38,7 @@
                 <img onclick="mmap.node.update('fixed')" src="img/material-icons/fixed.svg">
                 <img onclick="mmap.node.update('bold')" src="img/material-icons/bold.svg">
                 <img onclick="mmap.node.update('italic')" src="img/material-icons/italic.svg">
+                <img id="image-src" src="img/material-icons/node-img.svg">
                 <br>
                 <img id="save-img" src="img/material-icons/img.svg">
                 <img onclick="getElementById('upload-map').click()" src="img/material-icons/upload.svg">

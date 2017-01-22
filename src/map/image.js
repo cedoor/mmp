@@ -135,6 +135,10 @@ function checkImages( element, cb ) {
             counter--
             if ( counter === 0 ) cb()
         }
+        img.onerror = function() {
+            counter--
+            if ( counter === 0 ) cb()
+        }
 
     } else cb()
 }

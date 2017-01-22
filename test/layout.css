@@ -70,7 +70,7 @@ body {
     cursor: pointer;
 }
 
-#node-name, #font-size {
+#node-name, #font-size, #image-size {
     width: 180px;
     margin-left: 0;
     margin-right: 0;

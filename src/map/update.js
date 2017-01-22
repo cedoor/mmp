@@ -1,6 +1,6 @@
 import * as d3 from 'd3'
 import glob from '../global'
-import { drag } from '../node/index'
+import { drag, insertImage } from '../node/index'
 import { call } from '../events'
 import * as draw from '../draw/index'
 import { fontStyle, fontWeight } from '../utils'
@@ -41,18 +41,7 @@ export function update() {
         .attr('d', draw.background )
 
     outer.each( function( n ) {
-        let href = n.value.image
-        if ( href !== '' ) {
-            let img = new Image(), node = d3.select( this )
-            img.src = href
-            img.onload = function() {
-                let h = 100, w = this.width * h / this.height
-                node.append('image')
-                    .attr('href', href ).attr('height', h )
-                    .attr('y', - ( h + n.value.height/2 + 5 ) )
-                    .attr('x', - w/2 )
-            }
-        }
+        insertImage( this, n.value )
     })
 
     branches.enter().insert('path', 'g')

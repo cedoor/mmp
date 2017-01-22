@@ -13,6 +13,28 @@ export function orientation( x ) {
 }
 
 /**
+ * @name insertImage
+ * @param {number} x - The key of the parent node.
+ * @return {boolean} orientation
+ * @desc Return the orientation of a node in the mind map ( true: on left )
+*/
+export function insertImage( dom, node ) {
+    let img = new Image(), d = d3.select( dom ), href = node['image-src']
+    img.src = href
+    img.onload = function() {
+        let h = node['image-size'],
+            w = this.width * h / this.height
+        d.append('image')
+            .attr('href', href ).attr('height', h )
+            .attr('y', - ( h + node.height/2 + 5 ) )
+            .attr('x', - w/2 )
+    }
+    img.onerror = function() {
+        d.append('image').attr('href', '')
+    }
+}
+
+/**
  * @name dom
  * @param {string} k - The key of node.
  * @return {Object} dom

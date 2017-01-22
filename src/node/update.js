@@ -1,10 +1,10 @@
 import * as d3 from 'd3'
 import glob from '../global'
 import { call } from '../events'
-import { save as saveSnapshot } from '../map/snapshots'
+import * as map from '../map/index'
 import  * as draw from '../draw/index'
 import { error, fontStyle, fontWeight } from '../utils'
-import { dom as nodeDom } from './index'
+import { dom as nodeDom, insertImage } from './index'
 
 /**
  * @name update
@@ -23,6 +23,8 @@ export function update( k, v, vis ) {
             'background-color' : updateBackgroundColor,
             'branch-color' : updateBranchColor,
             'text-color' : updateTextColor,
+            'image-src' : updateImageSrc,
+            'image-size' : updateImageSize,
             'font-size' : updateFontSize,
             'italic' : updateItalicFont,
             'bold' : updateBoldFont
@@ -30,7 +32,7 @@ export function update( k, v, vis ) {
         upd = prop[k]
     if ( upd !== undefined )
         if ( upd.call( d, s, v, vis ) !== false ) {
-            if ( !vis ) saveSnapshot()
+            if ( !vis ) map.save()
             call('nodeupdate', d, glob.selected, s, k )
         }
     else return error('"'+ k +'" is not a valid node property')
@@ -63,7 +65,7 @@ function updateName( sel, v, vis ) {
 */
 function updateBackgroundColor( sel, v, vis ) {
     if ( sel['background-color'] !== v || vis ) {
-        const bg = this.childNodes[0]
+        let bg = this.childNodes[0]
         bg.style['fill'] = v
         if ( bg.style['stroke'] !== '' )
             bg.style['stroke'] = d3.color( v ).darker( .5 )
@@ -97,7 +99,7 @@ function updateTextColor( sel, v, vis ) {
 function updateBranchColor( sel, v, vis ) {
     if( glob.selected !== 'node0' ) {
         if ( sel['branch-color'] !== v || vis ) {
-            const branch = document.getElementById('branchOf'+ glob.selected )
+            let branch = document.getElementById('branchOf'+ glob.selected )
             branch.style['fill'] = branch.style['stroke'] = v
             if ( !vis ) sel['branch-color'] = v
         } else return false
@@ -120,6 +122,41 @@ function updateFontSize( sel, v, vis ) {
         d3.selectAll('.branch').attr('d', draw.branch )
         image.setAttribute('y', - ( image.getBBox().height + sel.height/2 + 5 ) )
         if ( !vis ) sel['font-size'] = v
+    } else return false
+}
+
+/**
+ * @name updateImageSize
+ * @param {Object} sel - The selected node.
+ * @param {string} v - New value.
+ * @param {boolean} [vis] - Only visual change.
+ * @return {boolean} failed
+ * @desc Update the node image size with a new value.
+*/
+function updateImageSize( sel, v, vis ) {
+    if( sel['image-size'] !== '' ) {
+        if ( sel['image-size'] != v || vis ) {
+            let image = this.childNodes[2], box = image.getBBox(),
+                h = parseInt( v ), w = box.width * h / box.height
+            image.setAttribute('height', h )
+            image.setAttribute('y', - ( h + sel.height/2 + 5 ) )
+            image.setAttribute('x', - w/2 )
+            if ( !vis ) sel['image-size'] = h
+        } else return false
+    } else return error('The node doesn\'t have an image')
+}
+
+/**
+ * @name updateImageSrc
+ * @param {Object} sel - The selected node.
+ * @param {string} v - New value.
+ * @return {boolean} failed
+ * @desc Update the node image link with a new value.
+*/
+function updateImageSrc( sel, v ) {
+    if ( sel['image-src'] !== v ) {
+        sel['image-src'] = v
+        insertImage( this, sel )
     } else return false
 }
 
