@@ -30,11 +30,12 @@ export function update( k, v, vis ) {
             'bold' : updateBoldFont
         },
         upd = prop[k]
-    if ( upd !== undefined )
+    if ( upd !== undefined ) {
         if ( upd.call( d, s, v, vis ) !== false ) {
             if ( !vis ) map.save()
             call('nodeupdate', d, glob.selected, s, k )
         }
+    }
     else return error('"'+ k +'" is not a valid node property')
 }
 
@@ -134,7 +135,7 @@ function updateFontSize( sel, v, vis ) {
  * @desc Update the node image size with a new value.
 */
 function updateImageSize( sel, v, vis ) {
-    if( sel['image-size'] !== '' ) {
+    if( sel['image-src'] !== '' ) {
         if ( sel['image-size'] != v || vis ) {
             let image = this.childNodes[2], box = image.getBBox(),
                 h = parseInt( v ), w = box.width * h / box.height
