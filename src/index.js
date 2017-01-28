@@ -1,11 +1,11 @@
 // version
 export { version } from '../package.json'
-export { default as init } from './init'
 export { on } from './events'
 
 export {
-    image,
     reset as new,
+    init, remove,
+    image,
     center,
     data,
     undo, repeat,

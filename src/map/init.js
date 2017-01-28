@@ -1,17 +1,26 @@
 import * as d3 from "d3"
-import glob from './global'
-import { call } from './events'
-import { zoom, center } from './map/index'
-import { addRoot, deselect } from './node/index'
-import { overwriteObject, error } from './utils'
-import shortcuts from './shortcuts'
+import glob from '../global'
+import { call } from '../events'
+import { zoom, center } from './index'
+import { addRoot, deselect } from '../node/index'
+import { overwriteObject, cloneObject, error } from '../utils'
+import shortcuts from '../shortcuts'
 
 /**
  * @name init
  * @param {Object} options - Mind map options.
  * @desc Initial mmap function, set all parameters of the map.
 */
-export default function( options ) {
+export function init( options ) {
+
+    // Create a backup of original global options
+    glob.backup = cloneObject( glob, true )
+
+    // If there are external options, then update the default options
+    if ( options !== undefined )
+        options.constructor === Object
+            ? overwriteObject( glob.options, options )
+            : error('mmap options are invalid')
 
     // Set the view of the map
     glob.container = d3.select('#mmap')
@@ -28,12 +37,6 @@ export default function( options ) {
     glob.counter = 0 // Set a global counter for the identity of nodes
     glob.history.index = -1 // Set history mmap settings to manage the snapshots
     glob.history.snapshots = []
-
-    // If there are external options, then update the default options
-    if ( options !== undefined )
-        options.constructor === Object
-            ? overwriteObject( glob.options, options )
-            : error('mmap options invalid')
 
     // Set the optional settings
     if ( glob.options['center-onresize'] === true ) onresize = center

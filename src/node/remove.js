@@ -20,5 +20,5 @@ export function remove() {
         map.redraw()
         map.save()
         call('noderemove', null, key )
-    } else return error('The root node can not be deleted')
+    } else error('The root node can not be deleted')
 }

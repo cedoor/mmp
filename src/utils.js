@@ -1,19 +1,31 @@
 /**
  * @name error
  * @param {string} message - Error message.
- * @desc Show an error message in the console.
+ * @desc Throw an Error with a message.
 */
 export function error( message ) {
-    return !!console.error( message )
+    throw new Error( message )
 }
 
 /**
  * @name cloneObject
  * @param {Object} obj - The object to be cloned.
- * @desc Clone an object.
+ * @param {boolean} deep
+ * @return {Object} obj - The copy of the object.
+ * @desc Clone an object, in depth if specified.
 */
-export function cloneObject( obj ) {
-    return Object.assign( {}, obj )
+export function cloneObject( obj, deep ) {
+    return deep ? JSON.parse( JSON.stringify( obj ) )
+        : Object.assign( {}, obj )
+}
+
+/**
+ * @name clearObject
+ * @param {Object} obj - The object to be clear.
+ * @desc Clear an object.
+*/
+export function clearObject( obj ) {
+    for ( let p in obj ) delete obj[p]
 }
 
 /**

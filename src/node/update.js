@@ -38,7 +38,7 @@ export function update( k, v, vis ) {
             }
         }
     }
-    else return error('"'+ k +'" is not a valid node property')
+    else error('"'+ k +'" is not a valid node property')
 }
 
 /**
@@ -106,7 +106,7 @@ function updateBranchColor( sel, v, vis ) {
             branch.style['fill'] = branch.style['stroke'] = v
             if ( !vis ) sel['branch-color'] = v
         } else return false
-    } else return error('The root node has no branches')
+    } else error('The root node has no branches')
 }
 
 /**
@@ -148,7 +148,7 @@ function updateImageSize( sel, v, vis ) {
             image.setAttribute('x', - w/2 )
             if ( !vis ) sel['image-size'] = h
         } else return false
-    } else return error('The node doesn\'t have an image')
+    } else error('The node doesn\'t have an image')
 }
 
 /**
@@ -192,5 +192,5 @@ function updateBoldFont( sel ) {
 */
 function updateFixStatus( sel ) {
     if ( glob.selected !== 'node0' ) sel.fixed = !sel.fixed;
-    else return error('The root node can not be fixed');
+    else error('The root node can not be fixed');
 }
