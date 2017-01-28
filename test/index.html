@@ -42,7 +42,7 @@
                 <br>
                 <img id="save-img" src="img/material-icons/img.svg">
                 <img onclick="getElementById('upload-map').click()" src="img/material-icons/upload.svg">
-                <input style="display:none" type="file" id="upload-map" accept=".mmp">
+                <input style="display:none" type="file" id="upload-map" accept=".json">
                 <img id="save-map" src="img/material-icons/save.svg">
                 <br>
                 <img onclick="mmap.undo()" src="img/material-icons/undo.svg">
@@ -66,10 +66,10 @@
         <script src="../node_modules/d3/build/d3.min.js"></script>
         <script src="../build/mmap.js"></script>
 
-        <script src="app.js"></script>
-
         <script>mocha.setup('bdd')</script>
         <script src="tests.js"></script>
         <script>mocha.run()</script>
+
+        <script src="app.js"></script>
     </body>
 </html>
