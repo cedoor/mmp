@@ -40,6 +40,6 @@ export default function( options ) {
     if ( glob.options['shortcuts'] !== false ) shortcuts()
     if ( glob.options['zoom'] === true ) glob.svg.main.call( zoom )
 
-    call('mmcreate')
+    call('mmcreate', glob.container.node() )
     addRoot()
 }

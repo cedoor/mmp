@@ -20,6 +20,8 @@ export let on = ( e, cb ) => dispatcher.on( e, cb )
 let dispatcher = dispatch(
     'mmcreate',
     'mmcenter',
+    'mmundo',
+    'mmrepeat',
     'nodedblclick',
     'nodeselect',
     'nodeupdate',

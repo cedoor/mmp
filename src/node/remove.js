@@ -19,6 +19,6 @@ export function remove() {
         node.select('node0')
         map.redraw()
         map.save()
-        call('noderemove', this, key )
+        call('noderemove', null, key )
     } else return error('The root node can not be deleted')
 }

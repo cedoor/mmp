@@ -1,5 +1,6 @@
 import glob from '../global'
 import { cloneObject, error } from '../utils'
+import { call } from '../events'
 import { center, redraw } from './index'
 import { deselect } from '../node/index'
 
@@ -26,7 +27,10 @@ export function data( snapshot ) {
 */
 export function undo() {
     let h = glob.history
-    if ( h.index > 0 ) load( h.snapshots[ --h.index ] )
+    if ( h.index > 0 ) {
+        load( h.snapshots[ --h.index ] )
+        call('mmundo')
+    }
 }
 
 /**
@@ -35,7 +39,10 @@ export function undo() {
 */
 export function repeat() {
     let h = glob.history
-    if ( h.index < h.snapshots.length - 1 ) load( h.snapshots[ ++h.index ] )
+    if ( h.index < h.snapshots.length - 1 ) {
+        load( h.snapshots[ ++h.index ] )
+        call('mmrepeat')
+    }
 }
 
 /**

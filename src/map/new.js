@@ -10,9 +10,9 @@ import * as map from './index'
 export function reset() {
     glob.counter = 0
     glob.nodes.clear()
-    addRoot()
     map.redraw()
+    call('mmcreate', glob.container.node() )
+    addRoot()
     map.center()
     map.save()
-    call('mmcreate')
 }
