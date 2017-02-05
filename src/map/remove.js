@@ -6,8 +6,10 @@ import { clearObject, cloneObject } from '../utils'
  * @desc Remove the mind map and reset all global settings.
 */
 export function remove() {
-    glob.container.select('svg').remove()
-    let backup = cloneObject( glob.backup )
-    clearObject( glob )
-    Object.assign( glob, backup )
+	if( glob.container !== undefined ) {
+		glob.container.select('svg').remove()
+		let backup = cloneObject( glob.backup )
+		clearObject( glob )
+		Object.assign( glob, backup )
+	} 
 }
