@@ -1,0 +1,20 @@
+{
+	"templates": {
+		"default": {
+			"staticFiles": {
+				"include": [
+					"./test"
+				]
+			}
+		}
+	},
+	"source": {
+		"include": [ "src" ]
+	},
+	"opts": {
+	    "destination": "./docs",
+	    "recurse": true,
+	    "readme": "./README.md",
+	    "package": "./package.json"
+	}
+}

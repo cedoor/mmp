@@ -17,7 +17,7 @@
     "name": "Omar Desogus",
     "url": "http://omardesogus.com"
   },
-  "main": "dist/mmap.js",
+  "main": "build/mmap.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/cedoor/mmap.git"
@@ -25,12 +25,14 @@
   "scripts": {
     "start": "npm run prepublish && echo Hit CTRL-C to stop the server && http-server -s -c-1 -o",
     "dev": "rollup -c -w",
-    "prepublish": "rollup -c && uglifyjs build/mmap.js --comments -c -m -o build/mmap.min.js"
+    "prepublish": "rollup -c && uglifyjs build/mmap.js --comments -c -m -o build/mmap.min.js && npm run docs",
+    "docs": "jsdoc -c doc.config.json"
   },
   "devDependencies": {
     "babel-preset-es2015-rollup": "3",
     "chai": "3",
     "http-server": "0.9",
+    "jsdoc": "3",
     "mocha": "3",
     "rollup": "0.41",
     "rollup-plugin-babel": "2",
