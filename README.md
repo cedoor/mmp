@@ -2,7 +2,7 @@
 
 Mmap is a javaScript UMD module and a logic engine to create mind maps applications, allowing a separation between business logic and view. Mmap is easily editable and customizable, it is written using the latest features of es2015 syntax and the famous D3.js library. All its functions are documented with JSDoc markup language and tested with mocha and chai.
 
-![mmap.js](test/img/logo.png)
+![mmap.js](https://github.com/cedoor/mmap/blob/master/test/img/logo.png)
 
 **# For the moment only tested on the latest versions of Google Chrome**
 
@@ -80,13 +80,14 @@ For a faster and more efficient development, some rules are used in the commits,
 
 ### # commits
 
-- Use this commit message format (angular style):  
+* Use this commit message format (angular style):  
 
-        [<type>]: <subject>
-        <BLANK LINE>
-        <body>
+    `[<type>]: <subject>`
+    `<BLANK LINE>`
+    `<body>`
 
     where `type` must be one of the following:
+
     - feat: A new feature
     - fix: A bug fix
     - docs: Documentation only changes
@@ -95,35 +96,35 @@ For a faster and more efficient development, some rules are used in the commits,
     - test: Adding missing or correcting existing tests
     - chore: Changes to the build process or auxiliary tools and libraries such as documentation generation
 
-    and `body` must be should include the motivation for the change and contrast this with previous behavior (do not add body if the commit is trivial). 
+and `body` must be should include the motivation for the change and contrast this with previous behavior (do not add body if the commit is trivial). 
 
-- Use the imperative, present tense: "change" not "changed" nor "changes".
-- Don't capitalize first letter.
-- No dot (.) at the end.
+* Use the imperative, present tense: "change" not "changed" nor "changes".
+* Don't capitalize first letter.
+* No dot (.) at the end.
 
 ### # branches
 
-- There is a master branch, used only for release.
-- There is a dev branch, used to marge all sub dev branch.
-- Avoid long descriptive names for long-lived branches.
-- No CamelCase.
-- Use grouping tokens (words) at the beginning of your branch names (in a similar way to the `type` of commit).
-- Define and use short lead tokens to differentiate branches in a way that is meaningful to your workflow.
-- Use slashes to separate parts of your branch names.
-- Remove branch after marge if it is not important.
+* There is a master branch, used only for release.
+* There is a dev branch, used to marge all sub dev branch.
+* Avoid long descriptive names for long-lived branches.
+* No CamelCase.
+* Use grouping tokens (words) at the beginning of your branch names (in a similar way to the `type` of commit).
+* Define and use short lead tokens to differentiate branches in a way that is meaningful to your workflow.
+* Use slashes to separate parts of your branch names.
+* Remove branch after marge if it is not important.
 
-Example:
+Examples:
     
-        git branch -b doc/README
-        git branch -b test/one-function
-        git branch -b feat/side-bar
-        git branch -b style/header
+    git branch -b doc/README
+    git branch -b test/one-function
+    git branch -b feat/side-bar
+    git branch -b style/header
 
 ### # es2015
 
-- Use `let` and `const`, not `var`.
-- Use Arrow Functions in place of function expressions when possible.
-- Use Arrow Functions whenever you need to preserve the lexical value of this.
+* Use `let` and `const`, not `var`.
+* Use Arrow Functions in place of function expressions when possible.
+* Use Arrow Functions whenever you need to preserve the lexical value of this.
 
 ## Third-party libs
 
