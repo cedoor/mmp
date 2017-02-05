@@ -63,7 +63,7 @@ imageSrc.onclick = function() {
 // mmap events
 
 mmap.on('mmcreate', function() {
-    message('§ Mind map created', 0, this );
+    message('\n§ Mind map created', 0, this );
 });
 
 mmap.on('mmcenter', function() {
