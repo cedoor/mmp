@@ -105,13 +105,13 @@ and `body` must be should include the motivation for the change and contrast thi
 ### # branches
 
 * There is a master branch, used only for release.
-* There is a dev branch, used to marge all sub dev branch.
+* There is a dev branch, used to merge all sub dev branch.
 * Avoid long descriptive names for long-lived branches.
 * No CamelCase.
 * Use grouping tokens (words) at the beginning of your branch names (in a similar way to the `type` of commit).
 * Define and use short lead tokens to differentiate branches in a way that is meaningful to your workflow.
 * Use slashes to separate parts of your branch names.
-* Remove branch after marge if it is not important.
+* Remove branch after merge if it is not important.
 
 Examples:
     
