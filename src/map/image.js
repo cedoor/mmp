@@ -6,7 +6,7 @@ import { deselect } from '../node/index'
  * @param {requestCallback} cb - The callback.
  * @param {string} [type] - Type of image, default png, others : jpeg, gif..
  * @param {string} [bg] - Color of mind map background.
- * @desc Set image settings and pass the its data URL in a callback function.
+ * @desc Set image settings and pass its data URL in a callback function.
 */
 export function image( cb, type, bg ) {
     deselect()
