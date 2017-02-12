@@ -7,7 +7,8 @@ describe('Tests', function() {
 
         describe('§ mmap.init()', function() {
             it('Should initialize the mind map without errors', function() {
-                mmap.init
+                var init = function() { mmap.init('mmap'); }
+                init
                     .should.to.not.throw( Error );
             });
             it('Should exist the svg node in the DOM', function() {
@@ -41,7 +42,7 @@ describe('Tests', function() {
     describe('', function() {
 
         before( function() {
-            mmap.init();
+            mmap.init('mmap');
         });
 
         describe('§ mmap.new()', function() {
@@ -210,7 +211,7 @@ describe('Tests', function() {
             script.onload = function() {
                 // Recreate the mind map
                 mmap.remove();
-                mmap.init();
+                mmap.init('mmap');
             }
             script.src = 'app.js';
         });

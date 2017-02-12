@@ -9,9 +9,10 @@ import shortcuts from '../shortcuts'
 /**
  * @name init
  * @param {Object} options - Mind map options.
+ * @param {string} selector - Html id value of mind map container.
  * @desc Initial mmap function, set all parameters of the map.
 */
-export function init( options ) {
+export function init( selector, options ) {
 
     // Create a backup of original global options
     glob.backup = cloneObject( glob, true )
@@ -23,7 +24,7 @@ export function init( options ) {
             : error('mmap options are invalid')
 
     // Set the view of the map
-    glob.container = d3.select('#mmap')
+    glob.container = d3.select('#'+ selector )
     glob.svg.main = glob.container.append('svg')
         .attr('width', '100%').attr('height', '100%')
     glob.svg.main.append("rect")
