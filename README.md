@@ -6,24 +6,84 @@ Mmap is a javaScript UMD module and a logic engine to create mind maps applicati
 
 **# For the moment only tested on the latest versions of Google Chrome**
 
-## Install
+## Installing
 
 You can install this package with npm :
 
     npm install mmap --save
 
 Then add the mmap library with d3.js to your `index.html` :
-
+    
+    <div id="mmap"></div>
+    
     <script src="node_modules/d3/build/d3.min.js"></script>
     <script src="node_modules/mmap/build/mmap.min.js"></script>
+    <script>
+        mmap.init('mmap');
+    </script>
 
-## Usage
+## API Reference
 
-### Functions
+### Map
 
-\# mmap.**init**(*object*)
+\# mmap.**init**( *id, options* )
 
-Initialize the mind map, creating the svg element and the root node.
+Initializes the mind map, creating the svg element and the root node. 
+You can pass various values as the following example:
+    
+    mmap.init('mmap', {
+        'center-onresize': true,
+        'drag': false,
+        'zoom': false,
+        'node': {'name': 'Default name'},
+        'root-node': {'background-color': '#E4DDC7'}
+    });
+
+\# mmap.**remove**()
+
+Removes the svg element of the mind map and resets all default values. 
+
+\# mmap.**new**()
+
+Resets the mind map. Removes old mind map and creates a new. 
+
+\# mmap.**zoomIn**()
+
+Zooms in the mind map.
+
+\# mmap.**zoomOut**()
+
+Zooms out the mind map.
+
+\# mmap.**center**()
+
+Centers the mind map. Moves the root node at the center of the svg element.  
+
+\# mmap.**undo**()
+
+
+
+\# mmap.**repeat**()
+
+\# mmap.**data**()
+
+Without
+
+### Nodes
+
+\# mmap.node.**add**( *options* )
+
+
+
+\# mmap.node.**remove**()
+
+\# mmap.node.**select**( *key* )
+
+\# mmap.node.**moveTo**( *options* )
+
+\# mmap.node.**selectTo**( *options* )
+
+\# mmap.node.**update**( *options* )
 
 ### Events  
 
