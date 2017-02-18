@@ -24,9 +24,10 @@ export function init( selector, options ) {
             : error('mmap options are invalid')
 
     // Set the view of the map
-    glob.container = d3.select('#'+ selector )
-    glob.svg.main = glob.container.append('svg')
-        .attr('width', '100%').attr('height', '100%')
+    glob.container = d3.select('#'+ selector ).style('position', 'relative')
+    glob.svg.main = glob.container.append('svg').style('position', 'absolute')
+        .style('width', '100%').style('height', '100%')
+        .style('top', 0).style('left', 0)
     glob.svg.main.append("rect")
         .attr("width", '100%').attr("height", '100%')
         .attr("fill", "white")
