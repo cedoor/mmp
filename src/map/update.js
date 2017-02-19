@@ -11,8 +11,8 @@ import { fontStyle, fontWeight } from '../utils'
 */
 export function update() {
     let nodeValues = glob.nodes.entries(),
-        nodes = glob.svg.mmap.selectAll('.node').data( nodeValues ),
-        branches = glob.svg.mmap.selectAll('.branch').data( nodeValues.slice(1) ),
+        nodes = glob.svg.mmp.selectAll('.node').data( nodeValues ),
+        branches = glob.svg.mmp.selectAll('.branch').data( nodeValues.slice(1) ),
 
     outer = nodes.enter().append('g')
         .style('cursor', 'pointer')

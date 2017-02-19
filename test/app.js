@@ -22,7 +22,7 @@ message = function( msg, style, arg ) {
 
 // Save the map as json file
 saveMap.onclick = function() {
-    var data = mmap.data(),
+    var data = mmp.data(),
         json = JSON.stringify( data ),
         blob = new Blob([ json ], { type: "application/json" }),
         a = document.createElement('a');
@@ -37,13 +37,13 @@ uploadMap.onchange = function( e ) {
     reader.readAsText( e.target.files[0] );
     reader.onload = function( e ) {
         var data = JSON.parse( event.target.result );
-        mmap.data( data );
+        mmp.data( data );
     };
 }
 
 // Save the image of the map
 saveImg.onclick = function() {
-    mmap.image( function( url ) {
+    mmp.image( function( url ) {
         var a = document.createElement('a');
         a.download = 'example';
         a.href = url;
@@ -53,53 +53,53 @@ saveImg.onclick = function() {
 
 // Load a node image with local links
 imageSrc.onclick = function() {
-    var src = mmap.node.select().value['image-src'];
+    var src = mmp.node.select().value['image-src'];
     if ( src === '' ) {
         var v = prompt("Please enter your name", "logo.png");
-        mmap.node.update('image-src', 'img/' + v );
-    } else mmap.node.update('image-src', '');
+        mmp.node.update('image-src', 'img/' + v );
+    } else mmp.node.update('image-src', '');
 }
 
-// mmap events
+// mmp events
 
-mmap.on('mmcreate', function() {
+mmp.on('mmcreate', function() {
     message('\n§ Mind map created', 0, this );
 });
 
-mmap.on('mmcenter', function() {
-    message('§ mmap.center()', 1 );
+mmp.on('mmcenter', function() {
+    message('§ mmp.center()', 1 );
 });
 
-mmap.on('mmundo', function() {
-    message('§ mmap.undo()', 1 );
+mmp.on('mmundo', function() {
+    message('§ mmp.undo()', 1 );
 });
 
-mmap.on('mmrepeat', function() {
-    message('§ mmap.repeat()', 1 );
+mmp.on('mmrepeat', function() {
+    message('§ mmp.repeat()', 1 );
 });
 
-mmap.on('nodeselect',  function( key, value ) {
+mmp.on('nodeselect',  function( key, value ) {
     nodeName.value = value['name'];
     fontSize.value = value['font-size'];
     imageSize.value = value['image-size'];
     backgroundColor.value = value['background-color'];
     branchColor.value = value['branch-color'] || '#ffffff';
     textColor.value = value['text-color'];
-    message('§ mmap.node.select( '+ key +' )', 1, this );
+    message('§ mmp.node.select( '+ key +' )', 1, this );
 });
 
-mmap.on('nodedblclick', function( key, value ) {
+mmp.on('nodedblclick', function( key, value ) {
     nodeName.focus();
 });
 
-mmap.on('nodeupdate', function( key, value, property ) {
-    message('§ mmap.node.update( '+ property +', '+ value[ property ] +' )', 1, this );
+mmp.on('nodeupdate', function( key, value, property ) {
+    message('§ mmp.node.update( '+ property +', '+ value[ property ] +' )', 1, this );
 });
 
-mmap.on('nodecreate', function( key, value ) {
-    message('§ mmap.node.add()', 1, this );
+mmp.on('nodecreate', function( key, value ) {
+    message('§ mmp.node.add()', 1, this );
 });
 
-mmap.on('noderemove', function( key, value ) {
-    message('§ mmap.node.remove()', 1, key );
+mmp.on('noderemove', function( key, value ) {
+    message('§ mmp.node.remove()', 1, key );
 });

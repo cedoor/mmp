@@ -40,7 +40,7 @@ export function center() {
  * @desc Set the transform of the mind map when the zoom change.
 */
 function zoomed() {
-    glob.svg.mmap.attr('transform', d3.event.transform )
+    glob.svg.mmp.attr('transform', d3.event.transform )
 }
 
 /**

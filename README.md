@@ -1,8 +1,8 @@
-# Mmap
+# Mmp
 
-Mmap is a javaScript UMD module and a logic engine to create mind maps applications, allowing a separation between business logic and view. Mmap is easily editable and customizable, it is written using the latest features of es2015 syntax and the famous D3.js library. All its functions are documented with JSDoc markup language and tested with mocha and chai.
+Mmp is a javaScript UMD module and a logic engine to create mind maps applications, allowing a separation between business logic and view. Mmp is easily editable and customizable, it is written using the latest features of es2015 syntax and the famous D3.js library. All its functions are documented with JSDoc markup language and tested with mocha and chai.
 
-![mmap.js](https://github.com/cedoor/mmap/blob/master/test/img/logo.png)
+![mmp.js](https://github.com/cedoor/mmp/blob/master/test/img/logo.png)
 
 **# For the moment only tested on the latest versions of Google Chrome**
 
@@ -10,28 +10,28 @@ Mmap is a javaScript UMD module and a logic engine to create mind maps applicati
 
 You can install this package with npm :
 
-    npm install mmap --save
+    npm install mmp --save
 
-Then add the mmap library with d3.js to your `index.html` :
+Then add the mmp library with d3.js to your `index.html` :
     
-    <div id="mmap"></div>
+    <div id="mmp"></div>
     
     <script src="node_modules/d3/build/d3.min.js"></script>
-    <script src="node_modules/mmap/build/mmap.min.js"></script>
+    <script src="node_modules/mmp/build/mmp.min.js"></script>
     <script>
-        mmap.init('mmap');
+        mmp.init('mmp');
     </script>
 
 ## API Reference
 
 ### Map
 
-\# mmap.**init**( id, *options* )
+\# mmp.**init**( id, *options* )
 
 Initializes the mind map, creating the svg element and the root node. 
 You can pass various options as the following example:
     
-    mmap.init('mmap', {
+    mmp.init('mmp', {
         'center-onresize': true,
         'drag': false,
         'zoom': false,
@@ -39,74 +39,74 @@ You can pass various options as the following example:
         'root-node': {'background-color': '#E4DDC7'}
     });
 
-\# mmap.**remove**()
+\# mmp.**remove**()
 
 Removes the svg element of the mind map and resets all default values. 
 
-\# mmap.**new**()
+\# mmp.**new**()
 
 Resets the mind map. Removes old mind map and creates a new. 
 
-\# mmap.**zoomIn**()
+\# mmp.**zoomIn**()
 
 Zooms in the mind map.
 
-\# mmap.**zoomOut**()
+\# mmp.**zoomOut**()
 
 Zooms out the mind map.
 
-\# mmap.**center**()
+\# mmp.**center**()
 
 Centers the mind map. Moves the root node at the center of the svg element.  
 
-\# mmap.**undo**()
+\# mmp.**undo**()
 
 Undo the last change. Loads the previous snapshot of the mind map if it exists.
 
-\# mmap.**repeat**()
+\# mmp.**repeat**()
 
 Repeats the last change. Loads the next snapshot of the mind map if it exists.
 
-\# mmap.**data**( *snapshot* )
+\# mmp.**data**( *snapshot* )
 
 Without parameter returns the data of the last snapshot of the mind map. If you pass the parameter with the data 
 of an old snapshot of the mind map, these data will be loades creating a new snapshot.
 
-\# mmap.**image**( callback, *type, background* )
+\# mmp.**image**( callback, *type, background* )
 
 Returns the data URL of the mind map image in the parameter of the callback. 
 
 ### Nodes
 
-\# mmap.node.**add**( *options* )
+\# mmp.node.**add**( *options* )
 
 Adds a new node in the mind map. 
 
-\# mmap.node.**remove**()
+\# mmp.node.**remove**()
 
 Removes the current selected node in the mind map.
 
-\# mmap.node.**select**( *key* )
+\# mmp.node.**select**( *key* )
 
 Without parameter returns the key and the value of the current selected node. 
 With a node key as parameter selects the node with that key. 
 
-\# mmap.node.**moveTo**( direction, *range* )
+\# mmp.node.**moveTo**( direction, *range* )
 
 Moves the current selected node in the specified direction.
 
-\# mmap.node.**selectTo**( direction )
+\# mmp.node.**selectTo**( direction )
 
 Moves the current selection in the specified direction.
 
-\# mmap.node.**update**( property, value, *visual* )
+\# mmp.node.**update**( property, value, *visual* )
 
 Updates a property of the current selected node with a new value. 
 If you pass `true` as third parameter the change will only visual.
 
 ### Events
 
-\# mmap.**on**( event, callback )
+\# mmp.**on**( event, callback )
 
 Executes a callback when an event is detected.
 
@@ -126,31 +126,31 @@ Executes a callback when an event is detected.
 
 | Shortcut              | Attached function               |
 |-----------------------|---------------------------------|
-| ctrl + shift + z      | `mmap.repeat()`                 |
-| ctrl + z              | `mmap.undo()`                   |
-| alt + c               | `mmap.center()`                 |
-| alt + n               | `mmap.new()`                    |
-| alt + shift + +       | `mmap.zoomIn()`                 |
-| alt + shift + -       | `mmap.zoomOut()`                |
-| alt +                 | `mmap.add()`                    |
-| alt -                 | `mmap.remove()`                 |
-| alt + shift + up      | `mmap.moveTo('up')`             |
-| alt + shift + down    | `mmap.moveTo('down')`           |
-| alt + shift + left    | `mmap.moveTo('left')`           |
-| alt + shift + right   | `mmap.moveTo('right')`          |
-| alt + up              | `mmap.selectionTo('up')`        |
-| alt + down            | `mmap.selectionTo('down')`      |
-| alt + left            | `mmap.selectionTo('left')`      |
-| alt + right           | `mmap.selectionTo('right')`     |
+| ctrl + shift + z      | `mmp.repeat()`                 |
+| ctrl + z              | `mmp.undo()`                   |
+| alt + c               | `mmp.center()`                 |
+| alt + n               | `mmp.new()`                    |
+| alt + shift + +       | `mmp.zoomIn()`                 |
+| alt + shift + -       | `mmp.zoomOut()`                |
+| alt +                 | `mmp.add()`                    |
+| alt -                 | `mmp.remove()`                 |
+| alt + shift + up      | `mmp.moveTo('up')`             |
+| alt + shift + down    | `mmp.moveTo('down')`           |
+| alt + shift + left    | `mmp.moveTo('left')`           |
+| alt + shift + right   | `mmp.moveTo('right')`          |
+| alt + up              | `mmp.selectionTo('up')`        |
+| alt + down            | `mmp.selectionTo('down')`      |
+| alt + left            | `mmp.selectionTo('left')`      |
+| alt + right           | `mmp.selectionTo('right')`     |
 
 ## File tree
 ##### After `npm start`
 
-    mmap
+    mmp
     |
     +--build
-    |  +--mmap.js
-    |  +--mmap.min.js
+    |  +--mmp.js
+    |  +--mmp.min.js
     |
     +--node_modules
     |
@@ -228,7 +228,7 @@ Examples:
 | D3 | Mike Bostock | [BSD-3-Clause](https://github.com/d3/d3/blob/master/LICENSE) | https://d3js.org/ |
 
 ## License
-* See [LICENSE](https://github.com/cedoor/mmap/blob/master/LICENSE.md) file
+* See [LICENSE](https://github.com/cedoor/mmp/blob/master/LICENSE.md) file
 
 ## Contact
 #### Developer

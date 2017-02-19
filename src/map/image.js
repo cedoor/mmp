@@ -37,7 +37,7 @@ export function image( cb, type, bg ) {
  * @desc Translate the mind map svg in data URI.
 */
 function dataURI( cb ) {
-    let element = glob.svg.mmap.node(),
+    let element = glob.svg.mmp.node(),
         clone = element.cloneNode( true ),
         svg = document.createElementNS('http://www.w3.org/2000/svg','svg'),
         box = element.getBBox(),

@@ -1,9 +1,9 @@
 {
-  "name": "mmap",
+  "name": "mmp",
   "version": "0.1.0",
   "description": "JavaScript UMD module & logic engine to create mind maps applications",
   "keywords": [
-    "mmap",
+    "mmp",
     "mindmap",
     "node",
     "branch",
@@ -11,21 +11,18 @@
     "mind",
     "infovis"
   ],
-  "homepage": "https://github.com/cedoor/mmap",
+  "homepage": "https://github.com/cedoor/mmp",
   "license": "MIT",
-  "author": {
-    "name": "Omar Desogus",
-    "url": "http://omardesogus.com"
-  },
-  "main": "build/mmap.js",
+  "author": "Omar Desogus <omardesogus9@gmail.com> (http://omardesogus.com)",
+  "main": "build/mmp.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cedoor/mmap.git"
+    "url": "https://github.com/cedoor/mmp.git"
   },
   "scripts": {
     "start": "npm run prepublish && echo Hit CTRL-C to stop the server && http-server -s -c-1 -o",
     "dev": "rollup -c -w",
-    "prepublish": "rollup -c && uglifyjs build/mmap.js --comments -c -m -o build/mmap.min.js && npm run docs",
+    "prepublish": "rollup -c && uglifyjs build/mmp.js --comments -c -m -o build/mmp.min.js && npm run docs",
     "docs": "jsdoc -c doc.config.json"
   },
   "devDependencies": {
@@ -42,7 +39,7 @@
     "uglify-js": "2"
   },
   "dependencies": {
-    "d3": "^4.4.1"
+    "d3": "4.4.1"
   },
   "eslintConfig": {
     "env": {

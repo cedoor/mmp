@@ -5,9 +5,9 @@ describe('Tests', function() {
 
     describe('', function() {
 
-        describe('§ mmap.init()', function() {
+        describe('§ mmp.init()', function() {
             it('Should initialize the mind map without errors', function() {
-                var init = function() { mmap.init('mmap'); }
+                var init = function() { mmp.init('mmp'); }
                 init
                     .should.to.not.throw( Error );
             });
@@ -22,9 +22,9 @@ describe('Tests', function() {
             });
         });
 
-        describe('§ mmap.remove()', function() {
+        describe('§ mmp.remove()', function() {
             it('Should remove the mind map without errors', function() {
-                mmap.remove();
+                mmp.remove();
             });
             it('Should not exist the svg node in the DOM', function() {
                 var svg = document.getElementsByTagName('svg');
@@ -42,12 +42,12 @@ describe('Tests', function() {
     describe('', function() {
 
         before( function() {
-            mmap.init('mmap');
+            mmp.init('mmp');
         });
 
-        describe('§ mmap.new()', function() {
+        describe('§ mmp.new()', function() {
             it('Should create a new mind map without errors', function() {
-                mmap.new
+                mmp.new
                     .should.to.not.throw( Error );
             });
             it('Should exist the svg node in the DOM', function() {
@@ -61,44 +61,44 @@ describe('Tests', function() {
             });
         });
 
-        describe('§ mmap.zoomIn()', function() {
+        describe('§ mmp.zoomIn()', function() {
             it('Should zoom-in the mind map without errors', function() {
-                mmap.zoomOut
+                mmp.zoomOut
                     .should.to.not.throw( Error );
             });
         });
 
-        describe('§ mmap.zoomOut()', function() {
+        describe('§ mmp.zoomOut()', function() {
             it('Should zoom-out the mind map without errors', function() {
-                mmap.zoomIn
+                mmp.zoomIn
                     .should.to.not.throw( Error );
             });
         });
 
-        describe('§ mmap.center()', function() {
+        describe('§ mmp.center()', function() {
             it('Should center the mind map without errors', function() {
-                mmap.center
+                mmp.center
                     .should.to.not.throw( Error );
             });
         });
 
-        describe('§ mmap.undo()', function() {
+        describe('§ mmp.undo()', function() {
             it('Should undo the mind map without errors', function() {
-                mmap.undo
+                mmp.undo
                     .should.to.not.throw( Error );
             });
         });
 
-        describe('§ mmap.repeat()', function() {
+        describe('§ mmp.repeat()', function() {
             it('Should repeat the mind map without errors', function() {
-                mmap.repeat
+                mmp.repeat
                     .should.to.not.throw( Error );
             });
         });
 
-        describe('§ mmap.node.add()', function() {
+        describe('§ mmp.node.add()', function() {
             it('Should add a node without errors', function() {
-                mmap.node.add
+                mmp.node.add
                     .should.to.not.throw( Error );
             });
             it('Should exist in the DOM', function() {
@@ -106,7 +106,7 @@ describe('Tests', function() {
                 expect( node ).to.exist;
             });
             it('Should add a node with custom parameters', function() {
-                mmap.node.add({
+                mmp.node.add({
                     'name': 'Custom node',
                     'background-color': 'rgb(201, 223, 192)',
                     'image-src': 'img/logo.png'
@@ -123,71 +123,71 @@ describe('Tests', function() {
             });
         });
 
-        describe('§ mmap.node.select()', function() {
+        describe('§ mmp.node.select()', function() {
             it('Should get selection of a node without errors', function() {
-                mmap.node.select
+                mmp.node.select
                     .should.to.not.throw( Error );
             });
             it('Should select a node', function() {
-                mmap.node.select('node1');
-                mmap.node.select()
+                mmp.node.select('node1');
+                mmp.node.select()
                     .should.to.have.property('key').and.equal('node1');
             });
         });
 
-        describe('§ mmap.node.remove()', function() {
+        describe('§ mmp.node.remove()', function() {
             it('Should remove a node without errors', function() {
-                mmap.node.select('node2');
-                mmap.node.remove
+                mmp.node.select('node2');
+                mmp.node.remove
                     .should.to.not.throw( Error );
             });
         });
 
-        describe('§ mmap.node.moveTo()', function() {
+        describe('§ mmp.node.moveTo()', function() {
             it('Should move a node', function() {
-                var x = mmap.node.select().value.x;
-                mmap.node.moveTo('right', 100 );
-                mmap.node.select().value.x
+                var x = mmp.node.select().value.x;
+                mmp.node.moveTo('right', 100 );
+                mmp.node.select().value.x
                     .should.to.equal( x + 100 );
-                mmap.node.moveTo('left', 100 );
-                mmap.node.select().value.x
+                mmp.node.moveTo('left', 100 );
+                mmp.node.select().value.x
                     .should.to.equal( x );
             });
         });
 
-        describe('§ mmap.node.selectTo()', function() {
+        describe('§ mmp.node.selectTo()', function() {
             it('Should move the selection of a node', function() {
-                var key = mmap.node.select().key;
-                mmap.node.selectTo('left');
-                mmap.node.select().key
+                var key = mmp.node.select().key;
+                mmp.node.selectTo('left');
+                mmp.node.select().key
                     .should.to.equal('node1');
-                mmap.node.selectTo('right');
-                mmap.node.select().key
+                mmp.node.selectTo('right');
+                mmp.node.select().key
                     .should.to.equal('node0');
             });
         });
 
-        describe('§ mmap.node.update()', function() {
+        describe('§ mmp.node.update()', function() {
             it('Should update the properties of a node ( visual )', function() {
-                var name = mmap.node.select().value.name;
-                mmap.node.update('name', 'test', true );
-                mmap.node.select().value.name
+                var name = mmp.node.select().value.name;
+                mmp.node.update('name', 'test', true );
+                mmp.node.select().value.name
                     .should.to.equal( name );
             });
             it('Should update the properties of a node', function() {
-                mmap.node.update('name', 'test');
-                mmap.node.select().value.name
+                mmp.node.update('name', 'test');
+                mmp.node.select().value.name
                     .should.to.equal('test');
             });
         });
 
-        describe('§ mmap.data()', function() {
+        describe('§ mmp.data()', function() {
             it('Should get mind map data without errors', function() {
-                mmap.data
+                mmp.data
                     .should.to.not.throw( Error );
             });
             it('Should have at least the first node', function() {
-                var data = mmap.data();
+                var data = mmp.data();
                 data[0]
                     .should.to.have.property('key')
                     .and.equal('node0');
@@ -210,8 +210,8 @@ describe('Tests', function() {
             document.body.appendChild( script ); 
             script.onload = function() {
                 // Recreate the mind map
-                mmap.remove();
-                mmap.init('mmap');
+                mmp.remove();
+                mmp.init('mmp');
             }
             script.src = 'app.js';
         });

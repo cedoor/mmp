@@ -10,7 +10,7 @@ import shortcuts from '../shortcuts'
  * @name init
  * @param {Object} options - Mind map options.
  * @param {string} selector - Html id value of mind map container.
- * @desc Initial mmap function, set all parameters of the map.
+ * @desc Initial mmp function, set all parameters of the map.
 */
 export function init( selector, options ) {
 
@@ -21,7 +21,7 @@ export function init( selector, options ) {
     if ( options !== undefined )
         options.constructor === Object
             ? overwriteObject( glob.options, options )
-            : error('mmap options are invalid')
+            : error('mmp options are invalid')
 
     // Set the view of the map
     glob.container = d3.select('#'+ selector ).style('position', 'relative')
@@ -33,11 +33,11 @@ export function init( selector, options ) {
         .attr("fill", "white")
         .attr("pointer-events", "all")
         .on('click', deselect )
-    glob.svg.mmap = glob.svg.main.append('g')
+    glob.svg.mmp = glob.svg.main.append('g')
 
     glob.nodes = d3.map() // Set d3 map to manage the nodes of mind map
     glob.counter = 0 // Set a global counter for the identity of nodes
-    glob.history.index = -1 // Set history mmap settings to manage the snapshots
+    glob.history.index = -1 // Set history mmp settings to manage the snapshots
     glob.history.snapshots = []
 
     // Set the optional settings

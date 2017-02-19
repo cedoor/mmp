@@ -1,4 +1,4 @@
-html, body, #mmap, #sidebar {
+html, body, #mmp, #sidebar {
     height: 100%;
 }
 
@@ -12,7 +12,7 @@ body {
     outline: none;
 }
 
-#mmap {
+#mmp {
     margin-left: 502px;
 }
 

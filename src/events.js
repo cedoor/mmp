@@ -16,7 +16,7 @@ export let call = ( e, ...p ) => dispatcher.call( e, ...p )
 */
 export let on = ( e, cb ) => dispatcher.on( e, cb )
 
-// All events of mmap
+// All events of mmp
 let dispatcher = dispatch(
     'mmcreate',
     'mmcenter',

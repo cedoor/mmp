@@ -3,7 +3,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Mmap</title>
+        <title>Mmp</title>
         <meta name="description" content="JavaScript UMD module to create mind maps">
         <link rel='shortcut icon' type='image/png' href='img/favicon.png'/>
         <link href="../node_modules/mocha/mocha.css" rel="stylesheet">
@@ -15,29 +15,29 @@
             <div id="commands">
                 <input
                     id="node-name" type="text" name="node-name"
-                    oninput="mmap.node.update('name', value, true)"
-                    onchange="mmap.node.update('name', value)">
+                    oninput="mmp.node.update('name', value, true)"
+                    onchange="mmp.node.update('name', value)">
                 <br>
                 <input
                     id="font-size" type="range" name="font-size" min="10" max="50"
-                    oninput="mmap.node.update('font-size', value, true)"
-                    onchange="mmap.node.update('font-size', value)">
+                    oninput="mmp.node.update('font-size', value, true)"
+                    onchange="mmp.node.update('font-size', value)">
                 <br>
                 <input
                     id="image-size" type="range" name="image-size" min="50" max="200"
-                    oninput="mmap.node.update('image-size', value, true)"
-                    onchange="mmap.node.update('image-size', value)">
+                    oninput="mmp.node.update('image-size', value, true)"
+                    onchange="mmp.node.update('image-size', value)">
                 <br>
                 <input id="background-color" type="color" name="background-color"
-                    onchange="mmap.node.update('background-color', value)">
+                    onchange="mmp.node.update('background-color', value)">
                 <input id="branch-color" type="color" name="branch-color"
-                    onchange="mmap.node.update('branch-color', value)">
+                    onchange="mmp.node.update('branch-color', value)">
                 <input id="text-color" type="color" name="text-color"
-                    onchange="mmap.node.update('text-color', value)">
+                    onchange="mmp.node.update('text-color', value)">
                 <br>
-                <img onclick="mmap.node.update('fixed')" src="img/material-icons/fixed.svg">
-                <img onclick="mmap.node.update('bold')" src="img/material-icons/bold.svg">
-                <img onclick="mmap.node.update('italic')" src="img/material-icons/italic.svg">
+                <img onclick="mmp.node.update('fixed')" src="img/material-icons/fixed.svg">
+                <img onclick="mmp.node.update('bold')" src="img/material-icons/bold.svg">
+                <img onclick="mmp.node.update('italic')" src="img/material-icons/italic.svg">
                 <img id="image-src" src="img/material-icons/node-img.svg">
                 <br>
                 <img id="save-img" src="img/material-icons/img.svg">
@@ -45,24 +45,24 @@
                 <input style="display:none" type="file" id="upload-map" accept=".json">
                 <img id="save-map" src="img/material-icons/save.svg">
                 <br>
-                <img onclick="mmap.undo()" src="img/material-icons/undo.svg">
-                <img onclick="mmap.repeat()" src="img/material-icons/repeat.svg">
-                <img onclick="mmap.node.add()" src="img/material-icons/add.svg">
-                <img onclick="mmap.node.remove()" src="img/material-icons/remove.svg">
+                <img onclick="mmp.undo()" src="img/material-icons/undo.svg">
+                <img onclick="mmp.repeat()" src="img/material-icons/repeat.svg">
+                <img onclick="mmp.node.add()" src="img/material-icons/add.svg">
+                <img onclick="mmp.node.remove()" src="img/material-icons/remove.svg">
                 <br>
-                <img onclick="mmap.zoomIn()" src="img/material-icons/zoomin.svg">
-                <img onclick="mmap.zoomOut()" src="img/material-icons/zoomout.svg">
-                <img onclick="mmap.center()" src="img/material-icons/center.svg">
-                <img onclick="mmap.new()" src="img/material-icons/new.svg">
+                <img onclick="mmp.zoomIn()" src="img/material-icons/zoomin.svg">
+                <img onclick="mmp.zoomOut()" src="img/material-icons/zoomout.svg">
+                <img onclick="mmp.center()" src="img/material-icons/center.svg">
+                <img onclick="mmp.new()" src="img/material-icons/new.svg">
             </div>
         </div>
 
-        <div id="mmap"></div>
+        <div id="mmp"></div>
 
         <script src="../node_modules/mocha/mocha.js"></script>
         <script src="../node_modules/chai/chai.js"></script>
         <script src="../node_modules/d3/build/d3.min.js"></script>
-        <script src="../build/mmap.js"></script>
+        <script src="../build/mmp.js"></script>
 
         <script>mocha.setup('bdd')</script>
         <script src="tests.js"></script>
