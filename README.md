@@ -102,30 +102,46 @@ Moves the current selection in the specified direction.
 \# mmap.node.**update**( property, value, *visual* )
 
 Updates a property of the current selected node with a new value. 
-If you pass `true` as the third parameter the change will only visual.
+If you pass `true` as third parameter the change will only visual.
 
-### Events  
+### Events
+
+\# mmap.**on**( event, callback )
+
+Executes a callback when an event is detected.
+
+| Events        |
+|---------------|
+| mmcreate      |
+| mmcenter      |
+| mmundo        |
+| mmrepeat      |
+| nodedblclick  |
+| nodeselect    |
+| nodeupdate    |
+| nodecreate    |
+| noderemove    |
 
 ### Shortcuts
 
-| Shortcut            | Attached function               |
-|---------------------|---------------------------------|
-| ctrl + shift + z    | `mmap.repeat()`                 |
-| ctrl + z            | `mmap.undo()`                   |
-| alt + c             | `mmap.center()`                 |
-| alt + n             | `mmap.new()`                    |
-| alt + shift + +     | `mmap.zoomIn()`                 |
-| alt + shift + -     | `mmap.zoomOut()`                |
-| alt +               | `mmap.add()`                    |
-| alt -               | `mmap.remove()`                 |
-| alt + shift + up    | `mmap.moveTo('up')`             |
-| alt + shift + down  | `mmap.moveTo('down')`           |
-| alt + shift + left  | `mmap.moveTo('left')`           |
-| alt + shift + right | `mmap.moveTo('right')`          |
-| alt + up            | `mmap.selectionTo('up')`        |
-| alt + down          | `mmap.selectionTo('down')`      |
-| alt + left          | `mmap.selectionTo('left')`      |
-| alt + right         | `mmap.selectionTo('right')`     |
+| Shortcut              | Attached function               |
+|-----------------------|---------------------------------|
+| ctrl + shift + z      | `mmap.repeat()`                 |
+| ctrl + z              | `mmap.undo()`                   |
+| alt + c               | `mmap.center()`                 |
+| alt + n               | `mmap.new()`                    |
+| alt + shift + +       | `mmap.zoomIn()`                 |
+| alt + shift + -       | `mmap.zoomOut()`                |
+| alt +                 | `mmap.add()`                    |
+| alt -                 | `mmap.remove()`                 |
+| alt + shift + up      | `mmap.moveTo('up')`             |
+| alt + shift + down    | `mmap.moveTo('down')`           |
+| alt + shift + left    | `mmap.moveTo('left')`           |
+| alt + shift + right   | `mmap.moveTo('right')`          |
+| alt + up              | `mmap.selectionTo('up')`        |
+| alt + down            | `mmap.selectionTo('down')`      |
+| alt + left            | `mmap.selectionTo('left')`      |
+| alt + right           | `mmap.selectionTo('right')`     |
 
 ## File tree
 ##### After `npm start`
