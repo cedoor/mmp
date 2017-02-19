@@ -1,13 +1,4 @@
 {
-	"templates": {
-		"default": {
-			"staticFiles": {
-				"include": [
-					"./test"
-				]
-			}
-		}
-	},
 	"source": {
 		"include": [ "src" ]
 	},
