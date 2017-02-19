@@ -26,10 +26,10 @@ Then add the mmap library with d3.js to your `index.html` :
 
 ### Map
 
-\# mmap.**init**( *id, options* )
+\# mmap.**init**( id, *options* )
 
 Initializes the mind map, creating the svg element and the root node. 
-You can pass various values as the following example:
+You can pass various options as the following example:
     
     mmap.init('mmap', {
         'center-onresize': true,
@@ -61,52 +61,87 @@ Centers the mind map. Moves the root node at the center of the svg element.
 
 \# mmap.**undo**()
 
-
+Undo the last change. Loads the previous snapshot of the mind map if it exists.
 
 \# mmap.**repeat**()
 
-\# mmap.**data**()
+Repeats the last change. Loads the next snapshot of the mind map if it exists.
 
-Without
+\# mmap.**data**( *snapshot* )
+
+Without parameter returns the data of the last snapshot of the mind map. If you pass the parameter with the data 
+of an old snapshot of the mind map, these data will be loades creating a new snapshot.
+
+\# mmap.**image**( callback, *type, background* )
+
+Returns the data URL of the mind map image in the parameter of the callback. 
 
 ### Nodes
 
 \# mmap.node.**add**( *options* )
 
-
+Adds a new node in the mind map. 
 
 \# mmap.node.**remove**()
 
+Removes the current selected node in the mind map.
+
 \# mmap.node.**select**( *key* )
 
-\# mmap.node.**moveTo**( *options* )
+Without parameter returns the key and the value of the current selected node. 
+With a node key as parameter selects the node with that key. 
 
-\# mmap.node.**selectTo**( *options* )
+\# mmap.node.**moveTo**( direction, *range* )
 
-\# mmap.node.**update**( *options* )
+Moves the current selected node in the specified direction.
 
-### Events  
+\# mmap.node.**selectTo**( direction )
+
+Moves the current selection in the specified direction.
+
+\# mmap.node.**update**( property, value, *visual* )
+
+Updates a property of the current selected node with a new value. 
+If you pass `true` as third parameter the change will only visual.
+
+### Events
+
+\# mmap.**on**( event, callback )
+
+Executes a callback when an event is detected.
+
+| Events        |
+|---------------|
+| mmcreate      |
+| mmcenter      |
+| mmundo        |
+| mmrepeat      |
+| nodedblclick  |
+| nodeselect    |
+| nodeupdate    |
+| nodecreate    |
+| noderemove    |
 
 ### Shortcuts
 
-| Shortcut            | Attached function               |
-|---------------------|---------------------------------|
-| ctrl + shift + z    | `mmap.repeat()`                 |
-| ctrl + z            | `mmap.undo()`                   |
-| alt + c             | `mmap.center()`                 |
-| alt + n             | `mmap.new()`                    |
-| alt + shift + +     | `mmap.zoomIn()`                 |
-| alt + shift + -     | `mmap.zoomOut()`                |
-| alt +               | `mmap.add()`                    |
-| alt -               | `mmap.remove()`                 |
-| alt + shift + up    | `mmap.moveTo('up')`             |
-| alt + shift + down  | `mmap.moveTo('down')`           |
-| alt + shift + left  | `mmap.moveTo('left')`           |
-| alt + shift + right | `mmap.moveTo('right')`          |
-| alt + up            | `mmap.selectionTo('up')`        |
-| alt + down          | `mmap.selectionTo('down')`      |
-| alt + left          | `mmap.selectionTo('left')`      |
-| alt + right         | `mmap.selectionTo('right')`     |
+| Shortcut              | Attached function               |
+|-----------------------|---------------------------------|
+| ctrl + shift + z      | `mmap.repeat()`                 |
+| ctrl + z              | `mmap.undo()`                   |
+| alt + c               | `mmap.center()`                 |
+| alt + n               | `mmap.new()`                    |
+| alt + shift + +       | `mmap.zoomIn()`                 |
+| alt + shift + -       | `mmap.zoomOut()`                |
+| alt +                 | `mmap.add()`                    |
+| alt -                 | `mmap.remove()`                 |
+| alt + shift + up      | `mmap.moveTo('up')`             |
+| alt + shift + down    | `mmap.moveTo('down')`           |
+| alt + shift + left    | `mmap.moveTo('left')`           |
+| alt + shift + right   | `mmap.moveTo('right')`          |
+| alt + up              | `mmap.selectionTo('up')`        |
+| alt + down            | `mmap.selectionTo('down')`      |
+| alt + left            | `mmap.selectionTo('left')`      |
+| alt + right           | `mmap.selectionTo('right')`     |
 
 ## File tree
 ##### After `npm start`

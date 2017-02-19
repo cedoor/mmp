@@ -43,9 +43,15 @@ body {
 }
 
 #commands {
+    z-index: 1;
     position: fixed;
+    padding: 10px;
+    border: 1px solid #CFCFCF;
+    background-color: #FDFDFD;
+    border-radius: 10px;
     left: 510px;
     top: 8px;
+    text-align: center;
 }
 
 #commands>* {
@@ -58,14 +64,13 @@ body {
 
 #commands>img {
     padding: 3px;
-    background-color: #f6f6f6;
     cursor: pointer;
     margin-right: 5px;
     margin-top: 2px;
 }
 
 #commands>input[type='color'] {
-    background-color: #f6f6f6;
+    background-color: transparent;
     border: 0;
     cursor: pointer;
 }
