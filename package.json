@@ -1,57 +1,57 @@
 {
-  "name": "mmp",
-  "version": "0.1.0",
-  "description": "JavaScript UMD module & logic engine to create mind maps applications",
-  "keywords": [
-    "mmp",
-    "mindmap",
-    "node",
-    "branch",
-    "map",
-    "mind",
-    "infovis"
-  ],
-  "homepage": "https://github.com/cedoor/mmp",
-  "license": "MIT",
-  "author": "Omar Desogus <omardesogus9@gmail.com> (http://omardesogus.com)",
-  "main": "build/mmp.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/cedoor/mmp.git"
-  },
-  "scripts": {
-    "start": "npm run prepublish && echo Hit CTRL-C to stop the server && http-server -s -c-1 -o",
-    "dev": "rollup -c -w",
-    "prepublish": "rollup -c && uglifyjs build/mmp.js --comments -c -m -o build/mmp.min.js && npm run docs",
-    "docs": "jsdoc -c doc.config.json"
-  },
-  "devDependencies": {
-    "babel-preset-es2015-rollup": "3",
-    "chai": "3",
-    "http-server": "0.9",
-    "jsdoc": "3",
-    "mocha": "3",
-    "rollup": "0.41",
-    "rollup-plugin-babel": "2",
-    "rollup-plugin-eslint": "3",
-    "rollup-plugin-json": "2",
-    "rollup-watch": "3",
-    "uglify-js": "2"
-  },
-  "dependencies": {
-    "d3": "4.4.1"
-  },
-  "eslintConfig": {
-    "env": {
-      "browser": true,
-      "es6": true
+    "name": "mmp",
+    "version": "0.1.0",
+    "description": "JavaScript UMD module & logic engine to create mind maps applications",
+    "keywords": [
+        "mmp",
+        "mindmap",
+        "node",
+        "branch",
+        "map",
+        "mind",
+        "infovis"
+    ],
+    "homepage": "https://github.com/cedoor/mmp",
+    "license": "MIT",
+    "author": "Omar Desogus <omardesogus9@gmail.com> (http://omardesogus.com)",
+    "main": "build/mmp.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/cedoor/mmp.git"
     },
-    "extends": "eslint:recommended",
-    "parserOptions": {
-      "sourceType": "module"
+    "scripts": {
+        "start": "npm run prepublish && echo Hit CTRL-C to stop the server && http-server -s -c-1 -o",
+        "dev": "rollup -c -w",
+        "prepublish": "rollup -c && uglifyjs build/mmp.js --comments -c -m -o build/mmp.min.js && npm run docs",
+        "docs": "jsdoc -c doc.config.json"
     },
-    "rules": {
-      "no-console": 0
+    "devDependencies": {
+        "babel-preset-es2015-rollup": "3",
+        "chai": "3",
+        "http-server": "0.9",
+        "jsdoc": "3",
+        "mocha": "3",
+        "rollup": "0.41",
+        "rollup-plugin-babel": "2",
+        "rollup-plugin-eslint": "3",
+        "rollup-plugin-json": "2",
+        "rollup-watch": "3",
+        "uglify-js": "2"
+    },
+    "dependencies": {
+        "d3": "4.4.1"
+    },
+    "eslintConfig": {
+        "env": {
+            "browser": true,
+            "es6": true
+        },
+        "extends": "eslint:recommended",
+        "parserOptions": {
+            "sourceType": "module"
+        },
+        "rules": {
+            "no-console": 0
+        }
     }
-  }
 }
