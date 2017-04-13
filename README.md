@@ -2,7 +2,7 @@
 
 Mmp is a javaScript UMD module and a logic engine to create mind maps applications, allowing a separation between business logic and view. Mmp is easily editable and customizable, it is written using the latest features of es2015 syntax and the famous D3.js library. All its functions are documented with JSDoc markup language and tested with mocha and chai.
 
-![mmp.js](https://github.com/cedoor/mmp/blob/master/test/img/logo.png)
+![mmp.js](https://raw.githubusercontent.com/cedoor/mmp/master/test/img/logo.png)
 
 **# For the moment only tested on the latest versions of Google Chrome**
 
