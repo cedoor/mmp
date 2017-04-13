@@ -4,7 +4,6 @@ import { call } from '../events'
 import { zoom, center } from './index'
 import { addRoot, deselect } from '../node/index'
 import { overwriteObject, cloneObject, error } from '../utils'
-import shortcuts from '../shortcuts'
 
 /**
  * @name init
@@ -42,7 +41,6 @@ export function init( selector, options ) {
 
     // Set the optional settings
     if ( glob.options['center-onresize'] === true ) onresize = center
-    if ( glob.options['shortcuts'] !== false ) shortcuts()
     if ( glob.options['zoom'] === true ) glob.svg.main.call( zoom )
 
     call('mmcreate', glob.container.node() )

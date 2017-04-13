@@ -122,27 +122,6 @@ Executes a callback when an event is detected.
 | nodecreate    |
 | noderemove    |
 
-### Shortcuts
-
-| Shortcut              | Attached function               |
-|-----------------------|---------------------------------|
-| ctrl + shift + z      | `mmp.repeat()`                 |
-| ctrl + z              | `mmp.undo()`                   |
-| alt + c               | `mmp.center()`                 |
-| alt + n               | `mmp.new()`                    |
-| alt + shift + +       | `mmp.zoomIn()`                 |
-| alt + shift + -       | `mmp.zoomOut()`                |
-| alt +                 | `mmp.add()`                    |
-| alt -                 | `mmp.remove()`                 |
-| alt + shift + up      | `mmp.moveTo('up')`             |
-| alt + shift + down    | `mmp.moveTo('down')`           |
-| alt + shift + left    | `mmp.moveTo('left')`           |
-| alt + shift + right   | `mmp.moveTo('right')`          |
-| alt + up              | `mmp.selectionTo('up')`        |
-| alt + down            | `mmp.selectionTo('down')`      |
-| alt + left            | `mmp.selectionTo('left')`      |
-| alt + right           | `mmp.selectionTo('right')`     |
-
 ## File tree
 ##### After `npm start`
 
