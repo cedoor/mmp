@@ -19,10 +19,8 @@ export function select( key ) {
                 if ( s && glob.nodes.has( s ) ) node.stroke( s, '')
                 const color = d3.color( bg.style['fill'] ).darker( .5 )
                 bg.style['stroke'] = color
-                if ( s !== key ) {
-                    glob.selected = key
-                    call('nodeselect', dom, key, glob.nodes.get( key ) )
-                }
+                glob.selected = key
+                call('nodeselect', dom, key, glob.nodes.get( key ) )
             }
         } else error('The node with the key '+ key +' don\'t exist')
     else return {
