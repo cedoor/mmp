@@ -22,14 +22,12 @@
     "scripts": {
         "start": "npm run prepublish && echo Hit CTRL-C to stop the server && http-server -s -c-1 -o",
         "dev": "rollup -c -w",
-        "prepublish": "rollup -c && uglifyjs build/mmp.js --comments -c -m -o build/mmp.min.js && npm run docs",
-        "docs": "jsdoc -c doc.config.json"
+        "prepublish": "rollup -c && uglifyjs build/mmp.js --comments -c -m -o build/mmp.min.js && npm run docs"
     },
     "devDependencies": {
         "babel-preset-es2015-rollup": "3",
         "chai": "3",
         "http-server": "0.9",
-        "jsdoc": "3",
         "mocha": "3",
         "rollup": "0.41",
         "rollup-plugin-babel": "2",
