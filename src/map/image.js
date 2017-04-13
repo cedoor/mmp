@@ -84,10 +84,12 @@ function cssRules( element ) {
     let css = "", sheets = document.styleSheets
     for ( let i = 0; i < sheets.length; i++ ) {
         let rules = sheets[i].cssRules
-        for ( let j = 0; j < rules.length; j++ ) {
-            let rule = rules[j], fontFace = rule.cssText.match(/^@font-face/)
-            if ( element.querySelector( rule.selectorText ) || fontFace )
-                css += rule.cssText
+        if ( rules ) {
+            for ( let j = 0; j < rules.length; j++ ) {
+                let rule = rules[j], fontFace = rule.cssText.match(/^@font-face/)
+                if ( element.querySelector( rule.selectorText ) || fontFace )
+                    css += rule.cssText
+            }
         }
     }
     return css
