@@ -213,4 +213,4 @@ Examples:
 #### Developer
 * e-mail : omardesogus9@gmail.com
 * github : [@cedoor](https://github.com/cedoor)
-* website : http://omardesogus.com
+* website : https://cedoor.github.io
