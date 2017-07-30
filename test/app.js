@@ -88,10 +88,6 @@ mmp.on('nodeselect',  function( key, value ) {
     message('§ mmp.node.select( '+ key +' )', 1, this );
 });
 
-mmp.on('nodedblclick', function( key, value ) {
-    nodeName.focus();
-});
-
 mmp.on('nodeupdate', function( key, value, property ) {
     message('§ mmp.node.update( '+ property +', '+ value[ property ] +' )', 1, this );
 });

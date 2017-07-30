@@ -26,16 +26,33 @@ export function update() {
 
     if ( glob.options['drag'] === true ) outer.call( drag )
 
-    outer.append('text').text( n => n.value.name )
-        .style('font-family', 'sans-serif')
-        .style('text-anchor', 'middle')
-        .style('alignment-baseline', 'middle')
-        .style('fill', n => n.value['text-color'])
-        .style('font-size', n => n.value['font-size'])
-        .style('font-style', n => Utils.fontStyle( n.value.italic ) )
-        .style('font-weight', n => Utils.fontWeight( n.value.bold ) )
+    // outer.append('text').text( n => n.value.name )
+    //     .style('font-family', 'sans-serif')
+    //     .style('text-anchor', 'middle')
+    //     .style('alignment-baseline', 'middle')
+    //     .style('fill', n => n.value['text-color'])
+    //     .style('font-size', n => n.value['font-size'])
+    //     .style('font-style', n => Utils.fontStyle( n.value.italic ) )
+    //     .style('font-weight', n => Utils.fontWeight( n.value.bold ) )
 
-    outer.insert('path', 'text')
+    outer.insert('foreignObject')
+        .attr('x', -100)
+        .attr('y', -20)
+        .attr('width', 200)
+        .attr('height', 50)
+        .html(n => `<input style="
+            width: 100%;
+            padding: 0;
+            border: 0;
+            font-family: sans-serif;
+            font-size: ${n.value['font-size']}px;
+            color: ${n.value["text-color"]};
+            font-style: ${Utils.fontStyle( n.value.italic )};
+            font-weight: ${Utils.fontStyle( n.value.bold )};
+            text-align: center;
+        " type="text" value="${n.value.name}"/>`)
+
+    outer.insert('path', 'foreignObject')
         .style('fill', n => n.value['background-color'])
         .style('stroke-width', 3 )
         .attr('d', draw.background )
