@@ -1,5 +1,6 @@
 import glob from '../global'
 import { deselect } from '../node/index'
+import Utils from '../utils'
 
 /**
  * @name image
@@ -10,12 +11,14 @@ import { deselect } from '../node/index'
 */
 export function image( cb, type, bg ) {
     deselect()
-    dataURI( uri => {
+    dataURL( url => {            
         let image = new Image()
-        image.src = uri
+
+        image.src = url
+
         image.onload = function() {
             let canvas = document.createElement('canvas'),
-                context = canvas.getContext('2d')
+            context = canvas.getContext('2d')
 
             canvas.width = image.width
             canvas.height = image.height
@@ -26,17 +29,21 @@ export function image( cb, type, bg ) {
             context.fillRect( 0, 0, canvas.width, canvas.height )
 
             if ( typeof type === 'string' ) type = 'image/' + type
-            cb( canvas.toDataURL( type ) )
+                cb( canvas.toDataURL( type ) )
+        }
+
+        image.onerror = function() {
+            Utils.error('The image has not been loaded')
         }
     })
 }
 
 /**
- * @name dataURI
+ * @name dataURL
  * @param {requestCallback} cb - A callback with uri as parameter
  * @desc Translate the mind map svg in data URI.
 */
-function dataURI( cb ) {
+function dataURL( cb ) {
     let element = glob.svg.mmp.node(),
         clone = element.cloneNode( true ),
         svg = document.createElementNS('http://www.w3.org/2000/svg','svg'),
@@ -69,8 +76,19 @@ function dataURI( cb ) {
     svg.appendChild( clone )
 
     checkImages( clone, function() {
-        let uri = window.btoa( reEncode( svg.outerHTML ) )
-        cb( 'data:image/svg+xml;base64,' + uri )
+        let xmls = new XMLSerializer(),
+            reader = new window.FileReader();
+
+        let blob = new Blob([
+            xmls.serializeToString(svg)
+        ], {
+            type: 'image/svg+xml'
+        });
+                    
+        reader.readAsDataURL(blob); 
+        reader.onloadend = function() {
+            cb(reader.result)
+        }
     })
 }
 
@@ -93,21 +111,6 @@ function cssRules( element ) {
         }
     }
     return css
-}
-
-/**
- * @name reEncode
- * @param {string} data - Original data.
- * @return {string} data - Data encoded.
- * @desc Encode data.
-*/
-function reEncode( data ) {
-    data = encodeURIComponent( data )
-    data = data.replace( /%([0-9A-F]{2})/g, ( match, p1 ) => {
-        const c = String.fromCharCode('0x'+p1)
-        return c === '%' ? '%25' : c
-    })
-    return decodeURIComponent( data )
 }
 
 /**
