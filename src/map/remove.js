@@ -1,5 +1,5 @@
 import glob from '../global'
-import { clearObject, cloneObject } from '../utils'
+import Utils from '../utils'
 
 /**
  * @name remove
@@ -8,8 +8,8 @@ import { clearObject, cloneObject } from '../utils'
 export function remove() {
 	if( glob.container !== undefined ) {
 		glob.container.select('svg').remove()
-		let backup = cloneObject( glob.backup )
-		clearObject( glob )
+		let backup = Utils.cloneObject( glob.backup )
+		Utils.clearObject( glob )
 		Object.assign( glob, backup )
 	} 
 }

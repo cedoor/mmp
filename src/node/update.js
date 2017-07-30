@@ -1,9 +1,9 @@
 import * as d3 from 'd3'
 import glob from '../global'
+import Utils from '../utils'
 import { call } from '../events'
 import * as map from '../map/index'
-import  * as draw from '../draw/index'
-import { error, fontStyle, fontWeight } from '../utils'
+import * as draw from '../draw/index'
 import { dom as nodeDom, setImage } from './index'
 
 /**
@@ -38,7 +38,7 @@ export function update( k, v, vis ) {
             }
         }
     }
-    else error('"'+ k +'" is not a valid node property')
+    else Utils.error('"'+ k +'" is not a valid node property')
 }
 
 /**
@@ -106,7 +106,7 @@ function updateBranchColor( sel, v, vis ) {
             branch.style['fill'] = branch.style['stroke'] = v
             if ( !vis ) sel['branch-color'] = v
         } else return false
-    } else error('The root node has no branches')
+    } else Utils.error('The root node has no branches')
 }
 
 /**
@@ -148,7 +148,7 @@ function updateImageSize( sel, v, vis ) {
             image.setAttribute('x', - w/2 )
             if ( !vis ) sel['image-size'] = h
         } else return false
-    } else error('The node doesn\'t have an image')
+    } else Utils.error('The node doesn\'t have an image')
 }
 
 /**
@@ -171,7 +171,7 @@ function updateImageSrc( sel, v ) {
  * @desc Update the node font style.
 */
 function updateItalicFont( sel ) {
-    const style = fontStyle( sel.italic = !sel.italic )
+    const style = Utils.fontStyle( sel.italic = !sel.italic )
     this.childNodes[1].style['font-style'] = style
 }
 
@@ -181,7 +181,7 @@ function updateItalicFont( sel ) {
  * @desc Update the node font weight.
 */
 function updateBoldFont( sel ) {
-    const style = fontWeight( sel.bold = !sel.bold )
+    const style = Utils.fontWeight( sel.bold = !sel.bold )
     this.childNodes[1].style['font-weight'] = style
 }
 
@@ -192,5 +192,5 @@ function updateBoldFont( sel ) {
 */
 function updateFixStatus( sel ) {
     if ( glob.selected !== 'node0' ) sel.fixed = !sel.fixed;
-    else error('The root node can not be fixed');
+    else Utils.error('The root node can not be fixed');
 }

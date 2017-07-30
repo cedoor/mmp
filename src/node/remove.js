@@ -1,6 +1,6 @@
 import glob from '../global'
+import Utils from '../utils'
 import { call } from '../events'
-import { error } from '../utils'
 import * as map from '../map/index'
 import * as node from './index'
 
@@ -20,5 +20,5 @@ export function remove() {
         map.redraw()
         map.save()
         call('noderemove', null, key )
-    } else error('The root node can not be deleted')
+    } else Utils.error('The root node can not be deleted')
 }

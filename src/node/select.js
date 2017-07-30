@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
+import Utils from '../utils'
 import glob from '../global'
 import { call } from '../events'
-import { error, cloneObject } from '../utils'
 import * as node from './index'
 
 /**
@@ -22,9 +22,9 @@ export function select( key ) {
                 glob.selected = key
                 call('nodeselect', dom, key, glob.nodes.get( key ) )
             }
-        } else error('The node with the key '+ key +' don\'t exist')
+        } else Utils.error('The node with the key '+ key +' don\'t exist')
     else return {
-        key : s, value : cloneObject( glob.nodes.get( s ) )
+        key : s, value : Utils.cloneObject( glob.nodes.get( s ) )
     }
 }
 

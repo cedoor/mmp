@@ -3,7 +3,7 @@ import glob from '../global'
 import { call } from '../events'
 import { zoom, center } from './index'
 import { addRoot, deselect } from '../node/index'
-import { overwriteObject, cloneObject, error } from '../utils'
+import Utils from '../utils'
 
 /**
  * @name init
@@ -14,13 +14,13 @@ import { overwriteObject, cloneObject, error } from '../utils'
 export function init( selector, options ) {
 
     // Create a backup of original global options
-    glob.backup = cloneObject( glob, true )
+    glob.backup = Utils.cloneObject( glob, true )
 
     // If there are external options, then update the default options
     if ( options !== undefined )
         options.constructor === Object
-            ? overwriteObject( glob.options, options )
-            : error('mmp options are invalid')
+            ? Utils.overwriteObject( glob.options, options )
+            : Utils.error('mmp options are invalid')
 
     // Set the view of the map
     glob.container = d3.select('#'+ selector ).style('position', 'relative')

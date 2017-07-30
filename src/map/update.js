@@ -3,7 +3,7 @@ import glob from '../global'
 import { drag, setImage } from '../node/index'
 import { call } from '../events'
 import * as draw from '../draw/index'
-import { fontStyle, fontWeight } from '../utils'
+import Utils from '../utils'
 
 /**
  * @name update
@@ -32,8 +32,8 @@ export function update() {
         .style('alignment-baseline', 'middle')
         .style('fill', n => n.value['text-color'])
         .style('font-size', n => n.value['font-size'])
-        .style('font-style', n => fontStyle( n.value.italic ) )
-        .style('font-weight', n => fontWeight( n.value.bold ) )
+        .style('font-style', n => Utils.fontStyle( n.value.italic ) )
+        .style('font-weight', n => Utils.fontWeight( n.value.bold ) )
 
     outer.insert('path', 'text')
         .style('fill', n => n.value['background-color'])

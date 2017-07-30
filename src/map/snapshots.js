@@ -1,5 +1,5 @@
 import glob from '../global'
-import { cloneObject, error } from '../utils'
+import Utils from '../utils'
 import { call } from '../events'
 import { center, redraw } from './index'
 import { deselect } from '../node/index'
@@ -64,7 +64,7 @@ export function save() {
 function load( snapshot ) {
     glob.nodes.clear()
     snapshot.forEach( function( node ) {
-        glob.nodes.set( node.key, cloneObject( node.value ) )
+        glob.nodes.set( node.key, Utils.cloneObject( node.value ) )
     })
     redraw()
     setCounter()
@@ -78,7 +78,7 @@ function load( snapshot ) {
 */
 function mapClone() {
     return glob.nodes.entries().map( function( node ) {
-        let value = cloneObject( node.value )
+        let value = Utils.cloneObject( node.value )
         delete value.width
         delete value.height
         return { key : node.key, value : value }
@@ -105,7 +105,7 @@ function check( snapshot ) {
         snapshot.constructor === Array &&
         snapshot[0].key === 'node0' &&
         checkNodes( snapshot ) ? true
-        : error('The loaded mind map is incorrect')
+        : Utils.error('The loaded mind map is incorrect')
     : false
 }
 
