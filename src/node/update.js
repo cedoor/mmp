@@ -1,10 +1,9 @@
 import * as d3 from 'd3'
 import glob from '../global'
-import Utils from '../utils'
 import { call } from '../events'
+import Utils from '../utils'
 import * as map from '../map/index'
-import * as draw from '../draw/index'
-import { dom as nodeDom, setImage } from './index'
+import * as node from './index'
 
 /**
  * @name update
@@ -16,7 +15,7 @@ import { dom as nodeDom, setImage } from './index'
 */
 export function update( k, v, vis ) {
     let s = glob.nodes.get( glob.selected ),
-        d = nodeDom( glob.selected ),
+        d = node.dom( glob.selected ),
         prop = {
             'name' : updateName,
             'fixed' : updateFixStatus,
@@ -51,9 +50,8 @@ export function update( k, v, vis ) {
 */
 function updateName( sel, v, vis ) {
     if ( sel.name != v || vis ) {
-        this.childNodes[1].innerHTML = v
-        d3.select( this.childNodes[0] ).attr('d', draw.background )
-        d3.selectAll('.branch').attr('d', draw.branch )
+        this.childNodes[1].childNodes[0].innerHTML = v
+        node.updateNodeShapes(this)
         if ( !vis ) sel.name = v
     } else return false
 }
@@ -119,9 +117,8 @@ function updateBranchColor( sel, v, vis ) {
 */
 function updateFontSize( sel, v, vis ) {
     if ( sel['font-size'] != v || vis ) {
-        this.childNodes[1].style['font-size'] = v
-        d3.select( this.childNodes[0] ).attr('d', draw.background )
-        d3.selectAll('.branch').attr('d', draw.branch )
+        this.childNodes[1].childNodes[0].style['font-size'] = v + "px"
+        node.updateNodeShapes(this)
         if ( sel['image-src'] !== '' ) {
             let image = this.childNodes[2]
             image.setAttribute('y', - ( image.getBBox().height + sel.height/2 + 5 ) )
@@ -161,7 +158,7 @@ function updateImageSize( sel, v, vis ) {
 function updateImageSrc( sel, v ) {
     if ( sel['image-src'] !== v ) {
         sel['image-src'] = v
-        setImage( d3.select( this ), sel )
+        node.setImage( d3.select( this ), sel )
     } else return false
 }
 
@@ -172,7 +169,7 @@ function updateImageSrc( sel, v ) {
 */
 function updateItalicFont( sel ) {
     const style = Utils.fontStyle( sel.italic = !sel.italic )
-    this.childNodes[1].style['font-style'] = style
+    this.childNodes[1].childNodes[0].style['font-style'] = style
 }
 
 /**
@@ -182,7 +179,8 @@ function updateItalicFont( sel ) {
 */
 function updateBoldFont( sel ) {
     const style = Utils.fontWeight( sel.bold = !sel.bold )
-    this.childNodes[1].style['font-weight'] = style
+    this.childNodes[1].childNodes[0].style['font-weight'] = style
+    node.updateNodeShapes(this)
 }
 
 /**

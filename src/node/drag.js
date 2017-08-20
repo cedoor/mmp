@@ -20,6 +20,7 @@ export let drag = d3.drag()
  * Select the node.
 */
 function started( n ) {
+    d3.event.sourceEvent.preventDefault()
     node.select( n.key )
 }
 

@@ -22,7 +22,6 @@ let dispatcher = dispatch(
     'mmcenter',
     'mmundo',
     'mmrepeat',
-    'nodedblclick',
     'nodeselect',
     'nodeupdate',
     'nodecreate',

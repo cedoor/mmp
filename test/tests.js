@@ -113,7 +113,7 @@ describe('Tests', function() {
                 });
                 var node = document.getElementById('node2'),
                     background = node.childNodes[0],
-                    text = node.childNodes[1],
+                    text = node.childNodes[1].childNodes[0],
                     image = node.childNodes[2];
                 background.style['fill'].should.to.equal('rgb(201, 223, 192)');
                 text.innerHTML
@@ -169,15 +169,15 @@ describe('Tests', function() {
 
         describe('§ mmp.node.update()', function() {
             it('Should update the properties of a node ( visual )', function() {
-                var name = mmp.node.select().value.name;
-                mmp.node.update('name', 'test', true );
-                mmp.node.select().value.name
-                    .should.to.equal( name );
+                var color = mmp.node.select().value['text-color'];
+                mmp.node.update('text-color', 'black', true );
+                mmp.node.select().value['text-color']
+                    .should.to.equal( color );
             });
             it('Should update the properties of a node', function() {
-                mmp.node.update('name', 'test');
-                mmp.node.select().value.name
-                    .should.to.equal('test');
+                mmp.node.update('text-color', 'black');
+                mmp.node.select().value['text-color']
+                    .should.to.equal('black');
             });
         });
 

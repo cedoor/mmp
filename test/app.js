@@ -1,6 +1,5 @@
 var
 // Dom elements
-nodeName = document.getElementById('node-name'),
 fontSize = document.getElementById('font-size'),
 imageSize = document.getElementById('image-size'),
 imageSrc = document.getElementById('image-src'),
@@ -79,7 +78,6 @@ mmp.on('mmrepeat', function() {
 });
 
 mmp.on('nodeselect',  function( key, value ) {
-    nodeName.value = value['name'];
     fontSize.value = value['font-size'];
     imageSize.value = value['image-size'];
     backgroundColor.value = value['background-color'];

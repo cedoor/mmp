@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import glob from '../global'
+import * as draw from '../draw/index'
 
 /**
  * @name orientation
@@ -36,6 +37,23 @@ export function setImage( dom, node ) {
         image.remove()
         node['image-src'] = ''
     }
+}
+
+/**
+ * @name updateNodeShapes
+ * @param {HTMLElement} dom - Mind map node DOM element.
+ * @desc Update the node HTML elements.
+ */
+export function updateNodeShapes(dom) {
+    let name = dom.childNodes[1].childNodes[0],
+        background = dom.childNodes[0]
+    d3.selectAll(".branch").attr("d", draw.branch)
+    d3.select(background).attr("d", draw.background)
+    d3.select(name.parentNode)
+        .attr("x", -name.clientWidth / 2)
+        .attr("y", -name.clientHeight / 2)
+        .attr("width", name.clientWidth)
+        .attr("height", name.clientHeight)
 }
 
 /**
