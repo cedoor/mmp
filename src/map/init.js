@@ -1,6 +1,6 @@
 import * as d3 from "d3"
 import glob from "../global"
-import {call} from "../events"
+import Events from "../events"
 import {center, zoom} from "./index"
 import {addRoot, deselect} from "../node/index"
 import Utils from "../utils"
@@ -43,6 +43,6 @@ export function init(selector, options) {
     if (glob.options["center-onresize"] === true) onresize = center
     if (glob.options["zoom"] === true) glob.svg.main.call(zoom)
 
-    call("mmcreate", glob.container.node())
+    Events.call("mmcreate", glob.container.node())
     addRoot()
 }

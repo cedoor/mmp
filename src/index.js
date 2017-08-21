@@ -1,5 +1,10 @@
+import {add, moveTo, remove, select, selectTo, update} from "./node/index"
+import Events from "./events"
+
+// mmp version
 export {version} from "../package.json"
-export {on} from "./events"
+
+export let on = Events.on
 
 // Mind map functions
 export {
@@ -13,14 +18,11 @@ export {
 } from "./map/index"
 
 // Node functions
-import {
+export let node = {
     add,
     moveTo,
     remove,
     select,
     selectTo,
     update
-} from "./node/index"
-
-
-export let node = {add, moveTo, remove, select, selectTo, update}
+}

@@ -1,6 +1,6 @@
 import * as d3 from "d3"
 import glob from "../global"
-import {call} from "../events"
+import Events from "../events"
 
 /**
  * @name zoom
@@ -32,7 +32,7 @@ export function center() {
         y = parseInt(glob.container.style("height")) / 2 - root.y,
         zoomId = d3.zoomIdentity.translate(x, y)
     glob.svg.main.transition().duration(500).call(zoom.transform, zoomId)
-    call("mmcenter")
+    Events.call("mmcenter")
 }
 
 /**

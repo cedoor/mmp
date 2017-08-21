@@ -1,7 +1,7 @@
 import * as d3 from "d3"
 import Utils from "../utils"
 import glob from "../global"
-import {call} from "../events"
+import Events from "../events"
 import * as node from "./index"
 
 /**
@@ -20,7 +20,7 @@ export function select(key) {
                 const color = d3.color(bg.style["fill"]).darker(.5)
                 bg.style["stroke"] = color
                 glob.selected = key
-                call("nodeselect", dom, key, glob.nodes.get(key))
+                Events.call("nodeselect", dom, key, glob.nodes.get(key))
             }
         } else Utils.error("The node with the key " + key + " don't exist")
     else return {

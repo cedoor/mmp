@@ -1,6 +1,6 @@
 import * as d3 from "d3"
 import glob from "../global"
-import {call} from "../events"
+import Events from "../events"
 import Utils from "../utils"
 import * as map from "../map/index"
 import * as node from "./index"
@@ -33,7 +33,7 @@ export function update(k, v, vis) {
         if (upd.call(d, s, v, vis) !== false) {
             if (!vis) {
                 map.save()
-                call("nodeupdate", d, glob.selected, s, k)
+                Events.call("nodeupdate", d, glob.selected, s, k)
             }
         }
     }

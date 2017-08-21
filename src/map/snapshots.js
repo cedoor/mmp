@@ -1,6 +1,6 @@
 import glob from "../global"
 import Utils from "../utils"
-import {call} from "../events"
+import Events from "../events"
 import {center, redraw} from "./index"
 import {deselect} from "../node/index"
 
@@ -29,7 +29,7 @@ export function undo() {
     let h = glob.history
     if (h.index > 0) {
         load(h.snapshots[--h.index])
-        call("mmundo")
+        Events.call("mmundo")
     }
 }
 
@@ -41,7 +41,7 @@ export function repeat() {
     let h = glob.history
     if (h.index < h.snapshots.length - 1) {
         load(h.snapshots[++h.index])
-        call("mmrepeat")
+        Events.call("mmrepeat")
     }
 }
 

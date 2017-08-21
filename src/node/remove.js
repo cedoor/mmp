@@ -1,6 +1,6 @@
 import glob from "../global"
 import Utils from "../utils"
-import {call} from "../events"
+import Events from "../events"
 import * as map from "../map/index"
 import * as node from "./index"
 
@@ -19,6 +19,6 @@ export function remove() {
         node.select("node0")
         map.redraw()
         map.save()
-        call("noderemove", null, key)
+        Events.call("noderemove", null, key)
     } else Utils.error("The root node can not be deleted")
 }

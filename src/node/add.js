@@ -1,5 +1,5 @@
 import glob from "../global"
-import {call} from "../events"
+import Events from "../events"
 import * as map from "../map/index"
 import * as node from "./index"
 
@@ -52,6 +52,6 @@ export function addRoot() {
 function addToMap(k, v) {
     glob.nodes.set(k, v)
     map.update()
-    call("nodecreate", node.dom(k), k, v)
+    Events.call("nodecreate", node.dom(k), k, v)
     map.save()
 }
