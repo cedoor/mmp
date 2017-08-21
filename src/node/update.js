@@ -1,9 +1,9 @@
-import * as d3 from 'd3'
-import glob from '../global'
-import { call } from '../events'
-import Utils from '../utils'
-import * as map from '../map/index'
-import * as node from './index'
+import * as d3 from "d3"
+import glob from "../global"
+import {call} from "../events"
+import Utils from "../utils"
+import * as map from "../map/index"
+import * as node from "./index"
 
 /**
  * @name update
@@ -12,32 +12,32 @@ import * as node from './index'
  * @param {boolean} [vis] - Only visual change.
  * @return {boolean} error - False.
  * @desc Update the properties of the selected node.
-*/
-export function update( k, v, vis ) {
-    let s = glob.nodes.get( glob.selected ),
-        d = node.dom( glob.selected ),
+ */
+export function update(k, v, vis) {
+    let s = glob.nodes.get(glob.selected),
+        d = node.dom(glob.selected),
         prop = {
-            'name' : updateName,
-            'fixed' : updateFixStatus,
-            'background-color' : updateBackgroundColor,
-            'branch-color' : updateBranchColor,
-            'text-color' : updateTextColor,
-            'image-src' : updateImageSrc,
-            'image-size' : updateImageSize,
-            'font-size' : updateFontSize,
-            'italic' : updateItalicFont,
-            'bold' : updateBoldFont
+            "name": updateName,
+            "fixed": updateFixStatus,
+            "background-color": updateBackgroundColor,
+            "branch-color": updateBranchColor,
+            "text-color": updateTextColor,
+            "image-src": updateImageSrc,
+            "image-size": updateImageSize,
+            "font-size": updateFontSize,
+            "italic": updateItalicFont,
+            "bold": updateBoldFont
         },
         upd = prop[k]
-    if ( upd !== undefined ) {
-        if ( upd.call( d, s, v, vis ) !== false ) {
-            if ( !vis ) {
+    if (upd !== undefined) {
+        if (upd.call(d, s, v, vis) !== false) {
+            if (!vis) {
                 map.save()
-                call('nodeupdate', d, glob.selected, s, k )
+                call("nodeupdate", d, glob.selected, s, k)
             }
         }
     }
-    else Utils.error('"'+ k +'" is not a valid node property')
+    else Utils.error("\"" + k + "\" is not a valid node property")
 }
 
 /**
@@ -47,12 +47,12 @@ export function update( k, v, vis ) {
  * @param {boolean} [vis] - Only visual change.
  * @return {boolean} failed
  * @desc Update the node name with a new value.
-*/
-function updateName( sel, v, vis ) {
-    if ( sel.name != v || vis ) {
+ */
+function updateName(sel, v, vis) {
+    if (sel.name != v || vis) {
         this.childNodes[1].childNodes[0].innerHTML = v
         node.updateNodeShapes(this)
-        if ( !vis ) sel.name = v
+        if (!vis) sel.name = v
     } else return false
 }
 
@@ -63,14 +63,14 @@ function updateName( sel, v, vis ) {
  * @param {boolean} [vis] - Only visual change.
  * @return {boolean} failed
  * @desc Update the node background color with a new value.
-*/
-function updateBackgroundColor( sel, v, vis ) {
-    if ( sel['background-color'] !== v || vis ) {
+ */
+function updateBackgroundColor(sel, v, vis) {
+    if (sel["background-color"] !== v || vis) {
         let bg = this.childNodes[0]
-        bg.style['fill'] = v
-        if ( bg.style['stroke'] !== '' )
-            bg.style['stroke'] = d3.color( v ).darker( .5 )
-        if ( !vis ) sel['background-color'] = v
+        bg.style["fill"] = v
+        if (bg.style["stroke"] !== "")
+            bg.style["stroke"] = d3.color(v).darker(.5)
+        if (!vis) sel["background-color"] = v
     } else return false
 }
 
@@ -81,11 +81,11 @@ function updateBackgroundColor( sel, v, vis ) {
  * @param {boolean} [vis] - Only visual change.
  * @return {boolean} failed
  * @desc Update the node text color with a new value.
-*/
-function updateTextColor( sel, v, vis ) {
-    if ( sel['text-color'] !== v || vis ) {
-        this.childNodes[1].style['fill'] = v
-        if ( !vis ) sel['text-color'] = v
+ */
+function updateTextColor(sel, v, vis) {
+    if (sel["text-color"] !== v || vis) {
+        this.childNodes[1].style["fill"] = v
+        if (!vis) sel["text-color"] = v
     } else return false
 }
 
@@ -96,15 +96,15 @@ function updateTextColor( sel, v, vis ) {
  * @param {boolean} [vis] - Only visual change.
  * @return {boolean} failed
  * @desc Update the node branch color with a new value.
-*/
-function updateBranchColor( sel, v, vis ) {
-    if( glob.selected !== 'node0' ) {
-        if ( sel['branch-color'] !== v || vis ) {
-            let branch = document.getElementById('branchOf'+ glob.selected )
-            branch.style['fill'] = branch.style['stroke'] = v
-            if ( !vis ) sel['branch-color'] = v
+ */
+function updateBranchColor(sel, v, vis) {
+    if (glob.selected !== "node0") {
+        if (sel["branch-color"] !== v || vis) {
+            let branch = document.getElementById("branchOf" + glob.selected)
+            branch.style["fill"] = branch.style["stroke"] = v
+            if (!vis) sel["branch-color"] = v
         } else return false
-    } else Utils.error('The root node has no branches')
+    } else Utils.error("The root node has no branches")
 }
 
 /**
@@ -114,16 +114,16 @@ function updateBranchColor( sel, v, vis ) {
  * @param {boolean} [vis] - Only visual change.
  * @return {boolean} failed
  * @desc Update the node font size with a new value.
-*/
-function updateFontSize( sel, v, vis ) {
-    if ( sel['font-size'] != v || vis ) {
-        this.childNodes[1].childNodes[0].style['font-size'] = v + "px"
+ */
+function updateFontSize(sel, v, vis) {
+    if (sel["font-size"] != v || vis) {
+        this.childNodes[1].childNodes[0].style["font-size"] = v + "px"
         node.updateNodeShapes(this)
-        if ( sel['image-src'] !== '' ) {
+        if (sel["image-src"] !== "") {
             let image = this.childNodes[2]
-            image.setAttribute('y', - ( image.getBBox().height + sel.height/2 + 5 ) )
+            image.setAttribute("y", -( image.getBBox().height + sel.height / 2 + 5 ))
         }
-        if ( !vis ) sel['font-size'] = v
+        if (!vis) sel["font-size"] = v
     } else return false
 }
 
@@ -134,18 +134,18 @@ function updateFontSize( sel, v, vis ) {
  * @param {boolean} [vis] - Only visual change.
  * @return {boolean} failed
  * @desc Update the node image size with a new value.
-*/
-function updateImageSize( sel, v, vis ) {
-    if( sel['image-src'] !== '' ) {
-        if ( sel['image-size'] != v || vis ) {
+ */
+function updateImageSize(sel, v, vis) {
+    if (sel["image-src"] !== "") {
+        if (sel["image-size"] != v || vis) {
             let image = this.childNodes[2], box = image.getBBox(),
-                h = parseInt( v ), w = box.width * h / box.height
-            image.setAttribute('height', h )
-            image.setAttribute('y', - ( h + sel.height/2 + 5 ) )
-            image.setAttribute('x', - w/2 )
-            if ( !vis ) sel['image-size'] = h
+                h = parseInt(v), w = box.width * h / box.height
+            image.setAttribute("height", h)
+            image.setAttribute("y", -( h + sel.height / 2 + 5 ))
+            image.setAttribute("x", -w / 2)
+            if (!vis) sel["image-size"] = h
         } else return false
-    } else Utils.error('The node doesn\'t have an image')
+    } else Utils.error("The node doesn't have an image")
 }
 
 /**
@@ -154,11 +154,11 @@ function updateImageSize( sel, v, vis ) {
  * @param {string} v - New value.
  * @return {boolean} failed
  * @desc Update the node image link with a new value.
-*/
-function updateImageSrc( sel, v ) {
-    if ( sel['image-src'] !== v ) {
-        sel['image-src'] = v
-        node.setImage( d3.select( this ), sel )
+ */
+function updateImageSrc(sel, v) {
+    if (sel["image-src"] !== v) {
+        sel["image-src"] = v
+        node.setImage(d3.select(this), sel)
     } else return false
 }
 
@@ -166,20 +166,20 @@ function updateImageSrc( sel, v ) {
  * @name updateItalicFont
  * @param {Object} sel - The selected node.
  * @desc Update the node font style.
-*/
-function updateItalicFont( sel ) {
-    const style = Utils.fontStyle( sel.italic = !sel.italic )
-    this.childNodes[1].childNodes[0].style['font-style'] = style
+ */
+function updateItalicFont(sel) {
+    const style = Utils.fontStyle(sel.italic = !sel.italic)
+    this.childNodes[1].childNodes[0].style["font-style"] = style
 }
 
 /**
  * @name updateBoldFont
  * @param {Object} sel - The selected node.
  * @desc Update the node font weight.
-*/
-function updateBoldFont( sel ) {
-    const style = Utils.fontWeight( sel.bold = !sel.bold )
-    this.childNodes[1].childNodes[0].style['font-weight'] = style
+ */
+function updateBoldFont(sel) {
+    const style = Utils.fontWeight(sel.bold = !sel.bold)
+    this.childNodes[1].childNodes[0].style["font-weight"] = style
     node.updateNodeShapes(this)
 }
 
@@ -187,8 +187,8 @@ function updateBoldFont( sel ) {
  * @name updateFixStatus
  * @param {Object} sel - The selected node.
  * @desc Update the node fix status.
-*/
-function updateFixStatus( sel ) {
-    if ( glob.selected !== 'node0' ) sel.fixed = !sel.fixed;
-    else Utils.error('The root node can not be fixed');
+ */
+function updateFixStatus(sel) {
+    if (glob.selected !== "node0") sel.fixed = !sel.fixed
+    else Utils.error("The root node can not be fixed")
 }
