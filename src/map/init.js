@@ -1,9 +1,9 @@
 import * as d3 from "d3"
 import glob from "../global"
-import Events from "../events"
+import Events from "../other/events"
 import {center, zoom} from "./index"
 import {addRoot, deselect} from "../node/index"
-import Utils from "../utils"
+import Utils from "../other/utils"
 
 /**
  * @name init

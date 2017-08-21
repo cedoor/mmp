@@ -1,5 +1,5 @@
 import glob from "../global"
-import Utils from "../utils"
+import Utils from "../other/utils"
 
 /**
  * @name remove

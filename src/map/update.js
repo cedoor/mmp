@@ -2,8 +2,9 @@ import * as d3 from "d3"
 import glob from "../global"
 import * as map from "./index"
 import * as node from "../node/index"
-import * as draw from "../draw/index"
-import Utils from "../utils"
+import NodeShape from "../draw/node"
+import BranchShape from "../draw/branch"
+import Utils from "../other/utils"
 
 /**
  * @name update
@@ -41,7 +42,9 @@ export function update() {
     outer.insert("path", "foreignObject")
         .style("fill", n => n.value["background-color"])
         .style("stroke-width", 3)
-        .attr("d", draw.background)
+        .attr("d", function (node) {
+            return new NodeShape(node, this).draw()
+        })
 
     outer.each(function (n) {
         node.setImage(d3.select(this), n.value)
@@ -52,7 +55,7 @@ export function update() {
         .style("stroke", n => n.value["branch-color"])
         .attr("class", "branch")
         .attr("id", n => "branchOf" + n.key)
-        .attr("d", draw.branch)
+        .attr("d", node => new BranchShape(node).draw())
 
     nodes.exit().remove()
     branches.exit().remove()

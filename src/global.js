@@ -6,6 +6,7 @@ export default {
         "zoom": true,
         // Default node properties
         "node": {
+            // Variable values
             "name": "Node",
             "background-color": "#f9f9f9",
             "text-color": "#808080",
@@ -15,7 +16,9 @@ export default {
             "font-size": 16,
             "italic": false,
             "bold": false,
-            "fixed": true
+            "fixed": true,
+            // Common constant values
+            "padding": [30, 45]
         },
         // Default root node properties
         "root-node": {

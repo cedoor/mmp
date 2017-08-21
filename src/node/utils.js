@@ -1,8 +1,9 @@
 import * as d3 from "d3"
 import glob from "../global"
-import * as draw from "../draw/index"
+import BranchShape from  "../draw/branch"
+import NodeShape from "../draw/node"
 
-/**
+/**w
  * @name orientation
  * @param {number} x - The key of the parent node.
  * @return {boolean} orientation
@@ -47,8 +48,10 @@ export function setImage(dom, node) {
 export function updateNodeShapes(dom) {
     let name = dom.childNodes[1].childNodes[0],
         background = dom.childNodes[0]
-    d3.selectAll(".branch").attr("d", draw.branch)
-    d3.select(background).attr("d", draw.background)
+    d3.selectAll(".branch").attr("d", node => new BranchShape(node).draw())
+    d3.select(background).attr("d", function (node) {
+        return new NodeShape(node, this).draw()
+    })
     d3.select(name.parentNode)
         .attr("x", -name.clientWidth / 2)
         .attr("y", -name.clientHeight / 2)

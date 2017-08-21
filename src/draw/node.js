@@ -1,24 +1,35 @@
-import * as d3 from "d3"
+import glob from "../global"
+import Shape from "./shape"
 
-/**
- * @name background
- * @param {Object} node - Mind map node.
- * @desc Draw the background shape of the node.
- */
-export function background(node) {
-    let n = node.value, text = this.nextSibling.childNodes[0],
-        path = d3.path()
-    const
-        x = ( n.width = text.clientWidth + 45 ) / 2,
-        y = ( n.height = text.clientHeight + 30 ) / 2,
-        k = n.k = n.k || d3.randomUniform(-20, 20)()
+export default class NodeShape extends Shape {
 
-    path.moveTo(-x, k / 3)
-    path.bezierCurveTo(-x, -y + 10, -x + 10, -y, k, -y)
-    path.bezierCurveTo(x - 10, -y, x, -y + 10, x, k / 3)
-    path.bezierCurveTo(x, y - 10, x - 10, y, k, y)
-    path.bezierCurveTo(-x + 10, y, -x, y - 10, -x, k / 3)
-    path.closePath()
+    constructor(node, dom) {
+        super(node, dom)
+    }
 
-    return path
+    /**
+     * @name draw
+     * @desc Draw the background shape of the node.
+     */
+    draw() {
+        const name = this.getNameDOMElement()
+
+        this.node.width = name.clientWidth + glob.options.node.padding[1]
+        this.node.height = name.clientHeight + glob.options.node.padding[0]
+        this.node.k = this.node.k || this.random(-20, 20)()
+
+        const x = this.node.width / 2,
+            y = this.node.height / 2,
+            k = this.node.k
+
+        this.path.moveTo(-x, k / 3)
+        this.path.bezierCurveTo(-x, -y + 10, -x + 10, -y, k, -y)
+        this.path.bezierCurveTo(x - 10, -y, x, -y + 10, x, k / 3)
+        this.path.bezierCurveTo(x, y - 10, x - 10, y, k, y)
+        this.path.bezierCurveTo(-x + 10, y, -x, y - 10, -x, k / 3)
+        this.path.closePath()
+
+        return this.path
+    }
+
 }

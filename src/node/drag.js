@@ -1,7 +1,7 @@
 import * as d3 from "d3"
 import glob from "../global"
 import {save as saveSnapshot} from "../map/snapshots"
-import {branch as drawBranch} from "../draw/index"
+import BranchShape from "../draw/branch"
 import * as node from "./index"
 
 /**
@@ -49,7 +49,7 @@ function dragged(n) {
         })
     }
     // Update all mind map branches
-    d3.selectAll(".branch").attr("d", drawBranch)
+    d3.selectAll(".branch").attr("d", node => new BranchShape(node).draw())
     // This is here and not in started function
     // because started function is also executed
     // when there is no drag events

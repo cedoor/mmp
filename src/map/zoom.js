@@ -1,6 +1,6 @@
 import * as d3 from "d3"
 import glob from "../global"
-import Events from "../events"
+import Events from "../other/events"
 
 /**
  * @name zoom

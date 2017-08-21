@@ -1,7 +1,7 @@
 import * as d3 from "d3"
 import glob from "../global"
 import {save as saveSnapshot} from "../map/snapshots"
-import {branch as drawBranch} from "../draw/index"
+import BranchShape from "../draw/branch"
 import {dom, orientation, subnodes} from "./utils"
 
 /**
@@ -30,6 +30,6 @@ export function moveTo(dir, range = 10) {
         this.setAttribute("transform", "translate(" + [n.x, n.y] + ")")
     })
     // Update all mind map branches
-    d3.selectAll(".branch").attr("d", drawBranch)
+    d3.selectAll(".branch").attr("d", node => new BranchShape(node).draw())
     saveSnapshot()
 }

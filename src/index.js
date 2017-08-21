@@ -1,5 +1,5 @@
 import {add, moveTo, remove, select, selectTo, update} from "./node/index"
-import Events from "./events"
+import Events from "./other/events"
 
 // mmp version
 export {version} from "../package.json"

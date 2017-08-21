@@ -1,7 +1,7 @@
 import * as d3 from "d3"
 import glob from "../global"
-import Events from "../events"
-import Utils from "../utils"
+import Events from "../other/events"
+import Utils from "../other/utils"
 import * as map from "../map/index"
 import * as node from "./index"
 

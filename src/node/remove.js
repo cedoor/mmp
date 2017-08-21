@@ -1,6 +1,6 @@
 import glob from "../global"
-import Utils from "../utils"
-import Events from "../events"
+import Utils from "../other/utils"
+import Events from "../other/events"
 import * as map from "../map/index"
 import * as node from "./index"
 

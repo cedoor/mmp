@@ -1,6 +1,6 @@
 import glob from "../global"
 import {addRoot} from "../node/index"
-import Events from "../events"
+import Events from "../other/events"
 import * as map from "./index"
 
 /**

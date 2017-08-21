@@ -1,6 +1,6 @@
 import glob from "../global"
 import {deselect} from "../node/index"
-import Utils from "../utils"
+import Utils from "../other/utils"
 
 /**
  * @name image
