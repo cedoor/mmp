@@ -1,23 +1,23 @@
 // Rollup plugins
-import json from 'rollup-plugin-json'
-import babel from 'rollup-plugin-babel'
-import eslint from 'rollup-plugin-eslint'
+import json from "rollup-plugin-json"
+import babel from "rollup-plugin-babel"
+import eslint from "rollup-plugin-eslint"
 
-const pkg = require('./package.json')
+const pkg = require("./package.json")
 
 export default {
-    entry: 'src/index.js',
-    dest: 'build/'+ pkg.name +'.js',
-    format: 'umd',
+    entry: "src/index.js",
+    dest: "build/" + pkg.name + ".js",
+    format: "umd",
     moduleName: pkg.name,
-    external: ['d3'],
-    globals: { d3: 'd3' },
+    external: ["d3"],
+    globals: {d3: "d3"},
     plugins: [
         json(),
         eslint(),
-        babel({ presets: ["es2015-rollup"] })
+        babel({presets: ["es2015-rollup"]})
     ],
-    banner : `/**
+    banner: `/**
  * @module ${pkg.name}
  * @version ${pkg.version}
  * @file ${pkg.description}

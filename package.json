@@ -1,6 +1,6 @@
 {
     "name": "mmp",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "JavaScript UMD module & logic engine to create mind maps applications",
     "keywords": [
         "mmp",
@@ -13,7 +13,11 @@
     ],
     "homepage": "https://github.com/cedoor/mmp",
     "license": "MIT",
-    "author": "Omar Desogus <omardesogus9@gmail.com> (http://omardesogus.com)",
+    "author": {
+        "name": "Omar Desogus",
+        "email": "omardesogus9@gmail.com",
+        "url": "https://cedoor.github.io"
+    },
     "main": "build/mmp.js",
     "repository": {
         "type": "git",
