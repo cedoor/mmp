@@ -84,7 +84,7 @@ function updateBackgroundColor(sel, v, vis) {
  */
 function updateTextColor(sel, v, vis) {
     if (sel["text-color"] !== v || vis) {
-        this.childNodes[1].style["fill"] = v
+        this.childNodes[1].childNodes[0].style["color"] = v
         if (!vis) sel["text-color"] = v
     } else return false
 }
