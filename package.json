@@ -11,7 +11,7 @@
         "mind",
         "infovis"
     ],
-    "homepage": "https://github.com/cedoor/mmp",
+    "homepage": "https://github.com/Mindmapp/mmp",
     "license": "MIT",
     "author": {
         "name": "Omar Desogus",
@@ -21,7 +21,7 @@
     "main": "build/mmp.js",
     "repository": {
         "type": "git",
-        "url": "https://github.com/cedoor/mmp.git"
+        "url": "https://github.com/Mindmapp/mmp.git"
     },
     "scripts": {
         "start": "npm run prepublish && echo Hit CTRL-C to stop the server && http-server -s -c-1 -o",
