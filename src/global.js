@@ -1,6 +1,7 @@
 // Global mind map parameters
 export default {
     options: {
+        "font-family": "Arial, Helvetica, sans-serif",
         "center-onresize": true,
         "drag": true,
         "zoom": true,
