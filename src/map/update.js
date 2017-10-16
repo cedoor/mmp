@@ -34,7 +34,7 @@ export function update() {
             white-space: nowrap;
             color: ${n.value["text-color"]};
             font-style: ${Utils.fontStyle(n.value.italic)};
-            font-weight: ${Utils.fontStyle(n.value.bold)};
+            font-weight: ${Utils.fontWeight(n.value.bold)};
             text-align: center;
         " contenteditable spellcheck="false">${n.value.name}</div>`)
         .each(setNodeName)
