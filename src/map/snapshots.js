@@ -18,7 +18,7 @@ export function data(snapshot) {
         load(snapshot)
         center()
         save()
-    } else return glob.history.snapshots[glob.history.index]
+    } else return JSON.parse(JSON.stringify(glob.history.snapshots[glob.history.index]));
 }
 
 /**
