@@ -52,6 +52,6 @@ export function addRoot() {
 function addToMap(k, v) {
     glob.nodes.set(k, v)
     map.update()
-    Events.call("nodecreate", node.dom(k), k, v)
     map.save()
+    Events.call("nodecreate", node.dom(k), k, v)
 }
