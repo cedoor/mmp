@@ -1,6 +1,6 @@
 {
     "name": "mmp",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "JavaScript UMD module & logic engine to create mind maps applications",
     "keywords": [
         "mmp",
