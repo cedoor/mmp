@@ -87,7 +87,8 @@ mmp.on('nodeselect',  function( key, value ) {
 });
 
 mmp.on('nodeupdate', function( key, value, property ) {
-    message('§ mmp.node.update( '+ property +', '+ value[ property ] +' )', 1, this );
+    var newValue = property === 'position' ?  value.x + ", " + value.y : value[ property ];
+    message('§ mmp.node.update( '+ property +', '+ newValue +' )', 1, this );
 });
 
 mmp.on('nodecreate', function( key, value ) {

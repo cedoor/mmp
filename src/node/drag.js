@@ -3,6 +3,7 @@ import glob from "../global"
 import {save as saveSnapshot} from "../map/snapshots"
 import BranchShape from "../draw/branch"
 import * as node from "./index"
+import Events from "../other/events"
 
 /**
  * @name drag
@@ -58,13 +59,15 @@ function dragged(n) {
 
 /**
  * @name ended
+ * @param {Object} n - Mind map node.
  * @desc
  * If the node was actually dragged change global value
  * and save the snapshot.
  */
-function ended() {
+function ended(n) {
     if (glob.dragged) {
         glob.dragged = false
         saveSnapshot()
+        Events.call("nodeupdate", this, n.key, n.value, "position")
     }
 }
