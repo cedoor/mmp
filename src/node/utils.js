@@ -22,22 +22,24 @@ export function orientation(x) {
  * and create it if it doesn't exist
  */
 export function setImage(dom, node) {
-    let i = new Image(),
-        href = node["image-src"],
+    let href = node["image-src"],
         image = dom.select("image")
     if (image.empty()) image = dom.append("image")
-    i.src = href
-    i.onload = function () {
-        let h = node["image-size"],
-            w = this.width * h / this.height
-        image.attr("href", href).attr("height", h)
-            .attr("y", -( h + node.height / 2 + 5 ))
-            .attr("x", -w / 2)
-    }
-    i.onerror = function () {
-        image.remove()
-        node["image-src"] = ""
-    }
+    if (href !== "") {
+        let i = new Image();
+        i.src = href
+        i.onload = function () {
+            let h = node["image-size"],
+                w = this.width * h / this.height
+            image.attr("href", href).attr("height", h)
+                .attr("y", -( h + node.height / 2 + 5 ))
+                .attr("x", -w / 2)
+        }
+        i.onerror = function () {
+            image.remove()
+            node["image-src"] = ""
+        }
+    } else image.remove()
 }
 
 /**
