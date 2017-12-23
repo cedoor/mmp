@@ -38,7 +38,7 @@
         "rollup-plugin-eslint": "3",
         "rollup-plugin-json": "2",
         "rollup-watch": "3",
-        "uglify-js": "2"
+        "uglify-js": "3.2.2"
     },
     "dependencies": {
         "d3": "4.4.1"
