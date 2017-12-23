@@ -1,6 +1,5 @@
 import * as d3 from "d3"
 import glob from "../global"
-import * as map from "./index"
 import * as node from "../node/index"
 import NodeShape from "../draw/node"
 import BranchShape from "../draw/branch"
@@ -83,8 +82,7 @@ function setNodeName(n) {
     }
     name.onblur = function () {
         if (name.innerHTML !== n.value.name) {
-            n.value.name = name.innerHTML
-            map.save()
+            node.update("name", name.innerHTML)
         }
     }
     d3.select(self)
