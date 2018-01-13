@@ -24,36 +24,21 @@
         "url": "https://github.com/Mindmapp/mmp.git"
     },
     "scripts": {
-        "start": "npm run prepublish && echo Hit CTRL-C to stop the server && http-server -s -c-1 -o",
-        "dev": "rollup -c -w",
-        "prepublish": "rollup -c && uglifyjs build/mmp.js --comments -c -m -o build/mmp.min.js"
-    },
-    "devDependencies": {
-        "babel-preset-es2015-rollup": "3",
-        "chai": "3",
-        "http-server": "0.9",
-        "mocha": "3",
-        "rollup": "0.41",
-        "rollup-plugin-babel": "2",
-        "rollup-plugin-eslint": "3",
-        "rollup-plugin-json": "2",
-        "rollup-watch": "3",
-        "uglify-js": "3.2.2"
+        "start": "rollup -c -w",
+        "prepare": "rollup -c --environment BUILD:production && uglifyjs build/mmp.js --comments -c -m -o build/mmp.min.js"
     },
     "dependencies": {
-        "d3": "4.4.1"
+        "d3": "4.12.2"
     },
-    "eslintConfig": {
-        "env": {
-            "browser": true,
-            "es6": true
-        },
-        "extends": "eslint:recommended",
-        "parserOptions": {
-            "sourceType": "module"
-        },
-        "rules": {
-            "no-console": 0
-        }
+    "devDependencies": {
+        "chai": "4.1.2",
+        "mocha": "4.1.0",
+        "rollup": "0.53.3",
+        "rollup-plugin-json": "2.3.0",
+        "rollup-plugin-livereload": "0.6.0",
+        "rollup-plugin-serve": "0.4.2",
+        "rollup-plugin-typescript2": "0.9.0",
+        "typescript": "2.6.2",
+        "uglify-js": "3.3.5"
     }
 }

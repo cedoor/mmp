@@ -6,7 +6,7 @@ export default class Utils {
      * @desc Throw an Error with a message.
      */
     static error(message) {
-        throw new Error(message)
+        throw new Error(message);
     }
 
     /**
@@ -16,9 +16,9 @@ export default class Utils {
      * @return {Object} obj - The copy of the object.
      * @desc Clone an object, in depth if specified.
      */
-    static cloneObject(obj, deep) {
+    static cloneObject(obj, deep?) {
         return deep ? JSON.parse(JSON.stringify(obj))
-            : Object.assign({}, obj)
+            : (<any>Object).assign({}, obj);
     }
 
     /**
@@ -27,7 +27,7 @@ export default class Utils {
      * @desc Clear an object.
      */
     static clearObject(obj) {
-        for (let p in obj) delete obj[p]
+        for (let p in obj) delete obj[p];
     }
 
     /**
@@ -36,9 +36,9 @@ export default class Utils {
      * @desc Convert an Object to an array.
      */
     static fromObjectToArray(obj) {
-        let array = []
-        for (let p in obj) array.push([p, obj[p]])
-        return array
+        let array = [];
+        for (let p in obj) array.push([p, obj[p]]);
+        return array;
     }
 
     /**
@@ -47,7 +47,7 @@ export default class Utils {
      * @desc Translate a boolean value in a font style value (italic/normal).
      */
     static fontStyle(b) {
-        return b ? "italic" : "normal"
+        return b ? "italic" : "normal";
     }
 
     /**
@@ -56,7 +56,7 @@ export default class Utils {
      * @desc Translate a boolean value in a font weight value (bold/normal).
      */
     static fontWeight(b) {
-        return b ? "bold" : "normal"
+        return b ? "bold" : "normal";
     }
 
     /**
@@ -67,11 +67,11 @@ export default class Utils {
      */
     static overwriteObject(target, source) {
         for (let prop in target) {
-            let t = target[prop], s = source[prop]
+            let t = target[prop], s = source[prop];
             if (s !== undefined && s.constructor === t.constructor) {
                 if (s.constructor === Object && !Array.isArray(s))
-                    this.overwriteObject(t, s)
-                else target[prop] = s
+                    this.overwriteObject(t, s);
+                else target[prop] = s;
             }
         }
     }
@@ -82,13 +82,13 @@ export default class Utils {
      * @desc Focus an element putting the cursor in the end.
      */
     static focusWithCaretAtEnd(el) {
-        el.focus()
+        el.focus();
         let range = document.createRange(),
-            sel = window.getSelection()
-        range.selectNodeContents(el)
-        range.collapse(false)
-        sel.removeAllRanges()
-        sel.addRange(range)
+            sel = window.getSelection();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
     }
 
 }

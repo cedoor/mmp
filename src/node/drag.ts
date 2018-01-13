@@ -1,9 +1,9 @@
-import * as d3 from "d3"
-import glob from "../global"
-import {save as saveSnapshot} from "../map/snapshots"
-import BranchShape from "../draw/branch"
-import * as node from "./index"
-import Events from "../other/events"
+import * as d3 from "d3";
+import Global from "../global";
+import {save as saveSnapshot} from "../map/snapshots";
+import BranchShape from "../draw/branch";
+import * as node from "./index";
+import Events from "../other/events";
 
 /**
  * @name drag
@@ -12,7 +12,7 @@ import Events from "../other/events"
 export let drag = d3.drag()
     .on("start", started)
     .on("drag", dragged)
-    .on("end", ended)
+    .on("end", ended);
 
 /**
  * @name started
@@ -21,8 +21,8 @@ export let drag = d3.drag()
  * Select the node.
  */
 function started(n) {
-    d3.event.sourceEvent.preventDefault()
-    node.select(n.key)
+    d3.event.sourceEvent.preventDefault();
+    node.select(n.key);
 }
 
 /**
@@ -36,25 +36,25 @@ function dragged(n) {
         // Set new coordinates and save them
         x = n.value.x += dx, y = n.value.y += dy,
         // Check if old and new orientation are equal
-        c = node.orientation(x) === node.orientation(x - dx)
+        c = node.orientation(x) === node.orientation(x - dx);
     // Move graphically the node in new coordinates
-    this.setAttribute("transform", "translate(" + [x, y] + ")")
+    this.setAttribute("transform", "translate(" + [x, y] + ")");
     // If the node isn't fixed move also subnodes
     if (n.value.fixed) {
-        let parent = n
+        let parent = n;
         node.subnodes(n.key, function (n) {
-            const x = n.x += dx, y = n.y += dy
+            const x = n.x += dx, y = n.y += dy;
             // If c is false change the orientation of subnodes
-            if (!c) n.x += ( parent.value.x - n.x ) * 2
-            this.setAttribute("transform", "translate(" + [x, y] + ")")
-        })
+            if (!c) n.x += (parent.value.x - n.x) * 2;
+            this.setAttribute("transform", "translate(" + [x, y] + ")");
+        });
     }
     // Update all mind map branches
-    d3.selectAll(".branch").attr("d", node => new BranchShape(node).draw())
+    d3.selectAll(".branch").attr("d", node => new BranchShape(node).draw());
     // This is here and not in started function
     // because started function is also executed
     // when there is no drag events
-    glob.dragged = true
+    Global.dragged = true;
 }
 
 /**
@@ -65,9 +65,9 @@ function dragged(n) {
  * and save the snapshot.
  */
 function ended(n) {
-    if (glob.dragged) {
-        glob.dragged = false
-        saveSnapshot()
-        Events.call("nodeupdate", this, n.key, n.value, "position")
+    if (Global.dragged) {
+        Global.dragged = false;
+        saveSnapshot();
+        Events.call("nodeupdate", this, n.key, n.value, "position");
     }
 }

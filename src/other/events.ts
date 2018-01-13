@@ -1,4 +1,4 @@
-import {dispatch} from "d3"
+import {dispatch} from "d3";
 
 // All events of mmp
 let dispatcher = dispatch(
@@ -10,7 +10,7 @@ let dispatcher = dispatch(
     "nodeupdate",
     "nodecreate",
     "noderemove"
-)
+);
 
 export default class Events {
 
@@ -21,7 +21,7 @@ export default class Events {
      * @desc  Invoke each registered callback for the specified event ( d3 function ).
      */
     static call(e, ...p) {
-        return dispatcher.call(e, ...p)
+        return dispatcher.call(e, ...p);
     }
 
     /**
@@ -31,7 +31,7 @@ export default class Events {
      * @desc Adds, removes or gets the callback for the specified event ( d3 function ).
      */
     static on(e, cb) {
-        return dispatcher.on(e, cb)
+        return dispatcher.on(e, cb);
     }
 
 }

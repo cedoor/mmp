@@ -1,28 +1,44 @@
-// Rollup plugins
+import typescript from "rollup-plugin-typescript2"
+import serve from "rollup-plugin-serve"
+import livereload from "rollup-plugin-livereload"
 import json from "rollup-plugin-json"
-import babel from "rollup-plugin-babel"
-import eslint from "rollup-plugin-eslint"
 
 const pkg = require("./package.json")
 
-export default {
-    entry: "src/index.js",
-    dest: "build/" + pkg.name + ".js",
-    format: "umd",
-    moduleName: pkg.name,
+let config = {
+    input: "src/index.ts",
+    output: {
+        name: pkg.name,
+        format: "umd",
+        file: "build/" + pkg.name + ".js",
+        globals: {
+            d3: "d3"
+        }
+    },
     external: ["d3"],
-    globals: {d3: "d3"},
     plugins: [
         json(),
-        eslint(),
-        babel({presets: ["es2015-rollup"]})
-    ],
-    banner: `/**
+        typescript()
+    ]
+}
+
+if (process.env.BUILD === "production") {
+    config.output.banner = `/**
  * @module ${pkg.name}
  * @version ${pkg.version}
  * @file ${pkg.description}
  * @copyright ${pkg.author.name} ${new Date().getFullYear()}
  * @license ${pkg.license}
  * @see {@link ${pkg.homepage}|GitHub}
- */`
+*/`
+} else {
+    config.plugins = config.plugins.concat([
+        serve({
+            open: true,
+            contentBase: ""
+        }),
+        livereload()
+    ])
 }
+
+export default config

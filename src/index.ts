@@ -1,10 +1,11 @@
-import {add, moveTo, remove, select, selectTo, update} from "./node/index"
-import Events from "./other/events"
+import {add, moveTo, remove, select, selectTo, update} from "./node";
+import Events from "./other/events";
+import * as pkg from "../package.json";
 
 // mmp version
-export {version} from "../package.json"
+export let version = (<any>pkg).version;
 
-export let on = Events.on
+export let on = Events.on;
 
 // Mind map functions
 export {
@@ -15,7 +16,7 @@ export {
     data,
     undo, repeat,
     zoomIn, zoomOut
-} from "./map/index"
+} from "./map/index";
 
 // Node functions
 export let node = {
@@ -25,4 +26,4 @@ export let node = {
     select,
     selectTo,
     update
-}
+};

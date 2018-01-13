@@ -1,6 +1,7 @@
 // Global mind map parameters
-export default {
-    options: {
+export default class Global {
+
+    static options = {
         "font-family": "Arial, Helvetica, sans-serif",
         "center-onresize": true,
         "drag": true,
@@ -33,7 +34,22 @@ export default {
             "bold": false,
             "fixed": false
         }
-    },
-    history: {},
-    svg: {}
+    };
+
+    static nodes: any;
+
+    static history: any;
+
+    static svg: any;
+
+    static container: any;
+
+    static counter: number;
+
+    static backup: any;
+
+    static selected: any;
+
+    static dragged: boolean;
+
 }

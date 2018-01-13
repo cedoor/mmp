@@ -1,8 +1,8 @@
-import glob from "../global"
-import Utils from "../other/utils"
-import Events from "../other/events"
-import {center, redraw} from "./index"
-import {deselect} from "../node/index"
+import Global from "../global";
+import Utils from "../other/utils";
+import Events from "../other/events";
+import {center, redraw} from "./index";
+import {deselect} from "../node/index";
 
 /**
  * @name data
@@ -15,10 +15,10 @@ import {deselect} from "../node/index"
 export function data(snapshot) {
     // ** external snapshot to control **
     if (check(snapshot)) {
-        load(snapshot)
-        center()
-        save()
-    } else return JSON.parse(JSON.stringify(glob.history.snapshots[glob.history.index]));
+        load(snapshot);
+        center();
+        save();
+    } else return JSON.parse(JSON.stringify(Global.history.snapshots[Global.history.index]));
 }
 
 /**
@@ -26,10 +26,10 @@ export function data(snapshot) {
  * @desc Undo last changes.
  */
 export function undo() {
-    let h = glob.history
+    let h = Global.history;
     if (h.index > 0) {
-        load(h.snapshots[--h.index])
-        Events.call("mmundo")
+        load(h.snapshots[--h.index]);
+        Events.call("mmundo");
     }
 }
 
@@ -38,10 +38,10 @@ export function undo() {
  * @desc Repeat last changes.
  */
 export function repeat() {
-    let h = glob.history
+    let h = Global.history;
     if (h.index < h.snapshots.length - 1) {
-        load(h.snapshots[++h.index])
-        Events.call("mmrepeat")
+        load(h.snapshots[++h.index]);
+        Events.call("mmrepeat");
     }
 }
 
@@ -50,10 +50,10 @@ export function repeat() {
  * @desc Save the current snapshot of the mind map.
  */
 export function save() {
-    let h = glob.history
-    if (h.index < h.snapshots.length - 1) h.snapshots.splice(h.index + 1)
-    h.snapshots.push(mapClone())
-    h.index++
+    let h = Global.history;
+    if (h.index < h.snapshots.length - 1) h.snapshots.splice(h.index + 1);
+    h.snapshots.push(mapClone());
+    h.index++;
 }
 
 /**
@@ -62,13 +62,13 @@ export function save() {
  * @desc Return last snapshot of the mind map.
  */
 function load(snapshot) {
-    glob.nodes.clear()
+    Global.nodes.clear();
     snapshot.forEach(function (node) {
-        glob.nodes.set(node.key, Utils.cloneObject(node.value))
-    })
-    redraw()
-    setCounter()
-    deselect()
+        Global.nodes.set(node.key, Utils.cloneObject(node.value));
+    });
+    redraw();
+    setCounter();
+    deselect();
 }
 
 /**
@@ -77,12 +77,12 @@ function load(snapshot) {
  * @desc Return a copy of all nodes without necessary properties.
  */
 function mapClone() {
-    return glob.nodes.entries().map(function (node) {
-        let value = Utils.cloneObject(node.value)
-        delete value.width
-        delete value.height
-        return {key: node.key, value: value}
-    })
+    return Global.nodes.entries().map(function (node) {
+        let value = Utils.cloneObject(node.value);
+        delete value.width;
+        delete value.height;
+        return {key: node.key, value: value};
+    });
 }
 
 /**
@@ -90,8 +90,8 @@ function mapClone() {
  * @desc Set the right value of global counter.
  */
 function setCounter() {
-    let keys = glob.nodes.keys().map(k => parseInt(k.substring(4)))
-    glob.counter = Math.max(...keys)
+    let keys = Global.nodes.keys().map(k => parseInt(k.substring(4)));
+    Global.counter = Math.max(...keys);
 }
 
 /**
@@ -106,7 +106,7 @@ function check(snapshot) {
         snapshot[0].key === "node0" &&
         checkNodes(snapshot) ? true
             : Utils.error("The loaded mind map is incorrect")
-        : false
+        : false;
 }
 
 /**
@@ -121,7 +121,7 @@ function checkNodes(snapshot) {
             typeof node.key !== "string" ||
             node.value.constructor !== Object
         // ... to improve?
-        ) return false
+        ) return false;
     }
-    return true
+    return true;
 }

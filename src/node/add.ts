@@ -1,7 +1,7 @@
-import glob from "../global"
-import Events from "../other/events"
-import * as map from "../map/index"
-import * as node from "./index"
+import Global from "../global";
+import Events from "../other/events";
+import * as map from "../map/index";
+import * as node from "./index";
 
 /**
  * @name add
@@ -9,10 +9,10 @@ import * as node from "./index"
  * @desc Add a child node to selected node.
  */
 export function add(prop) {
-    let parent = glob.nodes.get(glob.selected),
-        key = "node" + ( ++glob.counter ),
-        opt = glob.options.node,
-        value = Object.assign({}, {
+    let parent = Global.nodes.get(Global.selected),
+        key = "node" + (++Global.counter),
+        opt = Global.options.node,
+        value = (<any>Object).assign({}, {
             "name": prop && prop["name"] || opt["name"],
             "background-color": prop && prop["background-color"] || opt["background-color"],
             "text-color": prop && prop["text-color"] || opt["text-color"],
@@ -25,9 +25,9 @@ export function add(prop) {
             "fixed": prop && prop["fixed"] || opt["fixed"],
             "x": prop && prop.x || node.calcX(parent.x),
             "y": prop && prop.y || node.calcY(parent.y),
-            "parent": glob.selected
-        })
-    addToMap(key, value)
+            "parent": Global.selected
+        });
+    addToMap(key, value);
 }
 
 /**
@@ -35,12 +35,12 @@ export function add(prop) {
  * @desc Add the root node in the mind map.
  */
 export function addRoot() {
-    let value = Object.assign({
-        x: parseInt(glob.container.style("width")) / 2,
-        y: parseInt(glob.container.style("height")) / 2
-    }, glob.options["root-node"])
-    addToMap("node" + glob.counter, value)
-    node.deselect()
+    let value = (<any>Object).assign({
+        x: parseInt(Global.container.style("width")) / 2,
+        y: parseInt(Global.container.style("height")) / 2
+    }, Global.options["root-node"]);
+    addToMap("node" + Global.counter, value);
+    node.deselect();
 }
 
 /**
@@ -50,8 +50,8 @@ export function addRoot() {
  * @desc Add a node in the mind map.
  */
 function addToMap(k, v) {
-    glob.nodes.set(k, v)
-    map.update()
-    map.save()
-    Events.call("nodecreate", node.dom(k), k, v)
+    Global.nodes.set(k, v);
+    map.update();
+    map.save();
+    Events.call("nodecreate", node.getDom(k), k, v);
 }
