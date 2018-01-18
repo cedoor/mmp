@@ -1,7 +1,7 @@
+import {Dispatch} from "d3-dispatch";
 import {dispatch} from "d3";
 
-// All events of mmp
-let dispatcher = dispatch(
+let events: string[] = [
     "mmcreate",
     "mmcenter",
     "mmundo",
@@ -10,9 +10,15 @@ let dispatcher = dispatch(
     "nodeupdate",
     "nodecreate",
     "noderemove"
-);
+];
 
 export default class Events {
+
+    private dispatcher: Dispatch<any>;
+
+    constructor() {
+        this.dispatcher = dispatch(...events);
+    }
 
     /**
      * @name call
@@ -20,8 +26,8 @@ export default class Events {
      * @param {Object} [p] - Optional parameters.
      * @desc  Invoke each registered callback for the specified event ( d3 function ).
      */
-    static call(e, ...p) {
-        return dispatcher.call(e, ...p);
+    public call(e, ...p) {
+        return this.dispatcher.call(e, ...p);
     }
 
     /**
@@ -30,8 +36,8 @@ export default class Events {
      * @param {Function} [cb] - Callback called on event.
      * @desc Adds, removes or gets the callback for the specified event ( d3 function ).
      */
-    static on(e, cb) {
-        return dispatcher.on(e, cb);
-    }
+    public on = (e, cb) => {
+        return this.dispatcher.on(e, cb);
+    };
 
 }

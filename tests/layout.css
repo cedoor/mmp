@@ -16,6 +16,14 @@ body {
     margin-left: 502px;
 }
 
+#mmp1, #mmp2 {
+    height: 50%;
+}
+
+#mmp1 {
+    border-bottom: 1px solid #dddddd;
+}
+
 #mocha {
     margin: 15px;
 }

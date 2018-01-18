@@ -1,56 +1,64 @@
 import * as d3 from "d3";
-import Global from "../global";
-import Events from "../other/events";
+import Events from "./events";
+import Map, {DomElements} from "./map";
+import Node from "../node/node";
+import {Map as D3Map} from "d3-collection";
 
-/**
- * @name zoom
- * @desc d3 zoom function.
- */
-export let zoom = d3.zoom().scaleExtent([0.5, 2]).on("zoom", zoomed);
+export default class Zoom {
 
-/**
- * @name zoomIn
- */
-export function zoomIn() {
-    move(true);
-}
+    d3Zoom: any;
+    map: Map;
+    dom: DomElements;
+    events: Events;
+    nodes: D3Map<Node>;
 
-/**
- * @name zoomOut
- */
-export function zoomOut() {
-    move(false);
-}
+    constructor(map: Map) {
+        this.map = map;
+        this.dom = map.dom;
+        this.events = map.events;
+        this.nodes = map.nodes;
 
-/**
- * @name center
- * @desc Center the root node in the mind map.
- */
-export function center() {
-    let root = Global.nodes.get("node0"),
-        x = parseInt(Global.container.style("width")) / 2 - root.x,
-        y = parseInt(Global.container.style("height")) / 2 - root.y,
-        zoomId = d3.zoomIdentity.translate(x, y);
-    Global.svg.main.transition().duration(500).call(zoom.transform, zoomId);
-    Events.call("mmcenter");
-}
+        this.d3Zoom = d3.zoom().scaleExtent([0.5, 2]).on("zoom", () => {
+            this.dom.g.attr("transform", d3.event.transform);
+        });
+    }
 
-/**
- * @name zoomed
- * @desc Set the transform of the mind map when the zoom change.
- */
-function zoomed() {
-    Global.svg.mmp.attr("transform", d3.event.transform);
-}
+    /**
+     * @name zoomIn
+     */
+    public zoomIn = () => {
+        this.move(true);
+    };
 
-/**
- * @name move
- * @param {boolean} dir - Direction of the zoom
- * @desc Move the zoom in a direction ( true: in, false: out ).
- */
-function move(dir) {
-    let main = Global.svg.main,
-        k = d3.zoomTransform(main.node()).k;
-    k += dir ? k / 5 : -k / 5;
-    zoom.scaleTo(main.transition().duration(100), k);
+    /**
+     * @name zoomOut
+     */
+    public zoomOut = () => {
+        this.move(false);
+    };
+
+    /**
+     * @name center
+     * @desc Center the root node in the mind map.
+     */
+    public center = () => {
+        let root = this.nodes.get(this.map.id + "_node_0"),
+            x = parseInt(this.dom.container.style("width")) / 2 - root.coordinates.x,
+            y = parseInt(this.dom.container.style("height")) / 2 - root.coordinates.y,
+            zoomId = d3.zoomIdentity.translate(x, y);
+        this.dom.svg.transition().duration(500).call(this.d3Zoom.transform, zoomId);
+        this.events.call("mmcenter");
+    };
+
+    /**
+     * @name move
+     * @param {boolean} dir - Direction of the zoom
+     * @desc Move the zoom in a direction ( true: in, false: out ).
+     */
+    private move(dir) {
+        let k = d3.zoomTransform(this.dom.svg.node()).k;
+        k += dir ? k / 5 : -k / 5;
+        this.d3Zoom.scaleTo(this.dom.svg.transition().duration(100), k);
+    }
+
 }

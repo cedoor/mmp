@@ -1,4 +1,3 @@
-import glob from "../global";
 import Shape from "./shape";
 
 export default class NodeShape extends Shape {
@@ -14,12 +13,11 @@ export default class NodeShape extends Shape {
     draw() {
         const name = this.getNameDOMElement();
 
-        this.node.width = name.clientWidth + glob.options.node.padding[1];
-        this.node.height = name.clientHeight + glob.options.node.padding[0];
-        this.node.k = this.node.k || this.random(-20, 20)();
+        this.node.dimensions.width = name.clientWidth + 45;
+        this.node.dimensions.height = name.clientHeight + 30;
 
-        const x = this.node.width / 2,
-            y = this.node.height / 2,
+        const x = this.node.dimensions.width / 2,
+            y = this.node.dimensions.height / 2,
             k = this.node.k;
 
         this.path.moveTo(-x, k / 3);
