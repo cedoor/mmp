@@ -8,6 +8,8 @@ export default class Node implements NodeProperties, UserNodeProperties {
 
     map: Map;
 
+    dom: HTMLElement;
+
     id: string;
 
     parent: Node;
@@ -54,8 +56,26 @@ export default class Node implements NodeProperties, UserNodeProperties {
         this.locked = userProperties.locked;
     }
 
-    select() {
-        this.map.selectedNode = this;
+    select(): boolean {
+        let selected = this.map.selectedNode,
+            background = this.getDOMBackground();
+
+        if (!background.style.stroke) {
+            if (selected) {
+                selected.getDOMBackground().style.stroke = "";
+            }
+            const color = d3.color(background.style.fill).darker(.5);
+            background.style.stroke = color.toString();
+            this.map.selectedNode = this;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    deselect() {
+        this.getDOMBackground().style.stroke = "";
+        this.map.selectedNode = this.map.nodes.get(this.map.id + "_node_0");
     }
 
     // TODO: test
@@ -70,8 +90,17 @@ export default class Node implements NodeProperties, UserNodeProperties {
         return level;
     }
 
-    getChildren() {
+    getChildren(): Node[] {
         return this.map.nodes.values().filter(node => node.parent && node.parent.id === this.id);
+    }
+
+    getDescendants(): Node[] {
+        let nodes = [];
+        this.getChildren().forEach((node: Node) => {
+            nodes.push(node);
+            nodes = nodes.concat(node.getDescendants());
+        });
+        return nodes;
     }
 
     /**
@@ -79,11 +108,13 @@ export default class Node implements NodeProperties, UserNodeProperties {
      * @return {number} x - x coordinate of child node.
      * @desc Return the x coordinate of a node based on parent x coordinate.
      */
-    calculateXposition() {
-        let or = this.getOrientation(),
-            dir = or === true ? -1 : or === false ? 1 :
-                this.map.nodes.get(this.map.id + "_node_0").getChildren().length % 2 === 0 ? -1 : 1;
-        return this.parent.coordinates.x + 200 * dir;
+    calculateXposition(): number {
+        if (this.parent.isRoot()) {
+            let root = this.map.nodes.get(this.map.id + "_node_0");
+            return this.parent.coordinates.x + 200 * (root.getChildren().length % 2 === 0 ? -1 : 1);
+        } else {
+            return this.parent.coordinates.x + 200 * (this.parent.getOrientation() ? -1 : 1);
+        }
     }
 
     /**
@@ -92,7 +123,7 @@ export default class Node implements NodeProperties, UserNodeProperties {
      * @desc Return the y coordinate of a node based on parent y coordinate.
      * { To do more sophisticated }
      */
-    calculateYposition() {
+    calculateYposition(): number {
         return this.parent.coordinates.y - d3.randomUniform(60, 100)();
     }
 
@@ -102,11 +133,22 @@ export default class Node implements NodeProperties, UserNodeProperties {
      * @desc Return the orientation of a node in the mind map ( true: on left )
      */
     getOrientation(): boolean {
-        let root = this.map.nodes.get(this.map.id + "_node_0");
-
-        if (this.coordinates) {
+        if (!this.isRoot()) {
+            let root = this.map.nodes.get(this.map.id + "_node_0");
             return this.coordinates.x < root.coordinates.x;
         }
+    }
+
+    getDOMText(): HTMLElement {
+        return <HTMLElement>this.dom.childNodes[1].childNodes[0];
+    }
+
+    getDOMBackground(): HTMLElement {
+        return <HTMLElement>this.dom.childNodes[0];
+    }
+
+    isRoot() {
+        return this.id === this.map.id + "_node_0";
     }
 
     getProperties(): ExportNodeProperties {
@@ -153,6 +195,7 @@ export interface NodeProperties {
     id: string;
     parent?: Node;
     k?: number;
+    dom?: HTMLElement;
 }
 
 export interface ExportNodeProperties extends UserNodeProperties {

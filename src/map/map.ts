@@ -2,11 +2,12 @@ import * as d3 from "d3";
 import Events from "./events";
 import Zoom from "./zoom";
 import Draw from "./draw";
-import Node, {NodeProperties, UserNodeProperties} from "../node/node";
+import Node, {ExportNodeProperties, NodeProperties, UserNodeProperties} from "../node/node";
 import {Map as D3Map} from "d3-collection";
 import Options, {OptionParameters} from "./options";
 import History from "./history";
 import Drag from "../node/drag";
+import Utils from "../utils";
 
 export default class Map {
 
@@ -42,10 +43,10 @@ export default class Map {
         this.dom = {};
         this.events = new Events();
         this.options = new Options(options);
-        this.drag = new Drag(this);
-        this.draw = new Draw(this);
         this.zoom = new Zoom(this);
         this.history = new History(this);
+        this.drag = new Drag(this);
+        this.draw = new Draw(this);
 
         this.draw.create();
 
@@ -80,8 +81,6 @@ export default class Map {
 
         let node: Node = new Node(properties, userProperties, this);
 
-        node.select();
-
         this.nodes.set(properties.id, node);
 
         this.counter++;
@@ -92,7 +91,7 @@ export default class Map {
 
         this.events.call("nodecreate", document.getElementById(properties.id), properties.id, userProperties);
 
-        this.deselectNode();
+        node.deselect();
     }
 
     addNode = (userProperties: UserNodeProperties = {}) => {
@@ -114,13 +113,24 @@ export default class Map {
         this.events.call("nodecreate", document.getElementById(properties.id), properties.id, properties);
     };
 
+    selectNode = (key?: string): ExportNodeProperties => {
+        if (key) {
+            if (this.nodes.has(key)) {
+                let node = this.nodes.get(key);
+                if (node.select()) {
+                    this.events.call("nodeselect", node.dom, key, node.getProperties());
+                }
+            } else {
+                Utils.error("The node with the key " + key + " don't exist");
+            }
+        }
+
+        return this.selectedNode.getProperties();
+    };
+
     updateNode = (node: Node = this.selectedNode, property: string, value: any) => {
         node[property] = value;
     };
-
-    deselectNode() {
-
-    }
 
     remove = () => {
         this.dom.svg.remove();
@@ -147,7 +157,8 @@ export default class Map {
             zoomIn: this.zoom.zoomIn,
             zoomOut: this.zoom.zoomOut,
             center: this.zoom.center,
-            addNode: this.addNode
+            addNode: this.addNode,
+            selectNode: this.selectNode
         };
     }
 
@@ -164,6 +175,7 @@ export interface MmpInstance {
     zoomOut: Function;
     center: Function;
     addNode: Function;
+    selectNode: Function;
 }
 
 export interface DomElements {
