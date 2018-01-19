@@ -10,7 +10,7 @@ export default class BranchShape extends Shape {
      * @name draw
      * @desc Draw the branch of the node.
      */
-    draw() {
+    draw(): any {
         const parent = this.node.parent,
             level = this.node.getLevel(),
             width = 22 - (level < 5 ? level : 5) * 3,

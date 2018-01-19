@@ -2,19 +2,19 @@ import Shape from "./shape";
 
 export default class NodeShape extends Shape {
 
-    constructor(node, dom) {
-        super(node, dom);
+    constructor(node) {
+        super(node);
     }
 
     /**
      * @name draw
      * @desc Draw the background shape of the node.
      */
-    draw() {
-        const name = this.getNameDOMElement();
+    draw(): any {
+        let text = this.node.getDOMText();
 
-        this.node.dimensions.width = name.clientWidth + 45;
-        this.node.dimensions.height = name.clientHeight + 30;
+        this.node.dimensions.width = text.clientWidth + 45;
+        this.node.dimensions.height = text.clientHeight + 30;
 
         const x = this.node.dimensions.width / 2,
             y = this.node.dimensions.height / 2,

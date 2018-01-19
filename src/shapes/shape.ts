@@ -5,19 +5,11 @@ import Node from "../node/node";
 export default class Shape {
 
     public node: Node;
-
-    public dom: HTMLElement;
-
     public path: Path;
 
-    constructor(node: Node, dom?: HTMLElement) {
+    constructor(node: Node) {
         this.node = node;
-        this.dom = dom;
         this.path = d3.path();
-    }
-
-    getNameDOMElement(): any {
-        return this.dom.nextSibling.childNodes[0];
     }
 
 }
