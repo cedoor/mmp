@@ -1,22 +1,19 @@
 import * as d3 from "d3";
 import Map from "../map/map";
 import Node from "./node";
-import Events from "../map/events";
-import History from "../map/history";
+import BranchShape from "../shapes/branch";
 
 export default class Drag {
 
     D3Drag: any;
     dragging: boolean;
+    orientation: boolean;
+    descendants: Node[];
 
     map: Map;
-    history: History;
-    events: Events;
 
     constructor(map: Map) {
         this.map = map;
-        this.history = map.history;
-        this.events = map.events;
 
         this.D3Drag = d3.drag()
             .on("start", (e: any) => this.started(e.value))
@@ -32,6 +29,10 @@ export default class Drag {
      */
     started(node: Node) {
         d3.event.sourceEvent.preventDefault();
+
+        this.orientation = node.getOrientation();
+        this.descendants = node.getDescendants();
+
         node.select();
     }
 
@@ -42,25 +43,42 @@ export default class Drag {
      * Move the node dragged and if it isn't fixed all subnodes.
      */
     dragged(node: Node) {
-        // const dy = d3.event.dy, dx = d3.event.dx,
-        //     // Set new coordinates and save them
-        //     x = node.coordinates.x += dx, y = node.coordinates.y += dy,
-        //     // Check if old and new orientation are equal
-        //     c = node.orientation(x) === node.orientation(x - dx);
-        // // Move graphically the node in new coordinates
-        // this.setAttribute("transform", "translate(" + [x, y] + ")");
-        // // If the node isn't fixed move also subnodes
-        // if (n.value.fixed) {
-        //     let parent = n;
-        //     node.subnodes(n.key, function (n) {
-        //         const x = n.x += dx, y = n.y += dy;
-        //         // If c is false change the orientation of subnodes
-        //         if (!c) n.x += (parent.value.x - n.x) * 2;
-        //         this.setAttribute("transform", "translate(" + [x, y] + ")");
-        //     });
-        // }
-        // // Update all mind map branches
-        // d3.selectAll(".branch").attr("d", node => new BranchShape(node).draw());
+        let dy = d3.event.dy,
+            dx = d3.event.dx;
+
+        // Set new coordinates
+        let x = node.coordinates.x += dx,
+            y = node.coordinates.y += dy;
+
+        // Check if old and new orientation are equal
+        let newOrientation = node.getOrientation(),
+            orientationIsChanged = newOrientation !== this.orientation;
+
+        // Move graphically the node in new coordinates
+        node.dom.setAttribute("transform", "translate(" + [x, y] + ")");
+
+        // If the node is locked move also descendants
+        if (node.locked) {
+            let descendingX = node.coordinates.x;
+
+            for (let node of this.descendants) {
+                let x = node.coordinates.x += dx, y = node.coordinates.y += dy;
+
+                if (orientationIsChanged) {
+                    x = node.coordinates.x += (descendingX - node.coordinates.x) * 2;
+                }
+
+                node.dom.setAttribute("transform", "translate(" + [x, y] + ")");
+            }
+
+            if (orientationIsChanged) {
+                this.orientation = newOrientation;
+            }
+        }
+        // Update all mind map branches
+        d3.selectAll("." + this.map.id + "_branch").attr("d", function (node: any) {
+            return new BranchShape(node.value).draw();
+        });
         // This is here and not in started function
         // because started function is also executed
         // when there is no drag events
@@ -77,8 +95,8 @@ export default class Drag {
     ended(node: Node) {
         if (this.dragging) {
             this.dragging = false;
-            this.history.save();
-            this.events.call("nodeupdate", this, node.id, node, "position");
+            this.map.history.save();
+            this.map.events.call("nodeupdate", node.dom, node.id, node.getProperties(), "position");
         }
     }
 
