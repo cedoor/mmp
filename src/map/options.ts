@@ -30,8 +30,8 @@ export default class Options implements OptionParameters {
                 size: 60
             },
             backgroundColor: "#f9f9f9",
-            textColor: "#808080",
-            branchColor: "#c2d7aa",
+            textColor: "#787878",
+            branchColor: "#577a96",
             fontSize: 16,
             italic: false,
             bold: false,
@@ -50,7 +50,7 @@ export default class Options implements OptionParameters {
                 size: 70
             },
             backgroundColor: "#f0f6f5",
-            textColor: "#828c82",
+            textColor: "#787878",
             fontSize: 20,
             italic: false,
             bold: false,

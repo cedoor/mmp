@@ -1,32 +1,19 @@
 import Utils from "../utils";
 import Map from "./map";
-import Zoom from "./zoom";
-import Node, {ExportNodeProperties} from "../node/node";
-import {Map as D3Map} from "d3-collection";
-import Events from "./events";
-import Draw from "./draw";
+import {ExportNodeProperties} from "../node/node";
 
 export default class History {
 
     map: Map;
 
-    zoom: Zoom;
-    events: Events;
-    nodes: D3Map<Node>;
-    draw: Draw;
-
     index: number;
     snapshots: MapSnapshot[];
 
     constructor(map: Map) {
+        this.map = map;
+
         this.index = -1;
         this.snapshots = [];
-
-        this.map = map;
-        this.zoom = map.zoom;
-        this.events = map.events;
-        this.nodes = map.nodes;
-        this.draw = map.draw;
     }
 
     /**
@@ -48,28 +35,28 @@ export default class History {
         if (snapshot) {
             if (this.check(snapshot)) {
 
-                this.nodes.clear();
+                this.map.nodes.clear();
                 snapshot.forEach((node) => {
-                    this.nodes.set(node.key, Utils.cloneObject(node.value));
+                    this.map.nodes.set(node.key, Utils.cloneObject(node.value));
                 });
-                this.draw.clear();
-                this.draw.update();
+                this.map.draw.clear();
+                this.map.draw.update();
                 this.setCounter();
-                // deselect(); // TODO
+                this.map.selectedNode.deselect();
 
-                this.zoom.center();
+                this.map.zoom.center();
                 this.save();
             } else {
                 Utils.error("The snapshot is incorrect");
             }
         } else {
             this.map.counter = 0;
-            this.nodes.clear();
-            this.draw.clear();
-            this.draw.update();
-            this.events.call("mmcreate");
+            this.map.nodes.clear();
+            this.map.draw.clear();
+            this.map.draw.update();
+            this.map.events.call("mmcreate");
             this.map.addRootNode();
-            this.zoom.center();
+            this.map.zoom.center();
             this.save();
         }
     };
@@ -81,7 +68,7 @@ export default class History {
     undo = () => {
         if (this.index > 0) {
             this.new(this.snapshots[--this.index]);
-            this.events.call("mmundo");
+            this.map.events.call("mmundo");
         }
     };
 
@@ -92,7 +79,7 @@ export default class History {
     redo = () => {
         if (this.index < this.snapshots.length - 1) {
             this.new(this.snapshots[++this.index]);
-            this.events.call("mmundo");
+            this.map.events.call("mmundo");
         }
     };
 
@@ -114,7 +101,7 @@ export default class History {
      * @desc Return a copy of all fundamental node properties.
      */
     private getSnapshot(): MapSnapshot {
-        return this.nodes.entries().map((entry) => {
+        return this.map.nodes.entries().map((entry) => {
             let properties = entry.value.getProperties();
             return {key: entry.key, value: properties};
         });
@@ -125,7 +112,7 @@ export default class History {
      * @desc Set the right value of global counter.
      */
     private setCounter() {
-        let keys = this.nodes.keys().map(key => parseInt(key.split("_")[2]));
+        let keys = this.map.nodes.keys().map(key => parseInt(key.split("_")[2]));
         this.map.counter = Math.max(...keys);
     }
 

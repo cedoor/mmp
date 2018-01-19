@@ -1,27 +1,15 @@
 import * as d3 from "d3";
-import Map, {DomElements} from "./map";
+import Map from "./map";
 import BranchShape from "../shapes/branch";
 import NodeShape from "../shapes/node";
 import Utils from "../utils";
-import {Map as D3Map} from "d3-collection";
-import Node from "../node/node";
-import Options from "./options";
-import Drag from "../node/drag";
 
 export default class Draw {
 
     map: Map;
-    dom: DomElements;
-    options: Options;
-    nodes: D3Map<Node>;
-    drag: Drag;
 
     constructor(map: Map) {
         this.map = map;
-        this.dom = map.dom;
-        this.options = map.options;
-        this.nodes = map.nodes;
-        this.drag = map.drag;
     }
 
     /**
@@ -30,21 +18,21 @@ export default class Draw {
      */
     create() {
         // Set the view of the map
-        this.dom.container = d3.select("#" + this.map.id).style("position", "relative");
+        this.map.dom.container = d3.select("#" + this.map.id).style("position", "relative");
 
-        this.dom.svg = this.dom.container.append("svg").style("position", "absolute")
+        this.map.dom.svg = this.map.dom.container.append("svg").style("position", "absolute")
             .style("width", "100%").style("height", "100%")
             .style("top", 0).style("left", 0);
 
-        this.dom.svg.append("rect")
+        this.map.dom.svg.append("rect")
             .attr("width", "100%").attr("height", "100%")
             .attr("fill", "white")
             .attr("pointer-events", "all")
             .on("click", () => {
-                this.map.deselectNode();
+                this.map.selectedNode.deselect();
             });
 
-        this.dom.g = this.dom.svg.append("g");
+        this.map.dom.g = this.map.dom.svg.append("g");
     }
 
     /**
@@ -52,23 +40,26 @@ export default class Draw {
      * @desc Update the map with new nodes.
      */
     update() {
-        let nodeValues = this.nodes.entries(),
+        let nodeValues = this.map.nodes.entries(),
             self = this,
-            nodes = this.dom.g.selectAll("." + this.map.id + "_node").data(nodeValues),
-            branches = this.dom.g.selectAll(".branch").data(nodeValues.slice(1)),
+            nodes = this.map.dom.g.selectAll("." + this.map.id + "_node").data(nodeValues),
+            branches = this.map.dom.g.selectAll(".branch").data(nodeValues.slice(1)),
 
             outer = nodes.enter().append("g")
                 .style("cursor", "pointer")
                 .attr("class", this.map.id + "_node")
-                .attr("id", node => node.key)
+                .attr("id", function (node) {
+                    node.value.dom = this;
+                    return node.key;
+                })
                 .attr("transform", node => "translate(" + node.value.coordinates.x + "," + node.value.coordinates.y + ")")
                 .on("dblclick", function () {
                     d3.event.stopPropagation();
                     Utils.focusWithCaretAtEnd(this.childNodes[1].childNodes[0]);
                 });
 
-        if (this.options.drag === true) {
-            outer.call(this.drag.D3Drag);
+        if (this.map.options.drag === true) {
+            outer.call(this.map.drag.D3Drag);
         }
 
         outer.insert("foreignObject")
@@ -79,7 +70,7 @@ export default class Draw {
             color: ${node.value.textColor};
             font-style: ${Utils.fontStyle(node.value.italic)};
             font-weight: ${Utils.fontWeight(node.value.bold)};
-            font-family: ${this.options.fontFamily};
+            font-family: ${this.map.options.fontFamily};
             text-align: center;
         " contenteditable spellcheck="false">${node.value.name}</div>`)
             .each(function (node) {
@@ -90,7 +81,7 @@ export default class Draw {
             .style("fill", node => node.value.backgroundColor)
             .style("stroke-width", 3)
             .attr("d", function (node) {
-                return new NodeShape(node.value, this).draw();
+                return new NodeShape(node.value).draw();
             });
 
         outer.each(function (node) {
