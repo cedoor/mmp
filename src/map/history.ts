@@ -1,6 +1,6 @@
 import Utils from "../utils";
 import Map from "./map";
-import {ExportNodeProperties} from "../node/node";
+import Node, {ExportNodeProperties, NodeProperties, UserNodeProperties} from "../node/node";
 
 export default class History {
 
@@ -27,23 +27,16 @@ export default class History {
     };
 
     /**
-     * @name new
-     * @param {MapSnapshot} [snapshot] - A snapshot of the map.
-     * @desc Replace old map with a new one or create a new empty map.
+     * Replace old map with a new one or create a new empty map.
+     * @param {MapSnapshot} snapshot
      */
     new = (snapshot?: MapSnapshot) => {
         if (snapshot) {
             if (this.check(snapshot)) {
-
-                this.map.nodes.clear();
-                snapshot.forEach((node) => {
-                    this.map.nodes.set(node.key, Utils.cloneObject(node.value));
-                });
-                this.map.draw.clear();
-                this.map.draw.update();
+                this.redraw(snapshot);
                 this.setCounter();
+                this.map.events.call("mmcreate");
                 this.map.selectedNode.deselect();
-
                 this.map.zoom.center();
                 this.save();
             } else {
@@ -67,7 +60,7 @@ export default class History {
      */
     undo = () => {
         if (this.index > 0) {
-            this.new(this.snapshots[--this.index]);
+            this.redraw(this.snapshots[--this.index]);
             this.map.events.call("mmundo");
         }
     };
@@ -78,7 +71,7 @@ export default class History {
      */
     redo = () => {
         if (this.index < this.snapshots.length - 1) {
-            this.new(this.snapshots[++this.index]);
+            this.redraw(this.snapshots[++this.index]);
             this.map.events.call("mmundo");
         }
     };
@@ -93,6 +86,40 @@ export default class History {
         }
         this.snapshots.push(this.getSnapshot());
         this.index++;
+    }
+
+    /**
+     *
+     * @param {MapSnapshot} snapshot
+     */
+    redraw(snapshot: MapSnapshot) {
+        this.map.nodes.clear();
+
+        snapshot.forEach((entry) => {
+            let properties: NodeProperties = {
+                id: this.sanitizeNodeId(entry.value.id),
+                parent: this.map.nodes.get(this.sanitizeNodeId(entry.value.parent)),
+                k: entry.value.k
+            }, userProperties: UserNodeProperties = {
+                name: entry.value.name,
+                dimensions: entry.value.dimensions,
+                coordinates: entry.value.coordinates,
+                image: entry.value.image,
+                backgroundColor: entry.value.backgroundColor,
+                textColor: entry.value.textColor,
+                branchColor: entry.value.branchColor,
+                fontSize: entry.value.fontSize,
+                italic: entry.value.italic,
+                bold: entry.value.bold,
+                locked: entry.value.locked
+            };
+
+            let node: Node = new Node(properties, userProperties, this.map);
+            this.map.nodes.set(node.id, node);
+        });
+
+        this.map.draw.clear();
+        this.map.draw.update();
     }
 
     /**
@@ -123,11 +150,21 @@ export default class History {
      * @desc Check the snapshot structure and return true if it is authentic.
      */
     private check(snapshot: MapSnapshot): boolean {
-        let rootKey = this.map.id + "_node_0";
-
         return snapshot.constructor === Array &&
-            snapshot[0].key === rootKey &&
+            snapshot[0].key.split("_")[2] === "0" &&
             this.checkProperties(snapshot);
+    }
+
+    /**
+     * Sanitize an old map node id with a new.
+     * @param {string} oldId
+     * @returns {string}
+     */
+    private sanitizeNodeId(oldId: string) {
+        if (typeof oldId === "string") {
+            let oldIdSplitted = oldId.split("_");
+            return this.map.id + "_" + oldIdSplitted[1] + "_" + oldIdSplitted[2];
+        }
     }
 
     /**
@@ -140,7 +177,7 @@ export default class History {
         for (let properties of snapshot) {
             if (typeof properties.key !== "string" ||
                 properties.value.constructor !== Object)
-            // ... to improve?
+            // TODO, to improve
                 return false;
         }
         return true;
