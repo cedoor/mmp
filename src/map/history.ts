@@ -1,6 +1,6 @@
 import Utils from "../utils";
 import Map from "./map";
-import Node, {ExportNodeProperties, NodeProperties, UserNodeProperties} from "../node/node";
+import Node, {ExportNodeProperties, NodeProperties, UserNodeProperties} from "./node";
 
 export default class History {
 

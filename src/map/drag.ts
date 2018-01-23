@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import Map from "../map/map";
+import Map from "./map";
 import Node from "./node";
 import BranchShape from "../shapes/branch";
 
@@ -77,7 +77,7 @@ export default class Drag {
         }
         // Update all mind map branches
         d3.selectAll("." + this.map.id + "_branch").attr("d", function (node: any) {
-            return new BranchShape(node.value).draw();
+            return <any>new BranchShape(node.value).draw();
         });
         // This is here and not in started function
         // because started function is also executed

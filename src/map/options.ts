@@ -1,4 +1,4 @@
-import {UserNodeProperties} from "../node/node";
+import {UserNodeProperties} from "./node";
 
 export default class Options implements OptionParameters {
 

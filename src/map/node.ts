@@ -1,38 +1,32 @@
 import * as d3 from "d3";
-import Image from "./image";
-import Coordinates from "./coordinates";
-import Dimensions from "./dimensions";
-import Map from "../map/map";
+import Map from "./map";
 
 export default class Node implements NodeProperties, UserNodeProperties {
 
     map: Map;
 
+    id: string;
+    parent: Node;
+    k: number;
     dom: HTMLElement;
 
-    id: string;
-
-    parent: Node;
-
     name: string;
-
-    k: number;
-
     dimensions: Dimensions;
     coordinates: Coordinates;
-
     image: Image;
-
     backgroundColor: string;
     textColor: string;
     branchColor: string;
-
     fontSize: number;
     italic: boolean;
     bold: boolean;
-
     locked: boolean;
 
+    /**
+     * @param {NodeProperties} properties
+     * @param {UserNodeProperties} userProperties
+     * @param {Map} map
+     */
     constructor(properties: NodeProperties, userProperties: UserNodeProperties, map: Map) {
         this.map = map;
 
@@ -41,7 +35,10 @@ export default class Node implements NodeProperties, UserNodeProperties {
         this.k = properties.k || d3.randomUniform(-20, 20)();
 
         this.name = userProperties.name;
-        this.dimensions = userProperties.dimensions;
+        this.dimensions = userProperties.dimensions || {
+            width: 0,
+            height: 0
+        };
         this.coordinates = userProperties.coordinates || {
             x: this.calculateXposition(),
             y: this.calculateYposition()
@@ -56,6 +53,10 @@ export default class Node implements NodeProperties, UserNodeProperties {
         this.locked = userProperties.locked;
     }
 
+    /**
+     *
+     * @returns {boolean}
+     */
     select(): boolean {
         let selected = this.map.selectedNode,
             background = this.getDOMBackground();
@@ -73,12 +74,18 @@ export default class Node implements NodeProperties, UserNodeProperties {
         }
     }
 
+    /**
+     *
+     */
     deselect() {
         this.getDOMBackground().style.stroke = "";
         this.map.selectedNode = this.map.nodes.get(this.map.id + "_node_0");
     }
 
-    // TODO: test
+    /**
+     *
+     * @returns {number}
+     */
     getLevel(): number {
         let level = 0, parent = this.parent;
 
@@ -90,10 +97,18 @@ export default class Node implements NodeProperties, UserNodeProperties {
         return level;
     }
 
+    /**
+     *
+     * @returns {Node[]}
+     */
     getChildren(): Node[] {
         return this.map.nodes.values().filter(node => node.parent && node.parent.id === this.id);
     }
 
+    /**
+     *
+     * @returns {Node[]}
+     */
     getDescendants(): Node[] {
         let nodes = [];
         this.getChildren().forEach((node: Node) => {
@@ -104,9 +119,8 @@ export default class Node implements NodeProperties, UserNodeProperties {
     }
 
     /**
-     * @name calculateXposition
-     * @return {number} x - x coordinate of child node.
-     * @desc Return the x coordinate of a node based on parent x coordinate.
+     * Return the x coordinate of a node based on parent x coordinate
+     * @returns {number}
      */
     calculateXposition(): number {
         if (this.parent.isRoot()) {
@@ -118,19 +132,16 @@ export default class Node implements NodeProperties, UserNodeProperties {
     }
 
     /**
-     * @name calculateYposition
-     * @return {number} y - y coordinate of child node.
-     * @desc Return the y coordinate of a node based on parent y coordinate.
-     * { To do more sophisticated }
+     * Return the y coordinate of a node based on parent y coordinate.
+     * @return {number}
      */
     calculateYposition(): number {
         return this.parent.coordinates.y - d3.randomUniform(60, 100)();
     }
 
     /**
-     * @name orientation
-     * @return {boolean} orientation
-     * @desc Return the orientation of a node in the mind map ( true: on left )
+     * Return the orientation of a node in the map (true if left)
+     * @return {boolean}
      */
     getOrientation(): boolean {
         if (!this.isRoot()) {
@@ -202,4 +213,19 @@ export interface ExportNodeProperties extends UserNodeProperties {
     id: string;
     parent: string;
     k?: number;
+}
+
+export interface Coordinates {
+    x: number;
+    y: number;
+}
+
+export interface Dimensions {
+    width: number;
+    height: number;
+}
+
+export interface Image {
+    src: string;
+    size: number;
 }

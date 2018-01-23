@@ -2,11 +2,11 @@ import * as d3 from "d3";
 import Events from "./events";
 import Zoom from "./zoom";
 import Draw from "./draw";
-import Node, {ExportNodeProperties, NodeProperties, UserNodeProperties} from "../node/node";
+import Node, {ExportNodeProperties, NodeProperties, UserNodeProperties} from "./node";
 import {Map as D3Map} from "d3-collection";
 import Options, {OptionParameters} from "./options";
 import History from "./history";
-import Drag from "../node/drag";
+import Drag from "./drag";
 import Utils from "../utils";
 
 export default class Map {
