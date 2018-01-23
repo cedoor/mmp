@@ -1,16 +1,24 @@
 import Shape from "./shape";
+import {Path} from "d3-path";
 
+/**
+ * Represents the branch shape. Extends the shape class.
+ */
 export default class BranchShape extends Shape {
 
+    /**
+     * Extends the shape class.
+     * @param node
+     */
     constructor(node) {
         super(node);
     }
 
     /**
-     * @name draw
-     * @desc Draw the branch of the node.
+     *  Draw the branch of the node.
+     * @returns {Path}
      */
-    draw(): any {
+    draw(): Path {
         const parent = this.node.parent,
             level = this.node.getLevel(),
             width = 22 - (level < 5 ? level : 5) * 3,

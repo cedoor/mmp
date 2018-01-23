@@ -1,91 +1,82 @@
+/**
+ * A list of general useful functions
+ * @class
+ */
 export default class Utils {
 
     /**
-     * @name error
-     * @param {string} message - Error message.
-     * @desc Throw an Error with a message.
+     * Throw an Error with a message.
+     * @param {string} message
      */
-    static error(message) {
+    static error(message: string) {
         throw new Error(message);
     }
 
     /**
-     * @name cloneObject
-     * @param {Object} obj - The object to be cloned.
+     * Clone an object, in depth if specified.
+     * @param {Object} object
      * @param {boolean} deep
-     * @return {Object} obj - The copy of the object.
-     * @desc Clone an object, in depth if specified.
+     * @returns {Object}
      */
-    static cloneObject(obj, deep?) {
-        return deep ? JSON.parse(JSON.stringify(obj))
-            : (<any>Object).assign({}, obj);
+    static cloneObject(object: Object, deep?: boolean): Object {
+        return deep
+            ? JSON.parse(JSON.stringify(object))
+            : (<any>Object).assign({}, object);
     }
 
     /**
-     * @name clearObject
-     * @param {Object} obj - The object to be clear.
-     * @desc Clear an object.
+     * Clear an object.
+     * @param {Object} object
      */
-    static clearObject(obj) {
-        for (let p in obj) delete obj[p];
-    }
-
-    /**
-     * @name fromObjectToArray
-     * @param {Object} obj - The object to be converted.
-     * @desc Convert an Object to an array.
-     */
-    static fromObjectToArray(obj) {
-        let array = [];
-        for (let p in obj) array.push([p, obj[p]]);
-        return array;
-    }
-
-    /**
-     * @name fontStyle
-     * @param {boolean} b
-     * @desc Translate a boolean value in a font style value (italic/normal).
-     */
-    static fontStyle(b) {
-        return b ? "italic" : "normal";
-    }
-
-    /**
-     * @name fontWeight
-     * @param {boolean} b
-     * @desc Translate a boolean value in a font weight value (bold/normal).
-     */
-    static fontWeight(b) {
-        return b ? "bold" : "normal";
-    }
-
-    /**
-     * @name overwriteObject
-     * @param {Object} target
-     * @param {Object} source
-     * @desc Overwrite in depth an object with another Object.
-     */
-    static overwriteObject(target, source) {
-        for (let prop in target) {
-            let t = target[prop], s = source[prop];
-            if (s !== undefined && s.constructor === t.constructor) {
-                if (s.constructor === Object && !Array.isArray(s))
-                    this.overwriteObject(t, s);
-                else target[prop] = s;
-            }
+    static clearObject(object: Object) {
+        for (let property in object) {
+            delete object[property];
         }
     }
 
     /**
-     * @name focusWithCaretAtEnd
-     * @param {HTMLElement} el
-     * @desc Focus an element putting the cursor in the end.
+     * Convert an Object to an array.
+     * @param {Object} object
+     * @returns {Array}
      */
-    static focusWithCaretAtEnd(el) {
-        el.focus();
+    static fromObjectToArray(object: Object): Array<any> {
+        let array = [];
+
+        for (let p in object) {
+            array.push([p, object[p]]);
+        }
+
+        return array;
+    }
+
+    /**
+     * Translate a boolean value in a font style value (italic/normal).
+     * @param {boolean} flag
+     * @returns {string}
+     */
+    static fontStyle(flag: boolean): string {
+        return flag ? "italic" : "normal";
+    }
+
+    /**
+     * Translate a boolean value in a font weight value (bold/normal).
+     * @param {boolean} flag
+     * @returns {string}
+     */
+    static fontWeight(flag: boolean): string {
+        return flag ? "bold" : "normal";
+    }
+
+    /**
+     * Focus an element putting the cursor in the end.
+     * @param {HTMLElement} element
+     */
+    static focusWithCaretAtEnd(element: HTMLElement) {
         let range = document.createRange(),
             sel = window.getSelection();
-        range.selectNodeContents(el);
+
+        element.focus();
+        range.selectNodeContents(element);
         range.collapse(false);
         sel.removeAllRanges();
         sel.addRange(range);

@@ -1,16 +1,24 @@
 import Shape from "./shape";
+import {Path} from "d3-path";
 
+/**
+ * Represents the node shape. Extends the shape class.
+ */
 export default class NodeShape extends Shape {
 
+    /**
+     * Extends the shape class.
+     * @param node
+     */
     constructor(node) {
         super(node);
     }
 
     /**
-     * @name draw
-     * @desc Draw the background shape of the node.
+     * Draw the background shape of the node.
+     * @returns {Path}
      */
-    draw(): any {
+    draw(): Path {
         let text = this.node.getDOMText();
 
         this.node.dimensions.width = text.clientWidth + 45;
