@@ -1,16 +1,7 @@
 /**
- * A list of general useful functions
- * @class
+ * A list of general useful functions.
  */
 export default class Utils {
-
-    /**
-     * Throw an Error with a message.
-     * @param {string} message
-     */
-    static error(message: string) {
-        throw new Error(message);
-    }
 
     /**
      * Clone an object, in depth if specified.
@@ -43,7 +34,7 @@ export default class Utils {
         let array = [];
 
         for (let p in object) {
-            array.push([p, object[p]]);
+            array.push(object[p]);
         }
 
         return array;

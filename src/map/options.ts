@@ -1,15 +1,14 @@
-import {UserNodeProperties} from "./node";
+import {UserNodeProperties} from "./models/node";
 
 export default class Options implements OptionParameters {
 
-    fontFamily: string;
+    public fontFamily: string;
+    public centerOnResize: boolean;
+    public drag: boolean;
+    public zoom: boolean;
 
-    centerOnResize: boolean;
-    drag: boolean;
-    zoom: boolean;
-
-    node: UserNodeProperties;
-    rootNode: UserNodeProperties;
+    public node: UserNodeProperties;
+    public rootNode: UserNodeProperties;
 
     constructor(parameters: OptionParameters = {}) {
         this.fontFamily = parameters.fontFamily || "Arial, Helvetica, sans-serif";
@@ -19,11 +18,10 @@ export default class Options implements OptionParameters {
 
         // Default node properties
         this.node = parameters.node || {
-            // Variable values
             name: "Node",
-            dimensions: {
-                width: 0,
-                height: 0
+            coordinates: {
+                x: 0,
+                y: 0
             },
             image: {
                 src: "",
@@ -41,9 +39,9 @@ export default class Options implements OptionParameters {
         // Default root node properties
         this.rootNode = parameters.rootNode || {
             name: "Root node",
-            dimensions: {
-                width: 0,
-                height: 0
+            coordinates: {
+                x: 0,
+                y: 0
             },
             image: {
                 src: "",
@@ -51,6 +49,7 @@ export default class Options implements OptionParameters {
             },
             backgroundColor: "#f0f6f5",
             textColor: "#787878",
+            branchColor: "",
             fontSize: 20,
             italic: false,
             bold: false,

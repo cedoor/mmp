@@ -1,13 +1,14 @@
-import Utils from "../utils";
-import Map from "./map";
-import Node, {ExportNodeProperties, NodeProperties, UserNodeProperties} from "./node";
+import Map from "../map";
+import Node, {ExportNodeProperties, NodeProperties} from "../models/node";
+import {Event} from "./events";
+import Log, {ErrorMessage} from "../../utils/log";
 
 export default class History {
 
-    map: Map;
+    private map: Map;
 
-    index: number;
-    snapshots: MapSnapshot[];
+    private index: number;
+    private snapshots: MapSnapshot[];
 
     constructor(map: Map) {
         this.map = map;
@@ -22,7 +23,7 @@ export default class History {
      * @desc
      * Return last snapshot of the current map.
      */
-    data = (): MapSnapshot => {
+    public data = (): MapSnapshot => {
         return this.snapshots[this.index];
     };
 
@@ -30,25 +31,25 @@ export default class History {
      * Replace old map with a new one or create a new empty map.
      * @param {MapSnapshot} snapshot
      */
-    new = (snapshot?: MapSnapshot) => {
+    public new = (snapshot?: MapSnapshot) => {
         if (snapshot) {
             if (this.check(snapshot)) {
                 this.redraw(snapshot);
                 this.setCounter();
-                this.map.events.call("mmcreate");
-                this.map.selectedNode.deselect();
+                this.map.events.call(Event.create);
+                this.map.nodes.deselect(this.map.nodes.getSelectedNode());
                 this.map.zoom.center();
                 this.save();
             } else {
-                Utils.error("The snapshot is incorrect");
+                Log.error(ErrorMessage.incorrectSnapshot);
             }
         } else {
-            this.map.counter = 0;
+            this.map.nodes.setCounter(0);
             this.map.nodes.clear();
             this.map.draw.clear();
             this.map.draw.update();
-            this.map.events.call("mmcreate");
-            this.map.addRootNode();
+            this.map.events.call(Event.create);
+            this.map.nodes.addRoot();
             this.map.zoom.center();
             this.save();
         }
@@ -58,10 +59,10 @@ export default class History {
      * @name undo
      * @desc Undo last changes.
      */
-    undo = () => {
+    public undo = () => {
         if (this.index > 0) {
             this.redraw(this.snapshots[--this.index]);
-            this.map.events.call("mmundo");
+            this.map.events.call(Event.undo);
         }
     };
 
@@ -69,10 +70,10 @@ export default class History {
      * @name redo
      * @desc Redo one change which was undone.
      */
-    redo = () => {
+    public redo = () => {
         if (this.index < this.snapshots.length - 1) {
             this.redraw(this.snapshots[++this.index]);
-            this.map.events.call("mmundo");
+            this.map.events.call(Event.redo);
         }
     };
 
@@ -80,7 +81,7 @@ export default class History {
      * @name save
      * @desc Save the current snapshot of the mind map.
      */
-    save() {
+    public save() {
         if (this.index < this.snapshots.length - 1) {
             this.snapshots.splice(this.index + 1);
         }
@@ -92,30 +93,28 @@ export default class History {
      *
      * @param {MapSnapshot} snapshot
      */
-    redraw(snapshot: MapSnapshot) {
+    private redraw(snapshot: MapSnapshot) {
         this.map.nodes.clear();
 
-        snapshot.forEach((entry) => {
+        snapshot.forEach((property: ExportNodeProperties) => {
             let properties: NodeProperties = {
-                id: this.sanitizeNodeId(entry.value.id),
-                parent: this.map.nodes.get(this.sanitizeNodeId(entry.value.parent)),
-                k: entry.value.k
-            }, userProperties: UserNodeProperties = {
-                name: entry.value.name,
-                dimensions: entry.value.dimensions,
-                coordinates: entry.value.coordinates,
-                image: entry.value.image,
-                backgroundColor: entry.value.backgroundColor,
-                textColor: entry.value.textColor,
-                branchColor: entry.value.branchColor,
-                fontSize: entry.value.fontSize,
-                italic: entry.value.italic,
-                bold: entry.value.bold,
-                locked: entry.value.locked
+                id: this.sanitizeNodeId(property.id),
+                parent: this.map.nodes.getNode(this.sanitizeNodeId(property.parent)),
+                k: property.k,
+                name: property.name,
+                coordinates: property.coordinates,
+                image: property.image,
+                backgroundColor: property.backgroundColor,
+                textColor: property.textColor,
+                branchColor: property.branchColor,
+                fontSize: property.fontSize,
+                italic: property.italic,
+                bold: property.bold,
+                locked: property.locked
             };
 
-            let node: Node = new Node(properties, userProperties, this.map);
-            this.map.nodes.set(node.id, node);
+            let node: Node = new Node(properties);
+            this.map.nodes.setNode(node.id, node);
         });
 
         this.map.draw.clear();
@@ -123,15 +122,11 @@ export default class History {
     }
 
     /**
-     * @name cloneNodes
+     * Return a copy of all fundamental node properties.
      * @return {MapSnapshot} properties - Copy of all node properties.
-     * @desc Return a copy of all fundamental node properties.
      */
     private getSnapshot(): MapSnapshot {
-        return this.map.nodes.entries().map((entry) => {
-            let properties = entry.value.getProperties();
-            return {key: entry.key, value: properties};
-        });
+        return this.map.nodes.getNodes().map((node: Node) => node.getProperties());
     }
 
     /**
@@ -139,8 +134,8 @@ export default class History {
      * @desc Set the right value of global counter.
      */
     private setCounter() {
-        let keys = this.map.nodes.keys().map(key => parseInt(key.split("_")[2]));
-        this.map.counter = Math.max(...keys);
+        let id = this.map.nodes.getNodes().map((node: Node) => parseInt(node.id.split("_")[2]));
+        this.map.nodes.setCounter(Math.max(...id));
     }
 
     /**
@@ -151,7 +146,7 @@ export default class History {
      */
     private check(snapshot: MapSnapshot): boolean {
         return snapshot.constructor === Array &&
-            snapshot[0].key.split("_")[2] === "0" &&
+            snapshot[0].id.split("_")[2] === "0" &&
             this.checkProperties(snapshot);
     }
 
@@ -175,8 +170,8 @@ export default class History {
      */
     private checkProperties(snapshot: MapSnapshot) {
         for (let properties of snapshot) {
-            if (typeof properties.key !== "string" ||
-                properties.value.constructor !== Object)
+            if (typeof properties.id !== "string" ||
+                properties.constructor !== Object)
             // TODO, to improve
                 return false;
         }
@@ -185,5 +180,5 @@ export default class History {
 
 }
 
-export interface MapSnapshot extends Array<{ key: string, value: ExportNodeProperties }> {
+export interface MapSnapshot extends Array<ExportNodeProperties> {
 }
