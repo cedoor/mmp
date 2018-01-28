@@ -1,5 +1,8 @@
 import {UserNodeProperties} from "./models/node";
 
+/**
+ * Manage default map options.
+ */
 export default class Options implements OptionParameters {
 
     public fontFamily: string;
@@ -10,6 +13,10 @@ export default class Options implements OptionParameters {
     public node: UserNodeProperties;
     public rootNode: UserNodeProperties;
 
+    /**
+     * Initialize all options.
+     * @param {OptionParameters} parameters
+     */
     constructor(parameters: OptionParameters = {}) {
         this.fontFamily = parameters.fontFamily || "Arial, Helvetica, sans-serif";
         this.centerOnResize = parameters.centerOnResize || true;

@@ -4,7 +4,11 @@ import * as d3 from "d3";
 import {Map as D3Map} from "d3-collection";
 import {Event} from "./events";
 import Log, {ErrorMessage} from "../../utils/log";
+import Utils from "../../utils/utils";
 
+/**
+ * Manage the nodes of the map.
+ */
 export default class Nodes {
 
     private map: Map;
@@ -14,7 +18,7 @@ export default class Nodes {
     private selectedNode: Node;
 
     /**
-     * Get the associated map instance.
+     * Get the associated map instance and initialize counter and nodes.
      * @param {Map} map
      */
     constructor(map: Map) {
@@ -24,18 +28,17 @@ export default class Nodes {
         this.nodes = d3.map();
     }
 
-    public addRoot() {
-        let properties: NodeProperties = {
-            ...this.map.options.rootNode,
-            ...{
-                coordinates: {
-                    x: parseInt(this.map.dom.container.style("width")) / 2,
-                    y: parseInt(this.map.dom.container.style("height")) / 2
-                },
-                id: this.map.id + "_node_" + this.counter,
-                parent: null
-            }
-        };
+    /**
+     * Add the root node to the map.
+     */
+    public addRootNode() {
+        let properties: NodeProperties = Utils.mergeObjects(this.map.options.rootNode, {
+            coordinates: {
+                x: parseInt(this.map.dom.container.style("width")) / 2,
+                y: parseInt(this.map.dom.container.style("height")) / 2
+            },
+            id: this.map.id + "_node_" + this.counter
+        });
 
         let node: Node = new Node(properties);
 
@@ -47,33 +50,36 @@ export default class Nodes {
 
         this.map.history.save();
 
-        this.map.events.call(Event.nodeCreate, document.getElementById(properties.id), properties.id);
+        this.map.events.call(Event.nodeCreate, node.dom, node.id, node.getProperties());
 
-        this.deselect(node);
+        this.deselectNode(node);
     }
 
+    /**
+     * Add a node in the map.
+     * @param {UserNodeProperties} userProperties
+     */
     public addNode = (userProperties?: UserNodeProperties) => {
-        let properties: NodeProperties = {
-            ...{...this.map.options.node, ...userProperties},
-            ...{
+        let properties: NodeProperties = Utils.mergeObjects(
+            Utils.mergeObjects(this.map.options.node, userProperties),
+            {
                 id: this.map.id + "_node_" + this.counter,
                 parent: this.selectedNode
-            }
-        };
+            });
 
         let node: Node = new Node(properties);
 
-
-        node.coordinates = userProperties && userProperties.coordinates ? {
-            ...{
+        if (userProperties && userProperties.coordinates) {
+            node.coordinates = Utils.mergeObjects({
                 x: this.calculateXposition(node),
                 y: this.calculateYposition(node)
-            },
-            ...userProperties.coordinates
-        } : {
-            x: this.calculateXposition(node),
-            y: this.calculateYposition(node)
-        };
+            }, userProperties.coordinates);
+        } else {
+            node.coordinates = {
+                x: this.calculateXposition(node),
+                y: this.calculateYposition(node)
+            };
+        }
 
         this.nodes.set(properties.id, node);
 
@@ -83,15 +89,36 @@ export default class Nodes {
 
         this.map.history.save();
 
-        this.map.events.call(Event.nodeCreate, document.getElementById(properties.id), properties.id, properties);
+        this.map.events.call(Event.nodeCreate, node.dom, node.id, node.getProperties());
+
+        this.selectNode(node.id);
+        Utils.focusWithCaretAtEnd(node.getDOMText());
     };
 
+    /**
+     * Select a node or return the current selected node.
+     * @param {string} key
+     * @returns {ExportNodeProperties}
+     */
     public selectNode = (key?: string): ExportNodeProperties => {
         if (key) {
             if (this.nodes.has(key)) {
-                let node = this.nodes.get(key);
-                if (this.select(node)) {
-                    this.map.events.call(Event.nodeSelect, node.dom, key, node.getProperties());
+                let node = this.nodes.get(key),
+                    background = node.getDOMBackground();
+
+                if (!background.style.stroke) {
+                    if (this.selectedNode) {
+                        this.selectedNode.getDOMBackground().style.stroke = "";
+                    }
+
+                    let color = d3.color(background.style.fill).darker(.5);
+                    background.style.stroke = color.toString();
+
+                    Utils.removeAllRanges();
+
+                    this.selectedNode = node;
+
+                    this.map.events.call(Event.nodeSelect, node.dom, node.id, node.getProperties());
                 }
             } else {
                 Log.error(ErrorMessage.incorrectKey);
@@ -101,41 +128,28 @@ export default class Nodes {
         return this.selectedNode.getProperties();
     };
 
+    /**
+     *
+     * @param {Node} node
+     * @param {string} property
+     * @param value
+     */
     public updateNode = (node: Node = this.selectedNode, property: string, value: any) => {
         node[property] = value;
     };
 
     /**
      *
-     * @returns {boolean}
+     * @param {Node} node
      */
-    select(node: Node): boolean {
-        let selected = this.selectedNode,
-            background = node.getDOMBackground();
-
-        if (!background.style.stroke) {
-            if (selected) {
-                selected.getDOMBackground().style.stroke = "";
-            }
-            const color = d3.color(background.style.fill).darker(.5);
-            background.style.stroke = color.toString();
-            this.selectedNode = node;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     *
-     */
-    deselect(node: Node) {
+    deselectNode(node: Node) {
         node.getDOMBackground().style.stroke = "";
         this.selectedNode = this.nodes.get(this.map.id + "_node_0");
     }
 
     /**
      *
+     * @param {Node} node
      * @returns {Node[]}
      */
     public getChildren(node: Node): Node[] {
@@ -198,7 +212,21 @@ export default class Nodes {
      * @return {number}
      */
     public calculateYposition(node: Node): number {
-        return node.parent.coordinates.y - d3.randomUniform(60, 100)();
+        let siblings = this.getChildren(node.parent);
+
+        if (siblings.length > 0) {
+            let min = siblings[0].coordinates.y;
+
+            siblings.forEach((node: Node) => {
+                if (node.coordinates.y > min) {
+                    min = node.coordinates.y;
+                }
+            });
+
+            return min + (this.isRoot(node.parent) ? 30 : 60);
+        } else {
+            return node.parent.coordinates.y - 120;
+        }
     }
 
     /**

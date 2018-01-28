@@ -35,7 +35,7 @@ export default class Draw {
             .attr("pointer-events", "all")
             .on("click", () => {
                 // Deselect the selected node when click on the map background
-                this.map.nodes.deselect(this.map.nodes.getSelectedNode());
+                this.map.nodes.deselectNode(this.map.nodes.getSelectedNode());
             });
 
         this.map.dom.g = this.map.dom.svg.append("g");
@@ -145,7 +145,7 @@ export default class Draw {
         const parent = node.parent,
             path = d3.path(),
             level = node.getLevel(),
-            width = 22 - (level < 5 ? level : 5) * 3,
+            width = 22 - (level < 6 ? level : 6) * 3,
             mx = (parent.coordinates.x + node.coordinates.x) / 2,
             ory = parent.coordinates.y < node.coordinates.y + node.dimensions.height / 2 ? -1 : 1,
             orx = parent.coordinates.x > node.coordinates.x ? -1 : 1,

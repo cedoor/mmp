@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 
 /**
- *
+ * Model of the nodes.
  */
 export default class Node implements NodeProperties {
 
@@ -19,10 +19,10 @@ export default class Node implements NodeProperties {
     public italic: boolean;
     public bold: boolean;
     public locked: boolean;
-
     public dom: HTMLElement;
 
     /**
+     * Initialize the node properties, the dimensions and the k coefficient.
      * @param {NodeProperties} properties
      */
     constructor(properties: NodeProperties) {
@@ -47,11 +47,11 @@ export default class Node implements NodeProperties {
     }
 
     /**
-     *
+     * Return the level of the node.
      * @returns {number}
      */
     public getLevel(): number {
-        let level = 0, parent = this.parent;
+        let level = 1, parent = this.parent;
 
         while (parent) {
             level++;
@@ -61,14 +61,26 @@ export default class Node implements NodeProperties {
         return level;
     }
 
+    /**
+     * Return the dom of the text of the node.
+     * @returns {HTMLElement}
+     */
     public getDOMText(): HTMLElement {
         return <HTMLElement>this.dom.querySelector("div");
     }
 
+    /**
+     * Return the dom of the background of the node.
+     * @returns {HTMLElement}
+     */
     public getDOMBackground(): HTMLElement {
         return <HTMLElement>this.dom.childNodes[0];
     }
 
+    /**
+     * Return the export properties of the node.
+     * @returns {ExportNodeProperties}
+     */
     public getProperties(): ExportNodeProperties {
         return {
             id: this.id,

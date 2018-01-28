@@ -41,6 +41,26 @@ export default class Utils {
     }
 
     /**
+     * Merge two objects.
+     * @param {any} object1
+     * @param {any} object2
+     * @returns {any}
+     */
+    static mergeObjects(object1: any, object2: any): any {
+        return {
+            ...object1,
+            ...object2
+        };
+    }
+
+    /**
+     * Remove all ranges of window.
+     */
+    static removeAllRanges() {
+        window.getSelection().removeAllRanges();
+    }
+
+    /**
      * Translate a boolean value in a font style value (italic/normal).
      * @param {boolean} flag
      * @returns {string}

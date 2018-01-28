@@ -7,6 +7,9 @@ import History from "./handlers/history";
 import Drag from "./handlers/drag";
 import Nodes from "./handlers/nodes";
 
+/**
+ * Initialize all handlers and return a mmp object.
+ */
 export default class Map {
 
     public id: string;
@@ -23,9 +26,10 @@ export default class Map {
     private instance: MmpInstance;
 
     /**
-     * Set all parameters of the map.
-     * @param {string} id - Html id value of mind map container.
-     * @param {OptionParameters} options - Mind map options.
+     * Create all handler instances, set some map behaviors and return a mmp instance.
+     * @param {string} id
+     * @param {OptionParameters} options
+     * @returns {MmpInstance}
      */
     constructor(id: string, options?: OptionParameters) {
         this.id = id;
@@ -51,13 +55,13 @@ export default class Map {
             this.dom.svg.call(this.zoom.getZoomBehavior());
         }
 
-        this.nodes.addRoot();
+        this.nodes.addRootNode();
 
         return <any>this.createMmpInstance();
     }
 
     /**
-     *
+     * Remove permanently mmp instance.
      */
     private remove = () => {
         this.dom.svg.remove();
@@ -70,7 +74,7 @@ export default class Map {
 
     /**
      * Return a mmp instance with all mmp library functions.
-     * @return {MmpInstance} mmpInstance - A mmp instance.
+     * @return {MmpInstance} mmpInstance
      */
     private createMmpInstance(): MmpInstance {
         return this.instance = {
