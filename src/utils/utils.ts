@@ -1,6 +1,8 @@
 /**
  * A list of general useful functions.
  */
+import {type} from "os";
+
 export default class Utils {
 
     /**
@@ -47,10 +49,19 @@ export default class Utils {
      * @returns {any}
      */
     static mergeObjects(object1: any, object2: any): any {
-        return {
-            ...object1,
-            ...object2
-        };
+        for (let property in object2) {
+            let value = object2[property];
+
+            if ((typeof value !== "object" && !Array.isArray(value)) ||
+                (typeof object1[property] !== "object" && !Array.isArray(object1[property])) ||
+                !object1[property]) {
+                object1[property] = value;
+            } else {
+                object1[property] = Utils.mergeObjects(object1[property], value)
+            }
+        }
+
+        return object1;
     }
 
     /**

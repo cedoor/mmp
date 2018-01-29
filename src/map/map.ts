@@ -6,6 +6,7 @@ import Options, {OptionParameters} from "./options";
 import History from "./handlers/history";
 import Drag from "./handlers/drag";
 import Nodes from "./handlers/nodes";
+import Export from "./handlers/export";
 
 /**
  * Initialize all handlers and return a mmp object.
@@ -22,6 +23,7 @@ export default class Map {
     public draw: Draw;
     public drag: Drag;
     public nodes: Nodes;
+    public export: Export;
 
     private instance: MmpInstance;
 
@@ -42,6 +44,7 @@ export default class Map {
         this.drag = new Drag(this);
         this.draw = new Draw(this);
         this.nodes = new Nodes(this);
+        this.export = new Export(this);
 
         this.draw.create();
 
@@ -82,13 +85,16 @@ export default class Map {
             remove: this.remove,
             new: this.history.new,
             data: this.history.data,
+            getImage: this.export.getImage,
             undo: this.history.undo,
             redo: this.history.redo,
             zoomIn: this.zoom.zoomIn,
             zoomOut: this.zoom.zoomOut,
             center: this.zoom.center,
             addNode: this.nodes.addNode,
-            selectNode: this.nodes.selectNode
+            selectNode: this.nodes.selectNode,
+            updateNode: this.nodes.updateNode,
+            removeNode: this.nodes.removeNode
         };
     }
 
@@ -99,6 +105,7 @@ export interface MmpInstance {
     remove: Function;
     new: Function;
     data: Function;
+    getImage: Function;
     undo: Function;
     redo: Function;
     zoomIn: Function;
@@ -106,6 +113,8 @@ export interface MmpInstance {
     center: Function;
     addNode: Function;
     selectNode: Function;
+    updateNode: Function;
+    removeNode: Function;
 }
 
 export interface DomElements {

@@ -43,7 +43,7 @@ export default class Node implements NodeProperties {
             width: 0,
             height: 0
         };
-        this.k = d3.randomUniform(-20, 20)();
+        this.k = properties.k || d3.randomUniform(-20, 20)();
     }
 
     /**
@@ -75,6 +75,14 @@ export default class Node implements NodeProperties {
      */
     public getDOMBackground(): HTMLElement {
         return <HTMLElement>this.dom.childNodes[0];
+    }
+
+    /**
+     * Return the dom of the image of the node.
+     * @returns {HTMLElement}
+     */
+    public getDOMImage(): HTMLElement {
+        return <HTMLElement>this.dom.childNodes[2];
     }
 
     /**

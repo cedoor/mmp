@@ -52,7 +52,7 @@ export default class Nodes {
 
         this.map.events.call(Event.nodeCreate, node.dom, node.id, node.getProperties());
 
-        this.deselectNode(node);
+        this.deselectNode();
     }
 
     /**
@@ -60,12 +60,10 @@ export default class Nodes {
      * @param {UserNodeProperties} userProperties
      */
     public addNode = (userProperties?: UserNodeProperties) => {
-        let properties: NodeProperties = Utils.mergeObjects(
-            Utils.mergeObjects(this.map.options.node, userProperties),
-            {
-                id: this.map.id + "_node_" + this.counter,
-                parent: this.selectedNode
-            });
+        let properties: NodeProperties = Utils.mergeObjects(this.map.options.node, userProperties);
+
+        properties.id = this.map.id + "_node_" + this.counter;
+        properties.parent = this.selectedNode;
 
         let node: Node = new Node(properties);
 
@@ -130,22 +128,70 @@ export default class Nodes {
 
     /**
      *
-     * @param {Node} node
-     * @param {string} property
-     * @param value
      */
-    public updateNode = (node: Node = this.selectedNode, property: string, value: any) => {
-        node[property] = value;
+    public deselectNode() {
+        if (this.selectedNode) {
+            this.selectedNode.getDOMBackground().style.stroke = "";
+        }
+        this.selectedNode = this.nodes.get(this.map.id + "_node_0");
+    }
+
+    /**
+     * Update the properties of the selected node.
+     * @param {string} property
+     * @param {any} value
+     * @param {boolean} visual
+     */
+    public updateNode = (property: string, value: any, visual?: boolean) => {
+        let properties = {
+                name: this.updateNodeName,
+                locked: this.updateNodeLockedStatus,
+                backgroundColor: this.updateNodeBackgroundColor,
+                branchColor: this.updateNodeBranchColor,
+                textColor: this.updateNodeTextColor,
+                imageSrc: this.updateNodeImageSrc,
+                imageSize: this.updateNodeImageSize,
+                fontSize: this.updateNodeFontSize,
+                italic: this.updateNodeItalicFont,
+                bold: this.updateNodeBoldFont
+            },
+            func = properties[property];
+
+        if (func !== undefined) {
+            if (func(this.selectedNode, value, visual) !== false) {
+                if (!visual) {
+                    this.map.history.save();
+                    this.map.events.call(Event.nodeUpdate, this.selectedNode.dom, this.selectedNode.id, this.selectedNode.getProperties(), property);
+                }
+            }
+        } else {
+            Log.error(ErrorMessage.incorrectUpdateProperty);
+        }
     };
 
     /**
-     *
-     * @param {Node} node
+     * Remove the selected node.
      */
-    deselectNode(node: Node) {
-        node.getDOMBackground().style.stroke = "";
-        this.selectedNode = this.nodes.get(this.map.id + "_node_0");
-    }
+    public removeNode = () => {
+        if (!this.isRoot(this.selectedNode)) {
+            this.nodes.remove(this.selectedNode.id);
+
+            this.getDescendants(this.selectedNode).forEach((node: Node) => {
+                this.nodes.remove(node.id);
+            });
+
+            this.deselectNode();
+
+            this.map.draw.clear();
+            this.map.draw.update();
+
+            this.map.history.save();
+
+            this.map.events.call(Event.nodeRemove, null, this.selectedNode.id);
+        } else {
+            Log.error(ErrorMessage.rootNodeDeletion);
+        }
+    };
 
     /**
      *
@@ -274,5 +320,201 @@ export default class Nodes {
     public clear() {
         this.nodes.clear();
     }
+
+    /**
+     * Update the node name with a new value.
+     * @param {Node} node
+     * @param value
+     * @param {boolean} visual
+     * @returns {boolean}
+     */
+    private updateNodeName = (node: Node, value: any, visual?: boolean) => {
+        if (node.name != value || visual) {
+            node.getDOMText().innerHTML = value;
+
+            this.map.draw.updateNodeShapes(node);
+
+            if (!visual) {
+                node.name = value;
+            }
+        } else {
+            return false;
+        }
+    };
+
+    /**
+     * Update the node background color with a new value.
+     * @param {Node} node
+     * @param value
+     * @param {boolean} visual
+     * @returns {boolean}
+     */
+    private updateNodeBackgroundColor = (node: Node, value: any, visual?: boolean) => {
+        if (node.backgroundColor !== value || visual) {
+            let background = node.getDOMBackground();
+
+            background.style["fill"] = value;
+
+            if (background.style["stroke"] !== "") {
+                background.style["stroke"] = d3.color(value).darker(.5).toString();
+            }
+
+            if (!visual) {
+                node.backgroundColor = value;
+            }
+        } else {
+            return false;
+        }
+    };
+
+    /**
+     * Update the node text color with a new value.
+     * @param {Node} node
+     * @param value
+     * @param {boolean} visual
+     * @returns {boolean}
+     */
+    private updateNodeTextColor = (node: Node, value: any, visual?: boolean) => {
+        if (node.textColor !== value || visual) {
+            node.getDOMText().style["color"] = value;
+
+            if (!visual) {
+                node.textColor = value;
+            }
+        } else {
+            return false;
+        }
+    };
+
+    /**
+     * Update the node branch color with a new value.
+     * @param {Node} node
+     * @param value
+     * @param {boolean} visual
+     * @returns {boolean}
+     */
+    private updateNodeBranchColor = (node: Node, value: any, visual?: boolean) => {
+        if (!this.isRoot(node)) {
+            if (node.branchColor !== value || visual) {
+                let branch = document.getElementById(node.id + "_branch");
+
+                branch.style["fill"] = branch.style["stroke"] = value;
+
+                if (!visual) {
+                    node.branchColor = value;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            Log.error(ErrorMessage.rootNodeBranches);
+        }
+    };
+
+    /**
+     * Update the node font size with a new value.
+     * @param {Node} node
+     * @param value
+     * @param {boolean} visual
+     * @returns {boolean}
+     */
+    private updateNodeFontSize = (node: Node, value: any, visual?: boolean) => {
+        if (node.fontSize != value || visual) {
+            node.getDOMText().style["font-size"] = value + "px";
+
+            this.map.draw.updateNodeShapes(node);
+
+            if (node.image.src !== "") {
+                let image = node.getDOMImage(),
+                    y = -((<any>image).getBBox().height + node.dimensions.height / 2 + 5);
+                image.setAttribute("y", y.toString());
+            }
+
+            if (!visual) {
+                node.fontSize = value;
+            }
+        } else {
+            return false;
+        }
+    };
+
+    /**
+     * Update the node image size with a new value.
+     * @param {Node} node
+     * @param value
+     * @param {boolean} visual
+     * @returns {boolean}
+     */
+    private updateNodeImageSize = (node: Node, value: any, visual?: boolean) => {
+        if (node.image.src !== "") {
+            if (node.image.size != value || visual) {
+                let image = node.getDOMImage(),
+                    box = (<any>image).getBBox(),
+                    height = parseInt(value),
+                    width = box.width * height / box.height,
+                    y = -(height + node.dimensions.height / 2 + 5),
+                    x = -width / 2;
+
+                image.setAttribute("height", height.toString());
+                image.setAttribute("y", y.toString());
+                image.setAttribute("x", x.toString());
+
+                if (!visual) {
+                    node.image.size = height;
+                }
+            } else {
+                return false;
+            }
+        } else Log.error(ErrorMessage.nodeEmptyImage);
+    };
+
+    /**
+     * Update the node image src with a new value.
+     * @param {Node} node
+     * @param value
+     * @returns {boolean}
+     */
+    private updateNodeImageSrc = (node: Node, value: any) => {
+        if (node.image.src !== value) {
+            node.image.src = value;
+
+            this.map.draw.setImage(node);
+        } else {
+            return false;
+        }
+    };
+
+    /**
+     * Update the node font style.
+     * @param {Node} node
+     * @returns {boolean}
+     */
+    private updateNodeItalicFont = (node: Node) => {
+        node.getDOMText().style["font-style"] = Utils.fontStyle(node.italic = !node.italic);
+    };
+
+    /**
+     * Update the node font wight.
+     * @param {Node} node
+     * @returns {boolean}
+     */
+    private updateNodeBoldFont = (node: Node) => {
+        node.getDOMText().style["font-weight"] = Utils.fontWeight(node.bold = !node.bold);
+
+        this.map.draw.updateNodeShapes(node);
+    };
+
+    /**
+     * Update the node locked status.
+     * @param {Node} node
+     * @returns {boolean}
+     */
+    private updateNodeLockedStatus = (node: Node) => {
+        if (!this.isRoot(node)) {
+            node.locked = !node.locked;
+        } else {
+            Log.error(ErrorMessage.rootNodeLocking);
+        }
+    };
 
 }

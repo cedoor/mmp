@@ -35,7 +35,7 @@ export default class Draw {
             .attr("pointer-events", "all")
             .on("click", () => {
                 // Deselect the selected node when click on the map background
-                this.map.nodes.deselectNode(this.map.nodes.getSelectedNode());
+                this.map.nodes.deselectNode();
             });
 
         this.map.dom.g = this.map.dom.svg.append("g");
@@ -87,8 +87,8 @@ export default class Draw {
             .style("stroke-width", 3)
             .attr("d", (node: Node) => this.drawNodeBackground(node));
 
-        outer.each(function (node: Node) {
-            // node.setImage(d3.select(this), node);
+        outer.each((node: Node) => {
+            this.setImage(node);
         });
 
         dom.branches.enter().insert("path", "g")
@@ -168,6 +168,59 @@ export default class Draw {
     }
 
     /**
+     * Update the node HTML elements.
+     * @param {Node} node
+     */
+    public updateNodeShapes(node: Node) {
+        let text = node.getDOMText(),
+            background = node.getDOMBackground();
+
+        d3.selectAll(".branch").attr("d", (node: Node) => <any>this.drawBranch(node));
+        d3.select(background).attr("d", (node: Node) => <any>this.drawNodeBackground(node));
+
+        d3.select(<HTMLElement>text.parentNode)
+            .attr("x", -text.clientWidth / 2)
+            .attr("y", -text.clientHeight / 2)
+            .attr("width", text.clientWidth)
+            .attr("height", text.clientHeight);
+    }
+
+    /**
+     * Set main properties of image in the node and create it if it does not exist.
+     * @param {Node} node
+     */
+    public setImage(node: Node) {
+        let dom = d3.select(node.dom),
+            image = dom.select("image");
+
+        if (image.empty()) {
+            image = dom.append("image");
+        }
+
+        if (node.image.src !== "") {
+            let i = new Image();
+
+            i.src = node.image.src;
+
+            i.onload = function () {
+                let h = node.image.size,
+                    w = (<any>this).width * h / (<any>this).height;
+
+                image.attr("href", node.image.src).attr("height", h)
+                    .attr("y", -(h + node.dimensions.height / 2 + 5))
+                    .attr("x", -w / 2);
+            };
+
+            i.onerror = function () {
+                image.remove();
+                node.image.src = "";
+            };
+        } else {
+            image.remove();
+        }
+    }
+
+    /**
      * Set the node text.
      * @param {Node} node
      */
@@ -178,29 +231,11 @@ export default class Draw {
             this.updateNodeShapes(node);
         };
 
-        text.onblur = function () {
+        text.onblur = () => {
             if (text.innerHTML !== node.name) {
-                // node.update("name", name.innerHTML);
+                this.map.nodes.updateNode("name", text.innerHTML);
             }
         };
-
-        d3.select(<HTMLElement>text.parentNode)
-            .attr("x", -text.clientWidth / 2)
-            .attr("y", -text.clientHeight / 2)
-            .attr("width", text.clientWidth)
-            .attr("height", text.clientHeight);
-    }
-
-    /**
-     * Update the node HTML elements.
-     * @param {Node} node
-     */
-    private updateNodeShapes(node: Node) {
-        let text = node.getDOMText(),
-            background = node.getDOMBackground();
-
-        d3.selectAll(".branch").attr("d", (node: Node) => <any>this.drawBranch(node));
-        d3.select(background).attr("d", (node: Node) => <any>this.drawNodeBackground(node));
 
         d3.select(<HTMLElement>text.parentNode)
             .attr("x", -text.clientWidth / 2)

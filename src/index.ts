@@ -1,6 +1,6 @@
 import {OptionParameters} from "./map/options";
 import * as pkg from "../package.json";
-import Map, {MmpInstance} from "./map/map";
+import Map from "./map/map";
 
 /**
  * The version of the library

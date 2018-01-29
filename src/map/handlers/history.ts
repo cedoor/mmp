@@ -37,7 +37,6 @@ export default class History {
                 this.redraw(snapshot);
                 this.setCounter();
                 this.map.events.call(Event.create);
-                this.map.nodes.deselectNode(this.map.nodes.getSelectedNode());
                 this.map.zoom.center();
                 this.save();
             } else {
@@ -119,6 +118,7 @@ export default class History {
 
         this.map.draw.clear();
         this.map.draw.update();
+        this.map.nodes.deselectNode();
     }
 
     /**

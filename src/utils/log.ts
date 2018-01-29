@@ -32,5 +32,11 @@ export default class Log {
 export enum ErrorMessage {
     incorrectEvent = "The event does not exist",
     incorrectKey = "The key does not exist in this map",
-    incorrectSnapshot = "The snapshot is not correct"
+    incorrectSnapshot = "The snapshot is not correct",
+    incorrectUpdateProperty = "The property does not exist",
+    rootNodeDeletion = "The root node can not be deleted",
+    imageExportLoading = "The image has not been loaded correctly",
+    rootNodeBranches = "The root node has no branches",
+    rootNodeLocking = "The root node can not be locked",
+    nodeEmptyImage = "The node does not have an image"
 }
