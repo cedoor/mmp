@@ -207,6 +207,7 @@ export default class Draw {
                     w = (<any>this).width * h / (<any>this).height;
 
                 image.attr("href", node.image.src).attr("height", h)
+                    .attr("href", node.image.src).attr("width", w)
                     .attr("y", -(h + node.dimensions.height / 2 + 5))
                     .attr("x", -w / 2);
             };

@@ -456,6 +456,7 @@ export default class Nodes {
                     x = -width / 2;
 
                 image.setAttribute("height", height.toString());
+                image.setAttribute("width", width.toString());
                 image.setAttribute("y", y.toString());
                 image.setAttribute("x", x.toString());
 
