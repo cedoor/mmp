@@ -49,19 +49,21 @@ export default class Utils {
      * @returns {any}
      */
     static mergeObjects(object1: any, object2: any): any {
+        let result = (<any>Object).assign({}, object1);
+
         for (let property in object2) {
             let value = object2[property];
 
             if ((typeof value !== "object" && !Array.isArray(value)) ||
-                (typeof object1[property] !== "object" && !Array.isArray(object1[property])) ||
-                !object1[property]) {
-                object1[property] = value;
+                (typeof result[property] !== "object" && !Array.isArray(result[property])) ||
+                !result[property]) {
+                result[property] = value;
             } else {
-                object1[property] = Utils.mergeObjects(object1[property], value)
+                result[property] = Utils.mergeObjects(result[property], value)
             }
         }
 
-        return object1;
+        return result;
     }
 
     /**
