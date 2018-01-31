@@ -5,72 +5,109 @@
     <meta charset="UTF-8">
     <title>Mmp</title>
     <meta name="description" content="JavaScript UMD module to create mind maps">
-    <link rel="shortcut icon" type="image/png" href="example/img/favicon.png"/>
-    <!--<link href="./node_modules/mocha/mocha.css" rel="stylesheet">-->
+    <link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/Mindmapp/mindmapp/master/src/assets/icon/png/16x16.png"/>
+    <link href="./node_modules/mocha/mocha.css" rel="stylesheet">
     <link href="example/layout.css" rel="stylesheet">
 </head>
 <body>
 <div id="sidebar">
-    <!--<div id="mocha"></div>-->
-    <div id="commands">
-        <input
-                id="font-size" type="range" name="font-size" min="10" max="50"
-                oninput="myMap1.node.update('font-size', value, true)"
-                onchange="myMap1.node.update('font-size', value)">
-        <br>
-        <input
-                id="image-size" type="range" name="image-size" min="50" max="200"
-                oninput="myMap1.node.update('image-size', value, true)"
-                onchange="myMap1.node.update('image-size', value)">
-        <br>
-        <input id="background-color" type="color" name="background-color"
-               onchange="myMap1.node.update('background-color', value)">
-        <input id="branch-color" type="color" name="branch-color"
-               onchange="myMap1.node.update('branch-color', value)">
-        <input id="text-color" type="color" name="text-color"
-               onchange="myMap1.node.update('text-color', value)">
-        <br>
-        <img onclick="myMap1.node.update('fixed')" src="example/img/material-icons/fixed.svg">
-        <img onclick="myMap1.node.update('bold')" src="example/img/material-icons/bold.svg">
-        <img onclick="myMap1.node.update('italic')" src="example/img/material-icons/italic.svg">
-        <img id="image-src" src="example/img/material-icons/node-img.svg">
-        <br>
-        <img id="save-img" src="example/img/material-icons/img.svg">
-        <img onclick="getElementById('upload-map').click()" src="example/img/material-icons/upload.svg">
-        <input style="display:none" type="file" id="upload-map" accept=".json">
-        <img id="save-map" src="example/img/material-icons/save.svg">
-        <br>
-        <img onclick="myMap1.undo()" src="example/img/material-icons/undo.svg">
-        <img onclick="myMap1.redo()" src="example/img/material-icons/repeat.svg">
-        <img onclick="myMap1.addNode()" src="example/img/material-icons/add.svg">
-        <img onclick="myMap1.node.remove()" src="example/img/material-icons/remove.svg">
-        <br>
-        <img onclick="myMap1.zoomIn()" src="example/img/material-icons/zoomin.svg">
-        <img onclick="myMap1.zoomOut()" src="example/img/material-icons/zoomout.svg">
-        <img onclick="myMap1.center()" src="example/img/material-icons/center.svg">
-        <img onclick="myMap1.new()" src="example/img/material-icons/new.svg">
+    <div id="mocha"></div>
+</div>
+
+<div id="maps">
+    <div id="map1">
+        <div class="commands">
+            <div class="buttons">
+                <img onclick="map.addNode()" src="example/img/material-icons/add.svg">
+                <img onclick="map.removeNode()" src="example/img/material-icons/remove.svg">
+                <img onclick="map.zoomIn()" src="example/img/material-icons/zoomin.svg">
+                <img onclick="map.zoomOut()" src="example/img/material-icons/zoomout.svg">
+                <img onclick="map.center()" src="example/img/material-icons/center.svg">
+                <img onclick="map.new()" src="example/img/material-icons/new.svg">
+                <img onclick="map.updateNode('locked')" src="example/img/material-icons/fixed.svg">
+                <img onclick="map.updateNode('bold')" src="example/img/material-icons/bold.svg">
+                <img onclick="map.updateNode('italic')" src="example/img/material-icons/italic.svg">
+                <img class="image-src" src="example/img/material-icons/node-img.svg">
+                <img class="save-img" src="example/img/material-icons/img.svg">
+                <img onclick="getElementById('upload-map').click()" src="example/img/material-icons/upload.svg">
+                <input style="display:none" type="file" class="upload-map" accept=".json">
+                <img class="save-map" src="example/img/material-icons/save.svg">
+                <img onclick="map.undo()" src="example/img/material-icons/undo.svg">
+                <img onclick="map.redo()" src="example/img/material-icons/repeat.svg">
+            </div>
+            <div class="ranges">
+                <input
+                        class="font-size" type="range" name="font-size" min="10" max="50"
+                        oninput="map.updateNode('fontSize', value, true)"
+                        onchange="map.updateNode('fontSize', value)">
+                <input
+                        class="image-size" type="range" name="image-size" min="50" max="200"
+                        oninput="map.updateNode('imageSize', value, true)"
+                        onchange="map.updateNode('imageSize', value)">
+            </div>
+            <div class="colors">
+                <input class="background-color" type="color" name="background-color"
+                       onchange="map.updateNode('backgroundColor', value)">
+                <input class="branch-color" type="color" name="branch-color"
+                       onchange="map.updateNode('branchColor', value)">
+                <input class="text-color" type="color" name="text-color"
+                       onchange="map.updateNode('textColor', value)">
+            </div>
+        </div>
+        <div id="mmp1"></div>
+    </div>
+    <div id="map2">
+        <div class="commands">
+            <div class="buttons">
+                <img onclick="testMap.addNode()" src="example/img/material-icons/add.svg">
+                <img onclick="testMap.removeNode()" src="example/img/material-icons/remove.svg">
+                <img onclick="testMap.zoomIn()" src="example/img/material-icons/zoomin.svg">
+                <img onclick="testMap.zoomOut()" src="example/img/material-icons/zoomout.svg">
+                <img onclick="testMap.center()" src="example/img/material-icons/center.svg">
+                <img onclick="testMap.new()" src="example/img/material-icons/new.svg">
+                <img onclick="testMap.updateNode('locked')" src="example/img/material-icons/fixed.svg">
+                <img onclick="testMap.updateNode('bold')" src="example/img/material-icons/bold.svg">
+                <img onclick="testMap.updateNode('italic')" src="example/img/material-icons/italic.svg">
+                <img class="image-src" src="example/img/material-icons/node-img.svg">
+                <img class="save-img" src="example/img/material-icons/img.svg">
+                <img onclick="getElementById('upload-map').click()" src="example/img/material-icons/upload.svg">
+                <input style="display:none" type="file" class="upload-map" accept=".json">
+                <img class="save-map" src="example/img/material-icons/save.svg">
+                <img onclick="testMap.undo()" src="example/img/material-icons/undo.svg">
+                <img onclick="testMap.redo()" src="example/img/material-icons/repeat.svg">
+            </div>
+            <div class="ranges">
+                <input
+                        class="font-size" type="range" name="font-size" min="10" max="50"
+                        oninput="testMap.updateNode('fontSize', value, true)"
+                        onchange="testMap.updateNode('fontSize', value)">
+                <input
+                        class="image-size" type="range" name="image-size" min="50" max="200"
+                        oninput="testMap.updateNode('imageSize', value, true)"
+                        onchange="testMap.updateNode('imageSize', value)">
+            </div>
+            <div class="colors">
+                <input class="background-color" type="color" name="background-color"
+                       onchange="testMap.updateNode('backgroundColor', value)">
+                <input class="branch-color" type="color" name="branch-color"
+                       onchange="testMap.updateNode('branchColor', value)">
+                <input class="text-color" type="color" name="text-color"
+                       onchange="testMap.updateNode('textColor', value)">
+            </div>
+        </div>
+        <div id="mmp2"></div>
     </div>
 </div>
 
-
-<div id="mmp">
-    <div id="mmp1"></div>
-    <div id="mmp2"></div>
-</div>
-
-<!--<script src="./node_modules/mocha/mocha.js"></script>-->
-<!--<script src="./node_modules/chai/chai.js"></script>-->
+<script src="./node_modules/mocha/mocha.js"></script>
+<script src="./node_modules/chai/chai.js"></script>
 <script src="./node_modules/d3/build/d3.min.js"></script>
 <script src="./build/mmp.js"></script>
+<script src="./example/app.js"></script>
 
-<script>
-    let myMap1 = mmp.create("mmp1");
-    let myMap2 = mmp.create("mmp2");
-</script>
-
-<!--<script>mocha.setup("bdd")</script>-->
-<!--<script src="./tests/tests.js"></script>-->
-<!--<script>mocha.run()</script>-->
+<script>mocha.setup("bdd")</script>
+<script src="./example/tests.js"></script>
+<script>mocha.run()</script>
 
 </body>
 </html>

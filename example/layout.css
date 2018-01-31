@@ -1,4 +1,4 @@
-html, body, #mmp, #sidebar {
+html, body, #maps, #mmp1, #mmp2, #sidebar {
     height: 100%;
 }
 
@@ -12,16 +12,27 @@ body {
     outline: none;
 }
 
-#mmp {
-    margin-left: 502px;
+#maps {
+    margin-left: 352px;
 }
 
-#mmp1, #mmp2 {
+#map1, #map2 {
+    position: relative;
     height: 50%;
 }
 
-#mmp1 {
-    border-bottom: 1px solid #dddddd;
+#map1 {
+    border-bottom: 1px solid #CFCFCF;
+}
+
+#sidebar {
+    position: relative;
+    float: left;
+    width: 350px;
+    background-color: #f7f7f7;
+    border-right: 1px solid #CFCFCF;
+    color: #505050;
+    overflow-y: auto;
 }
 
 #mocha {
@@ -32,71 +43,46 @@ body {
     font-size: 24px;
 }
 
-#mocha-report ul>li.suite {
+#mocha-report ul > li.suite {
     margin-top: 15px;
 }
 
-#mocha-report .test>h2>a.replay {
+#mocha-report .test > h2 > a.replay {
     display: none;
 }
 
-#sidebar {
-    position: relative;
-    float: left;
-    width: 500px;
-    background-color: #f7f7f7;
-    border: 1px solid #dddddd;
-    color: #505050;
-    overflow-y: auto;
-}
-
-#commands {
-    z-index: 1;
-    position: fixed;
-    padding: 10px;
-    border: 1px solid #CFCFCF;
+.commands > .buttons {
+    position: absolute;
+    z-index: 2;
+    padding: 5px 8px 2px 8px;
+    border-bottom: 1px solid #CFCFCF;
+    border-right: 1px solid #CFCFCF;
     background-color: #FDFDFD;
-    border-radius: 10px;
-    left: 510px;
-    top: 8px;
-    text-align: center;
-}
-
-#commands>* {
-    margin-bottom: 10px;
-}
-
-#commands>img:hover {
-    background-color: #eeeeee;
-}
-
-#commands>img {
-    padding: 3px;
     cursor: pointer;
-    margin-right: 5px;
-    margin-top: 2px;
+    left: 0;
+    top: 0;
 }
 
-#commands>input[type='color'] {
-    background-color: transparent;
-    border: 0;
-    cursor: pointer;
+.commands > .buttons > img:hover {
+    background-color: #e5e5e5;
 }
 
-#node-name, #font-size, #image-size {
-    width: 180px;
-    margin-left: 0;
-    margin-right: 0;
+.commands > .ranges,
+.commands > .colors {
+    z-index: 2;
+    position: absolute;
+    left: 15px;
 }
 
-#node-name {
-    text-align: center;
-    border: 1px solid #bababa;
-    font-size: 16px;
-    color: #606060;
-    padding: 5px 0;
+.commands > .colors {
+    bottom: 45px;
 }
 
-#node-name:focus {
-    background-color: #f1f7f0;
+.commands > .colors > input {
+    display: block;
+    margin-top: 8px;
+}
+
+.commands > .ranges {
+    bottom: 8px;
 }
