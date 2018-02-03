@@ -175,8 +175,8 @@ export default class Draw {
         let text = node.getDOMText(),
             background = node.getDOMBackground();
 
-        d3.selectAll(".branch").attr("d", (node: Node) => <any>this.drawBranch(node));
         d3.select(background).attr("d", (node: Node) => <any>this.drawNodeBackground(node));
+        d3.selectAll("." + this.map.id + "_branch").attr("d", (node: Node) => <any>this.drawBranch(node));
 
         d3.select(<HTMLElement>text.parentNode)
             .attr("x", -text.clientWidth / 2)
