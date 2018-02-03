@@ -50,7 +50,7 @@ export default class Nodes {
 
         this.map.history.save();
 
-        this.map.events.call(Event.nodeCreate, node.dom, node.id, node.getProperties());
+        this.map.events.call(Event.nodeCreate, node.dom, node.getProperties());
 
         this.deselectNode();
     }
@@ -87,7 +87,7 @@ export default class Nodes {
 
         this.map.history.save();
 
-        this.map.events.call(Event.nodeCreate, node.dom, node.id, node.getProperties());
+        this.map.events.call(Event.nodeCreate, node.dom, node.getProperties());
 
         this.selectNode(node.id);
         Utils.focusWithCaretAtEnd(node.getDOMText());
@@ -116,7 +116,7 @@ export default class Nodes {
 
                     this.selectedNode = node;
 
-                    this.map.events.call(Event.nodeSelect, node.dom, node.id, node.getProperties());
+                    this.map.events.call(Event.nodeSelect, node.dom, node.getProperties());
                 }
             } else {
                 Log.error(ErrorMessage.incorrectKey);
@@ -139,10 +139,10 @@ export default class Nodes {
     /**
      * Update the properties of the selected node.
      * @param {string} property
-     * @param {any} value
+     * @param {object} value
      * @param {boolean} visual
      */
-    public updateNode = (property: string, value: any, visual?: boolean) => {
+    public updateNode = (property: string, value: object, visual?: boolean) => {
         let properties = {
                 name: this.updateNodeName,
                 locked: this.updateNodeLockedStatus,
@@ -161,7 +161,7 @@ export default class Nodes {
             if (func(this.selectedNode, value, visual) !== false) {
                 if (!visual) {
                     this.map.history.save();
-                    this.map.events.call(Event.nodeUpdate, this.selectedNode.dom, this.selectedNode.id, this.selectedNode.getProperties(), property);
+                    this.map.events.call(Event.nodeUpdate, this.selectedNode.dom, this.selectedNode.getProperties());
                 }
             }
         } else {
@@ -187,7 +187,7 @@ export default class Nodes {
 
             this.map.history.save();
 
-            this.map.events.call(Event.nodeRemove, null, this.selectedNode.id);
+            this.map.events.call(Event.nodeRemove, null, this.selectedNode.getProperties());
         } else {
             Log.error(ErrorMessage.rootNodeDeletion);
         }
