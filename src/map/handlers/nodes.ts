@@ -104,7 +104,7 @@ export default class Nodes {
                 let node = this.nodes.get(key),
                     background = node.getDOMBackground();
 
-                if (!background.style.stroke) {
+                if (this.selectedNode.id !== node.id) {
                     if (this.selectedNode) {
                         this.selectedNode.getDOMBackground().style.stroke = "";
                     }
@@ -113,6 +113,7 @@ export default class Nodes {
                     background.style.stroke = color.toString();
 
                     Utils.removeAllRanges();
+                    this.selectedNode.getDOMText().blur();
 
                     this.selectedNode = node;
 
@@ -129,20 +130,20 @@ export default class Nodes {
     /**
      *
      */
-    public deselectNode() {
+    public deselectNode = () => {
         if (this.selectedNode) {
             this.selectedNode.getDOMBackground().style.stroke = "";
         }
         this.selectedNode = this.nodes.get(this.map.id + "_node_0");
-    }
+    };
 
     /**
      * Update the properties of the selected node.
      * @param {string} property
-     * @param {object} value
+     * @param value
      * @param {boolean} visual
      */
-    public updateNode = (property: string, value: object, visual?: boolean) => {
+    public updateNode = (property: string, value: any, visual?: boolean) => {
         let properties = {
                 name: this.updateNodeName,
                 locked: this.updateNodeLockedStatus,
