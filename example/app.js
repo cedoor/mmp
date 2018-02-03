@@ -1,100 +1,145 @@
-var
-// Dom elements
-fontSize = document.getElementById('font-size'),
-imageSize = document.getElementById('image-size'),
-imageSrc = document.getElementById('image-src'),
-saveMap = document.getElementById('save-map'),
-saveImg = document.getElementById('save-img'),
-uploadMap = document.getElementById('upload-map'),
-backgroundColor = document.getElementById('background-color'),
-branchColor = document.getElementById('branch-color'),
-textColor = document.getElementById('text-color'),
-// js console styles
-message = function( msg, style, arg ) {
-    var styles = [
-        'color: #406536; font-weight: bold; font-size: 14px',
-        'color: #2f5226; font-size: 14px',
-    ];
-    if ( arg ) console.log( '%c' + msg, styles[style], arg )
-    else console.log( '%c' + msg, styles[style] )
-};
+// Mind maps
+let map = mmp.create("mmp1"),
+    testMap = mmp.create("mmp2"),
+    // Dom elements
+    dom = {
+        fontSize: document.getElementsByClassName("font-size"),
+        imageSize: document.getElementsByClassName("image-size"),
+        imageSrc: document.getElementsByClassName("image-src"),
+        downloadMap: document.getElementsByClassName("download-map"),
+        downloadImage: document.getElementsByClassName("download-image"),
+        uploadMap: document.getElementsByClassName("upload-map"),
+        backgroundColor: document.getElementsByClassName("background-color"),
+        branchColor: document.getElementsByClassName("branch-color"),
+        textColor: document.getElementsByClassName("text-color")
+    };
 
-// Save the map as json file
-saveMap.onclick = function() {
-    var data = mmp.data(),
-        json = JSON.stringify( data ),
-        blob = new Blob([ json ], { type: "application/json" }),
-        a = document.createElement('a');
+// Console messages
+function message(message, argument) {
+    console.log("%c" + message, "color: #2f5226; font-size: 14px", argument);
+}
+
+// Download the json of the map
+function downloadMap(map) {
+    let data = map.data(),
+        json = JSON.stringify(data),
+        blob = new Blob([json], {type: "application/json"}),
+        a = document.createElement("a");
+
     a.download = "example.json";
-    a.href = URL.createObjectURL( blob );
+    a.href = URL.createObjectURL(blob);
     a.click();
 }
 
-// Load a map from external json file
-uploadMap.onchange = function( e ) {
-    var reader = new FileReader();
-    reader.readAsText( e.target.files[0] );
-    reader.onload = function( e ) {
-        var data = JSON.parse( event.target.result );
-        mmp.data( data );
+// Upload a mmp json to map
+function uploadMap(map, e) {
+    let reader = new FileReader();
+
+    reader.readAsText(e.target.files[0]);
+
+    reader.onload = function () {
+        let data = JSON.parse(event.target.result);
+        map.new(data);
     };
 }
 
 // Save the image of the map
-saveImg.onclick = function() {
-    mmp.image( function( url ) {
-        var a = document.createElement('a');
-        a.download = 'example';
+function downloadImage(map) {
+    map.getImage(function (url) {
+        let a = document.createElement("a");
+        a.download = "example";
         a.href = url;
         a.click();
-    }, 'jpeg');
+    }, "jpeg");
 }
 
-// Load a node image with local links
-imageSrc.onclick = function() {
-    var src = mmp.node.select().value['image-src'];
-    if ( src === '' ) {
-        var v = prompt("Please enter your name", "logo.png");
-        mmp.node.update('image-src', 'img/' + v );
-    } else mmp.node.update('image-src', '');
+// Insert an image in the selected node
+function insertImage(map) {
+    let src = map.selectNode().imageSrc;
+
+    if (src === "") {
+        let v = prompt("Please enter your name", "logo.png");
+        map.updateNode("imageSrc", "img/" + v);
+    } else {
+        map.updateNode("imageSrc", "");
+    }
 }
 
-// mmp events
+// Update the values of map controls
+function updateValues(node, map) {
+    dom.fontSize[map].value = node.fontSize;
+    dom.imageSize[map].value = node.image.size;
+    dom.backgroundColor[map].value = node.backgroundColor;
+    dom.branchColor[map].value = node.branchColor || "#ffffff";
+    dom.textColor[map].value = node.textColor;
+}
 
-mmp.on('mmcreate', function() {
-    message('\n§ Mind map created', 0, this );
+// Initialize values of map controls
+updateValues(map.selectNode(), 0);
+
+// Map events
+dom.downloadMap[0].onclick = function () {
+    downloadMap(map);
+};
+
+dom.downloadMap[1].onclick = function () {
+    downloadMap(testMap);
+};
+
+dom.uploadMap[0].onclick = function (event) {
+    uploadMap(map, event);
+};
+
+dom.uploadMap[1].onclick = function (event) {
+    uploadMap(testMap, event);
+};
+
+dom.downloadImage[0].onclick = function () {
+    downloadImage(map);
+};
+
+dom.downloadImage[1].onclick = function () {
+    downloadImage(testMap);
+};
+
+dom.imageSrc[0].onclick = function () {
+    insertImage(map);
+};
+
+dom.imageSrc[1].onclick = function () {
+    insertImage(testMap);
+};
+
+map.on("create", function () {
+    message("\n§ map.new()");
 });
 
-mmp.on('mmcenter', function() {
-    message('§ mmp.center()', 1 );
+map.on("center", function () {
+    message("§ map.center()");
 });
 
-mmp.on('mmundo', function() {
-    message('§ mmp.undo()', 1 );
+map.on("undo", function () {
+    message("§ map.undo()");
 });
 
-mmp.on('mmrepeat', function() {
-    message('§ mmp.repeat()', 1 );
+map.on("redo", function () {
+    message("§ map.redo()");
 });
 
-mmp.on('nodeselect',  function( key, value ) {
-    fontSize.value = value['font-size'];
-    imageSize.value = value['image-size'];
-    backgroundColor.value = value['background-color'];
-    branchColor.value = value['branch-color'] || '#ffffff';
-    textColor.value = value['text-color'];
-    message('§ mmp.node.select( '+ key +' )', 1, this );
+map.on("nodeSelect", function (node) {
+    updateValues(node, 0);
+
+    message("§ map.selectNode", node.id);
 });
 
-mmp.on('nodeupdate', function( key, value, property ) {
-    var newValue = property === 'position' ?  value.x + ", " + value.y : value[ property ];
-    message('§ mmp.node.update( '+ property +', '+ newValue +' )', 1, this );
+map.on("nodeUpdate", function (node) {
+    message("§ map.updateNode", node.id);
 });
 
-mmp.on('nodecreate', function( key, value ) {
-    message('§ mmp.node.add()', 1, this );
+map.on("nodeCreate", function (node) {
+    message("§ map.addNode", node.id);
 });
 
-mmp.on('noderemove', function( key, value ) {
-    message('§ mmp.node.remove()', 1, key );
+map.on("nodeRemove", function (node) {
+    message("§ map.removeNode", node.id);
 });

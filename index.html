@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <title>Mmp</title>
     <meta name="description" content="JavaScript UMD module to create mind maps">
-    <link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/Mindmapp/mindmapp/master/src/assets/icon/png/16x16.png"/>
+    <link rel="shortcut icon" type="image/png"
+          href="https://raw.githubusercontent.com/Mindmapp/mindmapp/master/src/assets/icon/png/16x16.png"/>
     <link href="./node_modules/mocha/mocha.css" rel="stylesheet">
     <link href="example/layout.css" rel="stylesheet">
 </head>
@@ -28,10 +29,10 @@
                 <img onclick="map.updateNode('bold')" src="example/img/material-icons/bold.svg">
                 <img onclick="map.updateNode('italic')" src="example/img/material-icons/italic.svg">
                 <img class="image-src" src="example/img/material-icons/node-img.svg">
-                <img class="save-img" src="example/img/material-icons/img.svg">
-                <img onclick="getElementById('upload-map').click()" src="example/img/material-icons/upload.svg">
+                <img class="download-image" src="example/img/material-icons/img.svg">
+                <img onclick="dom.uploadMap[0].click()" src="example/img/material-icons/upload.svg">
                 <input style="display:none" type="file" class="upload-map" accept=".json">
-                <img class="save-map" src="example/img/material-icons/save.svg">
+                <img class="download-map" src="example/img/material-icons/save.svg">
                 <img onclick="map.undo()" src="example/img/material-icons/undo.svg">
                 <img onclick="map.redo()" src="example/img/material-icons/repeat.svg">
             </div>
@@ -69,10 +70,10 @@
                 <img onclick="testMap.updateNode('bold')" src="example/img/material-icons/bold.svg">
                 <img onclick="testMap.updateNode('italic')" src="example/img/material-icons/italic.svg">
                 <img class="image-src" src="example/img/material-icons/node-img.svg">
-                <img class="save-img" src="example/img/material-icons/img.svg">
-                <img onclick="getElementById('upload-map').click()" src="example/img/material-icons/upload.svg">
+                <img class="download-image" src="example/img/material-icons/img.svg">
+                <img onclick="dom.uploadMap[1].click()" src="example/img/material-icons/upload.svg">
                 <input style="display:none" type="file" class="upload-map" accept=".json">
-                <img class="save-map" src="example/img/material-icons/save.svg">
+                <img class="download-map" src="example/img/material-icons/save.svg">
                 <img onclick="testMap.undo()" src="example/img/material-icons/undo.svg">
                 <img onclick="testMap.redo()" src="example/img/material-icons/repeat.svg">
             </div>
@@ -105,9 +106,9 @@
 <script src="./build/mmp.js"></script>
 <script src="./example/app.js"></script>
 
-<script>mocha.setup("bdd")</script>
+<script>mocha.setup("bdd");</script>
 <script src="./example/tests.js"></script>
-<script>mocha.run()</script>
+<script>mocha.run();</script>
 
 </body>
 </html>
