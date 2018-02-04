@@ -15,8 +15,8 @@ let map = mmp.create("mmp1"),
     };
 
 // Console messages
-function message(message, argument) {
-    console.log("%c" + message, "color: #2f5226; font-size: 14px", argument);
+function message(message, ...arguments) {
+    console.log("%c" + message, "color: #2f5226; font-size: 14px", ...arguments);
 }
 
 // Download the json of the map
@@ -33,7 +33,7 @@ function downloadMap(map) {
 
 // Upload a mmp json to map
 function uploadMap(map, e) {
-    let reader = new FileReader();
+    let reader = new window.FileReader();
 
     reader.readAsText(e.target.files[0]);
 
@@ -55,11 +55,14 @@ function downloadImage(map) {
 
 // Insert an image in the selected node
 function insertImage(map) {
-    let src = map.selectNode().imageSrc;
+    let src = map.selectNode().image.src;
 
     if (src === "") {
-        let v = prompt("Please enter your name", "logo.png");
-        map.updateNode("imageSrc", "img/" + v);
+        let value = prompt("Please enter your name", "example/img/material-icons/add.svg");
+
+        if (value) {
+            map.updateNode("imageSrc", value);
+        }
     } else {
         map.updateNode("imageSrc", "");
     }
@@ -86,11 +89,11 @@ dom.downloadMap[1].onclick = function () {
     downloadMap(testMap);
 };
 
-dom.uploadMap[0].onclick = function (event) {
+dom.uploadMap[0].onchange = function (event) {
     uploadMap(map, event);
 };
 
-dom.uploadMap[1].onclick = function (event) {
+dom.uploadMap[1].onchange = function (event) {
     uploadMap(testMap, event);
 };
 
@@ -111,7 +114,7 @@ dom.imageSrc[1].onclick = function () {
 };
 
 map.on("create", function () {
-    message("\n§ map.new()");
+    message("§ map.new()");
 });
 
 map.on("center", function () {
