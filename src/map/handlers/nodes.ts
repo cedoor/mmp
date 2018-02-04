@@ -104,7 +104,7 @@ export default class Nodes {
                 let node = this.nodes.get(key),
                     background = node.getDOMBackground();
 
-                if (this.selectedNode.id !== node.id) {
+                if (!background.style.stroke) {
                     if (this.selectedNode) {
                         this.selectedNode.getDOMBackground().style.stroke = "";
                     }
