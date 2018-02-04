@@ -29,8 +29,8 @@ export default class Drag {
     }
 
     /**
-     *
-     * @returns {any}
+     * Return the d3 drag behavior
+     * @returns dragBehavior
      */
     public getDragBehavior(): any {
         return this.dragBehavior;

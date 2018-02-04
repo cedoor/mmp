@@ -90,7 +90,7 @@ export default class Nodes {
         this.map.events.call(Event.nodeCreate, node.dom, node.getProperties());
 
         this.selectNode(node.id);
-        Utils.focusWithCaretAtEnd(node.getDOMText());
+        Utils.focusWithCaretAtEnd(node.getNameDOM());
     };
 
     /**
@@ -102,18 +102,18 @@ export default class Nodes {
         if (key) {
             if (this.nodes.has(key)) {
                 let node = this.nodes.get(key),
-                    background = node.getDOMBackground();
+                    background = node.getBackgroundDOM();
 
                 if (!background.style.stroke) {
                     if (this.selectedNode) {
-                        this.selectedNode.getDOMBackground().style.stroke = "";
+                        this.selectedNode.getBackgroundDOM().style.stroke = "";
                     }
 
                     let color = d3.color(background.style.fill).darker(.5);
                     background.style.stroke = color.toString();
 
                     Utils.removeAllRanges();
-                    this.selectedNode.getDOMText().blur();
+                    this.selectedNode.getNameDOM().blur();
 
                     this.selectedNode = node;
 
@@ -132,7 +132,7 @@ export default class Nodes {
      */
     public deselectNode = () => {
         if (this.selectedNode) {
-            this.selectedNode.getDOMBackground().style.stroke = "";
+            this.selectedNode.getBackgroundDOM().style.stroke = "";
         }
         this.selectedNode = this.nodes.get(this.map.id + "_node_0");
     };
@@ -331,7 +331,7 @@ export default class Nodes {
      */
     private updateNodeName = (node: Node, value: any, visual?: boolean) => {
         if (node.name != value || visual) {
-            node.getDOMText().innerHTML = value;
+            node.getNameDOM().innerHTML = value;
 
             this.map.draw.updateNodeShapes(node);
 
@@ -352,7 +352,7 @@ export default class Nodes {
      */
     private updateNodeBackgroundColor = (node: Node, value: any, visual?: boolean) => {
         if (node.backgroundColor !== value || visual) {
-            let background = node.getDOMBackground();
+            let background = node.getBackgroundDOM();
 
             background.style["fill"] = value;
 
@@ -377,7 +377,7 @@ export default class Nodes {
      */
     private updateNodeTextColor = (node: Node, value: any, visual?: boolean) => {
         if (node.textColor !== value || visual) {
-            node.getDOMText().style["color"] = value;
+            node.getNameDOM().style["color"] = value;
 
             if (!visual) {
                 node.textColor = value;
@@ -421,12 +421,12 @@ export default class Nodes {
      */
     private updateNodeFontSize = (node: Node, value: any, visual?: boolean) => {
         if (node.fontSize != value || visual) {
-            node.getDOMText().style["font-size"] = value + "px";
+            node.getNameDOM().style["font-size"] = value + "px";
 
             this.map.draw.updateNodeShapes(node);
 
             if (node.image.src !== "") {
-                let image = node.getDOMImage(),
+                let image = node.getImageDOM(),
                     y = -((<any>image).getBBox().height + node.dimensions.height / 2 + 5);
                 image.setAttribute("y", y.toString());
             }
@@ -449,7 +449,7 @@ export default class Nodes {
     private updateNodeImageSize = (node: Node, value: any, visual?: boolean) => {
         if (node.image.src !== "") {
             if (node.image.size != value || visual) {
-                let image = node.getDOMImage(),
+                let image = node.getImageDOM(),
                     box = (<any>image).getBBox(),
                     height = parseInt(value),
                     width = box.width * height / box.height,
@@ -492,7 +492,7 @@ export default class Nodes {
      * @returns {boolean}
      */
     private updateNodeItalicFont = (node: Node) => {
-        node.getDOMText().style["font-style"] = Utils.fontStyle(node.italic = !node.italic);
+        node.getNameDOM().style["font-style"] = Utils.fontStyle(node.italic = !node.italic);
     };
 
     /**
@@ -501,7 +501,7 @@ export default class Nodes {
      * @returns {boolean}
      */
     private updateNodeBoldFont = (node: Node) => {
-        node.getDOMText().style["font-weight"] = Utils.fontWeight(node.bold = !node.bold);
+        node.getNameDOM().style["font-weight"] = Utils.fontWeight(node.bold = !node.bold);
 
         this.map.draw.updateNodeShapes(node);
     };

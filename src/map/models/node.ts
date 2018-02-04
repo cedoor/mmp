@@ -19,7 +19,7 @@ export default class Node implements NodeProperties {
     public italic: boolean;
     public bold: boolean;
     public locked: boolean;
-    public dom: HTMLElement;
+    public dom: SVGGElement;
 
     /**
      * Initialize the node properties, the dimensions and the k coefficient.
@@ -48,7 +48,7 @@ export default class Node implements NodeProperties {
 
     /**
      * Return the level of the node.
-     * @returns {number}
+     * @returns {number} level
      */
     public getLevel(): number {
         let level = 1, parent = this.parent;
@@ -62,32 +62,32 @@ export default class Node implements NodeProperties {
     }
 
     /**
-     * Return the dom of the text of the node.
-     * @returns {HTMLElement}
+     * Return the div element of the node name.
+     * @returns {HTMLDivElement} div
      */
-    public getDOMText(): HTMLElement {
-        return <HTMLElement>this.dom.querySelector("div");
+    public getNameDOM(): HTMLDivElement {
+        return this.dom.querySelector("foreignObject > div");
     }
 
     /**
-     * Return the dom of the background of the node.
-     * @returns {HTMLElement}
+     * Return the SVG path of the node background.
+     * @returns {SVGPathElement} path
      */
-    public getDOMBackground(): HTMLElement {
-        return <HTMLElement>this.dom.childNodes[0];
+    public getBackgroundDOM(): SVGPathElement {
+        return this.dom.querySelector("path");
     }
 
     /**
-     * Return the dom of the image of the node.
-     * @returns {HTMLElement}
+     * Return the SVG image of the node image.
+     * @returns {SVGImageElement} image
      */
-    public getDOMImage(): HTMLElement {
-        return <HTMLElement>this.dom.childNodes[2];
+    public getImageDOM(): SVGImageElement {
+        return this.dom.querySelector("image");
     }
 
     /**
      * Return the export properties of the node.
-     * @returns {ExportNodeProperties}
+     * @returns {ExportNodeProperties} properties
      */
     public getProperties(): ExportNodeProperties {
         return {

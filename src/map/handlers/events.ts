@@ -1,43 +1,44 @@
-import {Dispatch} from "d3-dispatch";
 import {dispatch} from "d3";
+import {Dispatch} from "d3-dispatch";
 import Utils from "../../utils/utils";
 import Log, {ErrorMessage} from "../../utils/log";
 
 /**
- * Manage the events of mmp
+ * Manage the events of the map.
  */
 export default class Events {
 
     private dispatcher: Dispatch<any>;
 
     /**
-     * Initialize the events
+     * Initialize the events.
      */
     constructor() {
         let events = Utils.fromObjectToArray(Event);
+
         this.dispatcher = dispatch(...events);
     }
 
     /**
-     * Invoke each registered callback for the specified event ( d3 function ).
+     * Call all registered callbacks for specified map event.
      * @param {Event} event
-     * @param {Object} parameters
+     * @param parameters
      */
     public call(event: Event, ...parameters) {
         return this.dispatcher.call(event, ...parameters);
     }
 
     /**
-     * Adds, removes or gets the callback for the specified event ( d3 function ).
+     * Add a callback for specific map event.
      * @param {string} event
      * @param {Function} callback
      */
-    public on = (event: string, callback) => {
-        if (Event[event]) {
-            return this.dispatcher.on(Event[event], callback);
-        } else {
-            Log.error(ErrorMessage.incorrectEvent)
+    public on = (event: string, callback: Function) => {
+        if (!Event[event]) {
+            Log.error(ErrorMessage.incorrectEvent);
         }
+
+        this.dispatcher.on(Event[event], <any>callback);
     };
 
 }

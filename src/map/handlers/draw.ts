@@ -23,14 +23,19 @@ export default class Draw {
      * Create svg and main css map properties.
      */
     public create() {
-        this.map.dom.container = d3.select("#" + this.map.id).style("position", "relative");
+        this.map.dom.container = d3.select("#" + this.map.id)
+            .style("position", "relative");
 
-        this.map.dom.svg = this.map.dom.container.append("svg").style("position", "absolute")
-            .style("width", "100%").style("height", "100%")
-            .style("top", 0).style("left", 0);
+        this.map.dom.svg = this.map.dom.container.append("svg")
+            .style("position", "absolute")
+            .style("width", "100%")
+            .style("height", "100%")
+            .style("top", 0)
+            .style("left", 0);
 
         this.map.dom.svg.append("rect")
-            .attr("width", "100%").attr("height", "100%")
+            .attr("width", "100%")
+            .attr("height", "100%")
             .attr("fill", "white")
             .attr("pointer-events", "all")
             .on("click", () => {
@@ -49,47 +54,43 @@ export default class Draw {
             dom = {
                 nodes: this.map.dom.g.selectAll("." + this.map.id + "_node").data(nodes),
                 branches: this.map.dom.g.selectAll(".branch").data(nodes.slice(1))
-            },
-            outer = dom.nodes.enter().append("g")
-                .style("cursor", "pointer")
-                .attr("class", this.map.id + "_node")
-                .attr("id", function (node: Node) {
-                    node.dom = this;
-                    return node.id;
-                })
-                .attr("transform", (node: Node) => "translate(" + node.coordinates.x + "," + node.coordinates.y + ")")
-                .on("dblclick", (node: Node) => {
-                    d3.event.stopPropagation();
-                    Utils.focusWithCaretAtEnd(node.getDOMText());
-                });
+            };
+
+        let outer = dom.nodes.enter().append("g")
+            .style("cursor", "pointer")
+            .attr("class", this.map.id + "_node")
+            .attr("id", function (node: Node) {
+                node.dom = this;
+                return node.id;
+            })
+            .attr("transform", (node: Node) => "translate(" + node.coordinates.x + "," + node.coordinates.y + ")")
+            .on("dblclick", (node: Node) => {
+                d3.event.stopPropagation();
+                Utils.focusWithCaretAtEnd(node.getNameDOM());
+            });
 
         if (this.map.options.drag === true) {
             outer.call(this.map.drag.getDragBehavior());
         }
 
+        // Set text of the node
         outer.insert("foreignObject")
-            .html((node: Node) => `<div style="
-            font-size: ${node.fontSize}px;
-            display: inline-block;
-            white-space: nowrap;
-            color: ${node.textColor};
-            font-style: ${Utils.fontStyle(node.italic)};
-            font-weight: ${Utils.fontWeight(node.bold)};
-            font-family: ${this.map.options.fontFamily};
-            text-align: center;
-        " contenteditable spellcheck="false">${node.name}</div>`)
+            .html((node: Node) => this.createNodeNameDOM(node))
             .each((node: Node) => {
                 this.setNodeName(node);
             });
 
+        // Set background of the node
         outer.insert("path", "foreignObject")
             .style("fill", (node: Node) => node.backgroundColor)
             .style("stroke-width", 3)
             .attr("d", (node: Node) => this.drawNodeBackground(node));
 
+        // Set image of the node
         outer.each((node: Node) => {
             this.setImage(node);
         });
+
 
         dom.branches.enter().insert("path", "g")
             .style("fill", (node: Node) => node.branchColor)
@@ -103,8 +104,7 @@ export default class Draw {
     }
 
     /**
-     * @name clear
-     * @desc Remove all nodes and branches of the map.
+     * Remove all nodes and branches of the map.
      */
     public clear() {
         d3.selectAll("." + this.map.id + "_node, ." + this.map.id + "_branch").remove();
@@ -113,16 +113,16 @@ export default class Draw {
     /**
      * Draw the background shape of the node.
      * @param {Node} node
-     * @returns {Path}
+     * @returns {Path} path
      */
     public drawNodeBackground(node: Node): Path {
-        let text = node.getDOMText(),
+        let text = node.getNameDOM(),
             path = d3.path();
 
-        node.dimensions.width = text.clientWidth + 45;
-        node.dimensions.height = text.clientHeight + 30;
+        node.dimensions.width = text.clientWidth + 50;
+        node.dimensions.height = text.clientHeight + 35;
 
-        const x = node.dimensions.width / 2,
+        let x = node.dimensions.width / 2,
             y = node.dimensions.height / 2,
             k = node.k;
 
@@ -139,10 +139,10 @@ export default class Draw {
     /**
      * Draw the branch of the node.
      * @param {Node} node
-     * @returns {Path}
+     * @returns {Path} path
      */
     public drawBranch(node: Node): Path {
-        const parent = node.parent,
+        let parent = node.parent,
             path = d3.path(),
             level = node.getLevel(),
             width = 22 - (level < 6 ? level : 6) * 3,
@@ -172,52 +172,51 @@ export default class Draw {
      * @param {Node} node
      */
     public updateNodeShapes(node: Node) {
-        let text = node.getDOMText(),
-            background = node.getDOMBackground();
+        let text = node.getNameDOM(),
+            background = node.getBackgroundDOM();
 
         d3.select(background).attr("d", (node: Node) => <any>this.drawNodeBackground(node));
         d3.selectAll("." + this.map.id + "_branch").attr("d", (node: Node) => <any>this.drawBranch(node));
 
-        d3.select(<HTMLElement>text.parentNode)
-            .attr("x", -text.clientWidth / 2)
-            .attr("y", -text.clientHeight / 2)
-            .attr("width", text.clientWidth)
-            .attr("height", text.clientHeight);
+        this.updateForeignObject(text);
     }
 
     /**
-     * Set main properties of image in the node and create it if it does not exist.
+     * Set main properties of node image and create it if it does not exist.
      * @param {Node} node
      */
     public setImage(node: Node) {
-        let dom = d3.select(node.dom),
-            image = dom.select("image");
+        let domImage = node.getImageDOM();
 
-        if (image.empty()) {
-            image = dom.append("image");
+        if (!domImage) {
+            domImage = document.createElementNS("http://www.w3.org/2000/svg", "image");
+            node.dom.appendChild(domImage);
         }
 
         if (node.image.src !== "") {
-            let i = new Image();
+            let image = new Image();
 
-            i.src = node.image.src;
+            image.src = node.image.src;
 
-            i.onload = function () {
+            image.onload = function () {
                 let h = node.image.size,
-                    w = (<any>this).width * h / (<any>this).height;
+                    w = (<any>this).width * h / (<any>this).height,
+                    y = -(h + node.dimensions.height / 2 + 5),
+                    x = -w / 2;
 
-                image.attr("href", node.image.src).attr("height", h)
-                    .attr("href", node.image.src).attr("width", w)
-                    .attr("y", -(h + node.dimensions.height / 2 + 5))
-                    .attr("x", -w / 2);
+                domImage.setAttribute("href", node.image.src);
+                domImage.setAttribute("height", h.toString());
+                domImage.setAttribute("width", w.toString());
+                domImage.setAttribute("y", y.toString());
+                domImage.setAttribute("x", x.toString());
             };
 
-            i.onerror = function () {
-                image.remove();
+            image.onerror = function () {
+                domImage.remove();
                 node.image.src = "";
             };
         } else {
-            image.remove();
+            domImage.remove();
         }
     }
 
@@ -226,7 +225,7 @@ export default class Draw {
      * @param {Node} node
      */
     private setNodeName(node: Node) {
-        let text = node.getDOMText();
+        let text = node.getNameDOM();
 
         text.oninput = () => {
             this.updateNodeShapes(node);
@@ -238,11 +237,45 @@ export default class Draw {
             }
         };
 
-        d3.select(<HTMLElement>text.parentNode)
-            .attr("x", -text.clientWidth / 2)
-            .attr("y", -text.clientHeight / 2)
-            .attr("width", text.clientWidth)
-            .attr("height", text.clientHeight);
+        this.updateForeignObject(text);
+    }
+
+    /**
+     * Update node foreign object dimensions.
+     * @param {HTMLDivElement} text
+     */
+    private updateForeignObject(text: HTMLDivElement) {
+        let foreignObject: SVGForeignObjectElement = <SVGForeignObjectElement>text.parentNode;
+
+        foreignObject.setAttribute("x", (-text.clientWidth / 2).toString());
+        foreignObject.setAttribute("y", (-text.clientHeight / 2).toString());
+        foreignObject.setAttribute("width", text.clientWidth.toString());
+        foreignObject.setAttribute("height", text.clientHeight.toString());
+    }
+
+    /**
+     * Create a string with HTML of the node name div.
+     * @param {Node} node
+     * @returns {string} html
+     */
+    private createNodeNameDOM(node: Node) {
+        let element = document.createElement("div");
+
+        element.style.setProperty("font-size", node.fontSize.toString() + "px");
+        element.style.setProperty("display", "inline-block");
+        element.style.setProperty("white-space", "nowrap");
+        element.style.setProperty("color", node.textColor);
+        element.style.setProperty("font-style", Utils.fontStyle(node.italic));
+        element.style.setProperty("font-weight", Utils.fontWeight(node.bold));
+        element.style.setProperty("font-family", this.map.options.fontFamily);
+        element.style.setProperty("text-align", "center");
+
+        element.setAttribute("contenteditable", "true");
+        element.setAttribute("spellcheck", "false");
+
+        element.innerHTML = node.name;
+
+        return element.outerHTML;
     }
 
 }

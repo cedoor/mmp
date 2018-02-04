@@ -31,7 +31,7 @@ export default class Map {
      * Create all handler instances, set some map behaviors and return a mmp instance.
      * @param {string} id
      * @param {OptionParameters} options
-     * @returns {MmpInstance}
+     * @returns {MmpInstance} mmpInstance
      */
     constructor(id: string, options?: OptionParameters) {
         this.id = id;
