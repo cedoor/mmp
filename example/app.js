@@ -135,6 +135,10 @@ map.on("nodeSelect", function (node) {
     message("§ map.selectNode", node.id);
 });
 
+testMap.on("nodeSelect", function (node) {
+    updateValues(node, 1);
+});
+
 map.on("nodeUpdate", function (node) {
     message("§ map.updateNode", node.id);
 });

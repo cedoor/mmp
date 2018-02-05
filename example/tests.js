@@ -1,222 +1,168 @@
 describe("Tests", function () {
 
-    var should = chai.should(),
-        expect = chai.expect
+    chai.should();
 
     describe("", function () {
 
-        describe("§ mmp.init()", function () {
-            it("Should initialize the mind map without errors", function () {
-                var init = function () {
-                    mmp.init("mmp")
-                }
-                init
-                    .should.to.not.throw(Error)
-            })
-            it("Should exist the svg node in the DOM", function () {
-                var svg = document.getElementsByTagName("svg")
-                svg.length
-                    .should.not.to.equal(0)
-            })
-            it("Should exist the root node in the DOM", function () {
-                var node = document.getElementById("node0")
-                expect(node).to.exist
-            })
-        })
-
-        describe("§ mmp.remove()", function () {
-            it("Should remove the mind map without errors", function () {
-                mmp.remove()
-            })
-            it("Should not exist the svg node in the DOM", function () {
-                var svg = document.getElementsByTagName("svg")
-                svg.length
-                    .should.to.equal(0)
-            })
-            it("Should not exist the root node in the DOM", function () {
-                var node = document.getElementById("node0")
-                expect(node).to.not.exist
-            })
-        })
-
-    })
-
-    describe("", function () {
-
-        before(function () {
-            mmp.init("mmp")
-        })
-
-        describe("§ mmp.new()", function () {
+        describe("§ testMap.new()", function () {
             it("Should create a new mind map without errors", function () {
-                mmp.new
-                    .should.to.not.throw(Error)
-            })
+                testMap.new.should.to.not.throw(Error);
+            });
+
             it("Should exist the svg node in the DOM", function () {
-                var svg = document.getElementsByTagName("svg")
-                svg.length
-                    .should.not.to.equal(0)
-            })
+                let svg = document.querySelector("#mmp2 > svg");
+                svg.should.to.not.be.null;
+            });
+
             it("Should exist the root node in the DOM", function () {
-                var node = document.getElementById("node0")
-                expect(node).to.exist
-            })
-        })
+                let node = document.getElementById("mmp2_node_0");
+                node.should.to.exist;
+            });
+        });
 
-        describe("§ mmp.zoomIn()", function () {
+        describe("§ testMap.zoomIn()", function () {
             it("Should zoom-in the mind map without errors", function () {
-                mmp.zoomOut
-                    .should.to.not.throw(Error)
-            })
-        })
+                testMap.zoomOut.should.to.not.throw(Error);
+            });
+        });
 
-        describe("§ mmp.zoomOut()", function () {
+        describe("§ testMap.zoomOut()", function () {
             it("Should zoom-out the mind map without errors", function () {
-                mmp.zoomIn
-                    .should.to.not.throw(Error)
-            })
-        })
+                testMap.zoomIn.should.to.not.throw(Error);
+            });
+        });
 
-        describe("§ mmp.center()", function () {
+        describe("§ testMap.center()", function () {
             it("Should center the mind map without errors", function () {
-                mmp.center
-                    .should.to.not.throw(Error)
-            })
-        })
+                testMap.center.should.to.not.throw(Error);
+            });
+        });
 
-        describe("§ mmp.undo()", function () {
+        describe("§ testMap.undo()", function () {
             it("Should undo the mind map without errors", function () {
-                mmp.undo
-                    .should.to.not.throw(Error)
-            })
-        })
+                testMap.undo.should.to.not.throw(Error);
+            });
+        });
 
-        describe("§ mmp.repeat()", function () {
+        describe("§ testMap.redo()", function () {
             it("Should repeat the mind map without errors", function () {
-                mmp.repeat
-                    .should.to.not.throw(Error)
-            })
-        })
+                testMap.redo.should.to.not.throw(Error);
+            });
+        });
 
-        describe("§ mmp.node.add()", function () {
+        describe("§ testMap.addNode()", function () {
             it("Should add a node without errors", function () {
-                mmp.node.add
-                    .should.to.not.throw(Error)
-            })
+                testMap.addNode.should.to.not.throw(Error);
+            });
+
             it("Should exist in the DOM", function () {
-                var node = document.getElementById("node1")
-                expect(node).to.exist
-            })
+                let node = document.getElementById("mmp2_node_1");
+                node.should.to.exist;
+            });
+
             it("Should add a node with custom parameters", function () {
-                mmp.node.add({
-                    "name": "Custom node",
-                    "background-color": "rgb(201, 223, 192)",
-                    "image-src": "tests/img/logo.png"
-                })
-                var node = document.getElementById("node2"),
+                testMap.addNode({
+                    name: "Custom node",
+                    backgroundColor: "#c9dfc0",
+                    image: {
+                        src: "https://raw.githubusercontent.com/Mindmapp/mindmapp/master/src/assets/icon/png/64x64.png"
+                    }
+                });
+
+                let node = document.getElementById("mmp2_node_2"),
                     background = node.childNodes[0],
                     text = node.childNodes[1].childNodes[0],
-                    image = node.childNodes[2]
-                background.style["fill"].should.to.equal("rgb(201, 223, 192)")
-                text.innerHTML
-                    .should.to.equal("Custom node")
-                image
-                    .should.to.exist
-            })
-        })
+                    image = node.childNodes[2];
 
-        describe("§ mmp.node.select()", function () {
+                background.style["fill"].should.to.equal("rgb(201, 223, 192)");
+                text.innerHTML.should.to.equal("Custom node");
+                image.should.to.exist;
+            });
+        });
+
+        describe("§ testMap.selectNode()", function () {
             it("Should get selection of a node without errors", function () {
-                mmp.node.select
-                    .should.to.not.throw(Error)
-            })
+                testMap.selectNode.should.to.not.throw(Error);
+            });
+
             it("Should select a node", function () {
-                mmp.node.select("node1")
-                mmp.node.select()
-                    .should.to.have.property("key").and.equal("node1")
-            })
-        })
+                testMap.selectNode("mmp2_node_1");
 
-        describe("§ mmp.node.remove()", function () {
+                testMap.selectNode().should.to.have.property("id").and.equal("mmp2_node_1");
+            });
+        });
+
+        describe("§ testMap.removeNode()", function () {
             it("Should remove a node without errors", function () {
-                mmp.node.select("node2")
-                mmp.node.remove
-                    .should.to.not.throw(Error)
-            })
-        })
+                testMap.selectNode("mmp2_node_2");
 
-        describe("§ mmp.node.moveTo()", function () {
-            it("Should move a node", function () {
-                var x = mmp.node.select().value.x
-                mmp.node.moveTo("right", 100)
-                mmp.node.select().value.x
-                    .should.to.equal(x + 100)
-                mmp.node.moveTo("left", 100)
-                mmp.node.select().value.x
-                    .should.to.equal(x)
-            })
-        })
+                testMap.removeNode.should.to.not.throw(Error);
+            });
+        });
 
-        describe("§ mmp.node.selectTo()", function () {
-            it("Should move the selection of a node", function () {
-                var key = mmp.node.select().key
-                mmp.node.selectTo("left")
-                mmp.node.select().key
-                    .should.to.equal("node1")
-                mmp.node.selectTo("right")
-                mmp.node.select().key
-                    .should.to.equal("node0")
-            })
-        })
+        // describe("§ mmp.node.moveTo()", function () {
+        //     it("Should move a node", function () {
+        //         let x = mmp.node.select().value.x;
+        //         mmp.node.moveTo("right", 100);
+        //         mmp.node.select().value.x
+        //             .should.to.equal(x + 100);
+        //         mmp.node.moveTo("left", 100);
+        //         mmp.node.select().value.x
+        //             .should.to.equal(x);
+        //     });
+        // });
+        //
+        // describe("§ mmp.node.selectTo()", function () {
+        //     it("Should move the selection of a node", function () {
+        //         let key = mmp.node.select().key;
+        //         mmp.node.selectTo("left");
+        //         mmp.node.select().key
+        //             .should.to.equal("node1");
+        //         mmp.node.selectTo("right");
+        //         mmp.node.select().key
+        //             .should.to.equal("node0");
+        //     });
+        // });
 
-        describe("§ mmp.node.update()", function () {
+        describe("§ testMap.updateNode()", function () {
             it("Should update the properties of a node ( visual )", function () {
-                var color = mmp.node.select().value["text-color"]
-                mmp.node.update("text-color", "black", true)
-                mmp.node.select().value["text-color"]
-                    .should.to.equal(color)
-            })
-            it("Should update the properties of a node", function () {
-                mmp.node.update("text-color", "black")
-                mmp.node.select().value["text-color"]
-                    .should.to.equal("black")
-            })
-        })
+                let color = testMap.selectNode("mmp2_node_0").textColor;
 
-        describe("§ mmp.data()", function () {
+                testMap.updateNode("textColor", "#000000", true);
+                testMap.selectNode().textColor.should.to.equal(color);
+            });
+
+            it("Should update the properties of a node", function () {
+                testMap.updateNode("textColor", "#000000");
+                testMap.selectNode().textColor.should.to.equal("#000000");
+            });
+        });
+
+        describe("§ testMap.data()", function () {
             it("Should get mind map data without errors", function () {
-                mmp.data
-                    .should.to.not.throw(Error)
-            })
+                testMap.data.should.to.not.throw(Error);
+            });
+
             it("Should have at least the first node", function () {
-                var data = mmp.data()
-                data[0]
-                    .should.to.have.property("key")
-                    .and.equal("node0")
-            })
-        })
+                let data = testMap.data();
+
+                data[0].should.to.have.property("id").and.equal("mmp2_node_0");
+            });
+        });
 
         after(function () {
             // Remove links from suites for separate tests
-            var links = document.querySelectorAll(".suite > h1 > a")
-            links.forEach(function (a) {
-                var text = a.innerHTML, parent = a.parentNode
-                parent.removeChild(a)
-                parent.innerHTML = text
-            })
-            // Clear the console
-            console.clear()
-            console.log("%cTest were done!", "font-size: 16px; color: #4C4527")
-            // Load app.js
-            var script = document.createElement("script")
-            document.body.appendChild(script)
-            script.onload = function () {
-                // Recreate the mind map
-                mmp.remove()
-                mmp.init("mmp")
-            }
-            script.src = "tests/app.js"
-        })
+            let links = document.querySelectorAll(".suite > h1 > a");
 
-    })
-})
+            links.forEach(function (a) {
+                let text = a.innerHTML, parent = a.parentNode;
+                parent.removeChild(a);
+                parent.innerHTML = text;
+            });
+
+            // Refresh the map
+            testMap.new();
+        });
+
+    });
+});
