@@ -1,4 +1,5 @@
 import {UserNodeProperties} from "./models/node";
+import Utils from "../utils/utils";
 
 /**
  * Manage default map options.
@@ -61,6 +62,39 @@ export default class Options implements OptionParameters {
             italic: false,
             bold: false,
             locked: false
+        };
+    }
+
+    /**
+     * Set option parameters and return them updated.
+     * @param {OptionParameters} parameters
+     * @returns {OptionParameters} parameters
+     */
+    public set = (parameters: OptionParameters): OptionParameters => {
+        parameters = Utils.mergeObjects(this.get(), parameters);
+
+        this.fontFamily = parameters.fontFamily;
+        this.centerOnResize = parameters.centerOnResize;
+        this.drag = parameters.drag;
+        this.zoom = parameters.zoom;
+        this.node = parameters.node;
+        this.rootNode = parameters.rootNode;
+
+        return this.get();
+    };
+
+    /**
+     * Return current option parameters.
+     * @returns {OptionParameters} parameters
+     */
+    private get(): OptionParameters {
+        return {
+            fontFamily: this.fontFamily,
+            centerOnResize: this.centerOnResize,
+            drag: this.drag,
+            zoom: this.zoom,
+            node: Utils.cloneObject(this.node) as UserNodeProperties,
+            rootNode: Utils.cloneObject(this.rootNode) as UserNodeProperties
         };
     }
 

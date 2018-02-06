@@ -85,6 +85,7 @@ export default class Map {
             remove: this.remove,
             new: this.history.new,
             data: this.history.data,
+            options: this.options.set,
             getImage: this.export.image,
             undo: this.history.undo,
             redo: this.history.redo,
@@ -106,6 +107,7 @@ export interface MmpInstance {
     remove: Function;
     new: Function;
     data: Function;
+    options: Function,
     getImage: Function;
     undo: Function;
     redo: Function;
