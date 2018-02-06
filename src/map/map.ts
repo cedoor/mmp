@@ -85,7 +85,7 @@ export default class Map {
             remove: this.remove,
             new: this.history.new,
             data: this.history.data,
-            getImage: this.export.getImage,
+            getImage: this.export.image,
             undo: this.history.undo,
             redo: this.history.redo,
             zoomIn: this.zoom.zoomIn,

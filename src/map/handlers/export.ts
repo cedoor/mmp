@@ -22,7 +22,7 @@ export default class Export {
      * @param {string} [type] - Type of image, default png, others : jpeg, gif..
      * @param {string} [bg] - Color of mind map background.
      */
-    public getImage = (cb, type, bg) => {
+    public image = (cb, type, bg) => {
         this.map.nodes.deselectNode();
 
         this.dataURL(url => {

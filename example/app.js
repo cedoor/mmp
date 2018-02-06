@@ -45,7 +45,7 @@ function uploadMap(map, e) {
 
 // Save the image of the map
 function downloadImage(map) {
-    map.getImage(function (url) {
+    map.image(function (url) {
         let a = document.createElement("a");
         a.download = "example";
         a.href = url;
