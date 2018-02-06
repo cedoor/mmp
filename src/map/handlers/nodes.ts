@@ -1,4 +1,4 @@
-import Node, {ExportNodeProperties, NodeProperties, UserNodeProperties} from "../models/node";
+import Node, {Coordinates, ExportNodeProperties, NodeProperties, UserNodeProperties} from "../models/node";
 import Map from "../map";
 import * as d3 from "d3";
 import {Map as D3Map} from "d3-collection";
@@ -38,7 +38,7 @@ export default class Nodes {
                 y: parseInt(this.map.dom.container.style("height")) / 2
             },
             id: this.map.id + "_node_" + this.counter
-        });
+        }) as NodeProperties;
 
         let node: Node = new Node(properties);
 
@@ -60,7 +60,7 @@ export default class Nodes {
      * @param {UserNodeProperties} userProperties
      */
     public addNode = (userProperties?: UserNodeProperties) => {
-        let properties: NodeProperties = Utils.mergeObjects(this.map.options.node, userProperties);
+        let properties: NodeProperties = Utils.mergeObjects(this.map.options.node, userProperties, true) as NodeProperties;
 
         properties.id = this.map.id + "_node_" + this.counter;
         properties.parent = this.selectedNode;
@@ -71,7 +71,7 @@ export default class Nodes {
             node.coordinates = Utils.mergeObjects({
                 x: this.calculateXposition(node),
                 y: this.calculateYposition(node)
-            }, userProperties.coordinates);
+            }, userProperties.coordinates, true) as Coordinates;
         } else {
             node.coordinates = {
                 x: this.calculateXposition(node),

@@ -7,7 +7,7 @@ export default class Log {
      * Throw an Error with a message.
      * @param {ErrorMessage} message
      */
-    static error(message: ErrorMessage) {
+    static error(message: ErrorMessage | string) {
         throw new Error(message);
     }
 
@@ -38,5 +38,6 @@ export enum ErrorMessage {
     imageExportLoading = "The image has not been loaded correctly",
     rootNodeBranches = "The root node has no branches",
     rootNodeLocking = "The root node can not be locked",
-    nodeEmptyImage = "The node does not have an image"
+    nodeEmptyImage = "The node does not have an image",
+    incorrectType = ""
 }

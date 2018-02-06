@@ -1,27 +1,30 @@
+import Log, {ErrorMessage} from "./log";
+
 /**
  * A list of general useful functions.
  */
-import {type} from "os";
-
 export default class Utils {
 
     /**
      * Clone an object, in depth if specified.
-     * @param {Object} object
-     * @param {boolean} deep
-     * @returns {Object}
+     * @param {object} object
+     * @returns {object} object
      */
-    static cloneObject(object: Object, deep?: boolean): Object {
-        return deep
-            ? JSON.parse(JSON.stringify(object))
-            : (<any>Object).assign({}, object);
+    static cloneObject(object: object): object {
+        if (object === null) {
+            return null;
+        } else if (typeof object === "object") {
+            return JSON.parse(JSON.stringify(object));
+        } else {
+            Log.error(ErrorMessage.incorrectType);
+        }
     }
 
     /**
      * Clear an object.
-     * @param {Object} object
+     * @param {object} object
      */
-    static clearObject(object: Object) {
+    static clearObject(object: object) {
         for (let property in object) {
             delete object[property];
         }
@@ -29,10 +32,10 @@ export default class Utils {
 
     /**
      * Convert an Object to an array.
-     * @param {Object} object
+     * @param {object} object
      * @returns {Array}
      */
-    static fromObjectToArray(object: Object): Array<any> {
+    static fromObjectToArray(object: object): Array<any> {
         let array = [];
 
         for (let p in object) {
@@ -44,26 +47,64 @@ export default class Utils {
 
     /**
      * Merge two objects.
-     * @param {any} object1
-     * @param {any} object2
-     * @returns {any}
+     * @param {object} object1
+     * @param {object} object2
+     * @param {boolean} restricted
+     * @returns {object} result
      */
-    static mergeObjects(object1: any, object2: any): any {
-        let result = (<any>Object).assign({}, object1);
+    static mergeObjects(object1: object, object2: object, restricted: boolean = false): object {
+        if (object2 === undefined && this.isPureObjectType(object1)) {
+            return this.cloneObject(object1);
+        } else if (object1 === undefined && this.isPureObjectType(object2)) {
+            return this.cloneObject(object2);
+        } else if (!this.isPureObjectType(object1) || !this.isPureObjectType(object2)) {
+            Log.error(ErrorMessage.incorrectType);
+        }
+
+        let result = this.cloneObject(object1);
 
         for (let property in object2) {
             let value = object2[property];
 
-            if ((typeof value !== "object" && !Array.isArray(value)) ||
-                (typeof result[property] !== "object" && !Array.isArray(result[property])) ||
-                !result[property]) {
-                result[property] = value;
-            } else {
-                result[property] = Utils.mergeObjects(result[property], value)
+            if (!restricted || result[property]) {
+                if (this.isPrimitiveType(value) || value === null) {
+                    result[property] = value;
+                } else if (Array.isArray(value)) {
+                    result[property] = Utils.cloneObject(value);
+                } else if (this.isPureObjectType(value)) {
+                    if (this.isPureObjectType(result[property])) {
+                        result[property] = Utils.mergeObjects(result[property], value);
+                    } else {
+                        result[property] = Utils.cloneObject(value);
+                    }
+                } else {
+                    Log.error(ErrorMessage.incorrectType);
+                }
             }
         }
 
         return result;
+    }
+
+    /**
+     * Return true if the value is a primitive type.
+     * @param value
+     * @returns {boolean}
+     */
+    static isPrimitiveType(value: any) {
+        return typeof value === "string" ||
+            typeof value === "number" ||
+            typeof value === "boolean" ||
+            typeof value === "undefined"
+    }
+
+    /**
+     * Return true if the value is a pure object.
+     * @param value
+     * @returns {boolean}
+     */
+    static isPureObjectType(value: any) {
+        return typeof value === "object" && !Array.isArray(value) && value !== null;
     }
 
     /**
