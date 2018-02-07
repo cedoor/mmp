@@ -1,6 +1,6 @@
 // Mind maps
-let map = mmp.create("mmp1"),
-    testMap = mmp.create("mmp2"),
+let map = mmp.create("mmp1", { rootNode: { name: "Map" } }),
+    testMap = mmp.create("mmp2", { rootNode: { name: "Test map" } }),
     // Dom elements
     dom = {
         fontSize: document.getElementsByClassName("font-size"),

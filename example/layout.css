@@ -13,7 +13,7 @@ body {
 }
 
 #maps {
-    margin-left: 352px;
+    margin-left: 402px;
 }
 
 #map1, #map2 {
@@ -28,7 +28,7 @@ body {
 #sidebar {
     position: relative;
     float: left;
-    width: 350px;
+    width: 400px;
     background-color: #f7f7f7;
     border-right: 1px solid #CFCFCF;
     color: #505050;
