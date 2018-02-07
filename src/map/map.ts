@@ -38,7 +38,7 @@ export default class Map {
 
         this.dom = {};
         this.events = new Events();
-        this.options = new Options(options);
+        this.options = new Options(options, this);
         this.zoom = new Zoom(this);
         this.history = new History(this);
         this.drag = new Drag(this);

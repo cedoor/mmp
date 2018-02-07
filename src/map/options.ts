@@ -1,10 +1,14 @@
 import {UserNodeProperties} from "./models/node";
 import Utils from "../utils/utils";
+import Map from "./map";
+import * as d3 from "d3";
 
 /**
  * Manage default map options.
  */
 export default class Options implements OptionParameters {
+
+    private map: Map;
 
     public fontFamily: string;
     public centerOnResize: boolean;
@@ -17,8 +21,11 @@ export default class Options implements OptionParameters {
     /**
      * Initialize all options.
      * @param {OptionParameters} parameters
+     * @param {Map} map
      */
-    constructor(parameters: OptionParameters = {}) {
+    constructor(parameters: OptionParameters = {}, map: Map) {
+        this.map = map;
+
         this.fontFamily = parameters.fontFamily || "Arial, Helvetica, sans-serif";
         this.centerOnResize = parameters.centerOnResize || true;
         this.drag = parameters.drag || true;
@@ -80,6 +87,8 @@ export default class Options implements OptionParameters {
         this.node = parameters.node;
         this.rootNode = parameters.rootNode;
 
+        this.update();
+
         return this.get();
     };
 
@@ -96,6 +105,26 @@ export default class Options implements OptionParameters {
             node: Utils.cloneObject(this.node) as UserNodeProperties,
             rootNode: Utils.cloneObject(this.rootNode) as UserNodeProperties
         };
+    }
+
+    private update() {
+        // Update centerOnResize behavior
+        if (this.centerOnResize === true) {
+            d3.select(window).on("resize." + this.map.id, () => {
+                this.map.zoom.center();
+            });
+        } else {
+            d3.select(window).on("resize." + this.map.id, null);
+        }
+        // Update zoom behavior
+        if (this.map.options.zoom === true) {
+            this.map.dom.svg.call(this.map.zoom.getZoomBehavior());
+        } else {
+            this.map.dom.svg.on(".zoom", null);
+        }
+        // Redraw map to update drag behavior
+        this.map.draw.clear();
+        this.map.draw.update();
     }
 
 }
