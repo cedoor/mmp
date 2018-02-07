@@ -1,4 +1,4 @@
-import Log, {ErrorMessage} from "./log";
+import Log from "./log";
 
 /**
  * A list of general useful functions.
@@ -16,7 +16,7 @@ export default class Utils {
         } else if (typeof object === "object") {
             return JSON.parse(JSON.stringify(object));
         } else {
-            Log.error(ErrorMessage.incorrectType);
+            Log.error("Impossible to clone a non-object", "type");
         }
     }
 
@@ -58,7 +58,7 @@ export default class Utils {
         } else if (object1 === undefined && this.isPureObjectType(object2)) {
             return this.cloneObject(object2);
         } else if (!this.isPureObjectType(object1) || !this.isPureObjectType(object2)) {
-            Log.error(ErrorMessage.incorrectType);
+            Log.error("Only two pure objects can be merged", "type");
         }
 
         let result = this.cloneObject(object1);
@@ -78,7 +78,7 @@ export default class Utils {
                         result[property] = Utils.cloneObject(value);
                     }
                 } else {
-                    Log.error(ErrorMessage.incorrectType);
+                    Log.error(`Type "${typeof value}" not allowed here`, "type");
                 }
             }
         }
@@ -95,7 +95,7 @@ export default class Utils {
         return typeof value === "string" ||
             typeof value === "number" ||
             typeof value === "boolean" ||
-            typeof value === "undefined"
+            typeof value === "undefined";
     }
 
     /**
