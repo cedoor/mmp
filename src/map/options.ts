@@ -32,7 +32,7 @@ export default class Options implements OptionParameters {
         this.zoom = parameters.zoom || true;
 
         // Default node properties
-        this.node = parameters.node || {
+        this.node = Utils.mergeObjects({
             name: "Node",
             coordinates: {
                 x: 0,
@@ -49,10 +49,10 @@ export default class Options implements OptionParameters {
             italic: false,
             bold: false,
             locked: true
-        };
+        }, parameters.node, true) as UserNodeProperties;
 
         // Default root node properties
-        this.rootNode = parameters.rootNode || {
+        this.rootNode = Utils.mergeObjects({
             name: "Root node",
             coordinates: {
                 x: 0,
@@ -69,7 +69,7 @@ export default class Options implements OptionParameters {
             italic: false,
             bold: false,
             locked: false
-        };
+        }, parameters.rootNode, true) as UserNodeProperties;
     }
 
     /**
