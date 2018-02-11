@@ -160,15 +160,31 @@ describe("Tests", function () {
         });
     });
 
-    describe("§ testMap.data()", function () {
+    describe("§ testMap.exportAsJSON()", function () {
         it("Should get mind map data without errors", function () {
-            testMap.data.should.to.not.throw(Error);
+            testMap.exportAsJSON.should.to.not.throw(Error);
         });
 
         it("Should have at least the first node", function () {
-            let data = testMap.data();
+            let json = testMap.exportAsJSON();
 
-            data[0].should.to.have.property("id").and.equal("mmp2_node_0");
+            json[0].should.to.have.property("id").and.equal("mmp2_node_0");
+        });
+    });
+
+    describe("§ testMap.exportAsImage()", function () {
+        it("Should get mind map data without errors", function () {
+            (function () {
+                testMap.exportAsImage(() => {});
+            }).should.to.not.throw(Error);
+        });
+
+        it("Should have at least the first node", function () {
+            testMap.exportAsImage((dataURI) => {
+                let check = dataURI.match(/^\s*data:([a-z]+\/[a-z]+(;[a-z\-]+\=[a-z\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i);
+
+                check.should.to.not.equal(null);
+            });
         });
     });
 
