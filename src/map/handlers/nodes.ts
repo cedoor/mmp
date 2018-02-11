@@ -195,6 +195,20 @@ export default class Nodes {
     };
 
     /**
+     * Move the node selection in the direction passed as parameter.
+     * @param {string} direction
+     */
+    public nodeSelectionTo = (direction: string) => {
+        let d = direction === "up" || direction === "left";
+
+        if (direction === "up" || direction === "down") {
+            this.moveSelectionOnLevel(d);
+        } else {
+            this.moveSelectionOnBranch(d);
+        }
+    };
+
+    /**
      * Return the children of a node.
      * @param {Node} node
      * @returns {Node[]}
@@ -526,5 +540,64 @@ export default class Nodes {
             Log.error(ErrorMessage.rootNodeLocking);
         }
     };
+
+    /**
+     * Move the node selection on the level of the current node.
+     * @param {boolean} direction
+     */
+    private moveSelectionOnLevel(direction: boolean) {
+        let orientation = this.getOrientation(this.selectedNode),
+            key, tmp = Number.MAX_VALUE;
+
+        if (this.selectedNode.parent) {
+            this.getChildren(this.selectedNode.parent).forEach((node: Node) => {
+                let d = direction
+                    ? this.selectedNode.coordinates.y - node.coordinates.y
+                    : node.coordinates.y - this.selectedNode.coordinates.y;
+
+                if (
+                    this.selectedNode.id !== node.id &&
+                    orientation === this.getOrientation(node) &&
+                    d > 0 && d < tmp
+                ) {
+                    tmp = d;
+                    key = node.id;
+                }
+            });
+        }
+
+        if (key !== undefined) {
+            this.selectNode(key);
+        }
+    }
+
+    /**
+     * Move the node selection in a child node or in the parent node.
+     * @param {boolean} direction
+     */
+    private moveSelectionOnBranch(direction: boolean) {
+        let root = this.getRoot(),
+            key, checks, tmp = Number.MIN_VALUE;
+
+        this.getNodes().forEach((node: Node) => {
+            if (this.selectedNode.coordinates.x < root.coordinates.x) {
+                checks = direction ? node.parent.id === this.selectedNode.id : this.selectedNode.parent.id === node.id;
+            } else if (this.selectedNode.coordinates.x > root.coordinates.x) {
+                checks = !direction ? node.parent.id === this.selectedNode.id : this.selectedNode.parent.id === node.id;
+            } else {
+                checks = (direction ? node.coordinates.x < root.coordinates.x : node.coordinates.x > root.coordinates.x)
+                    && node.parent.id === this.selectedNode.id;
+
+                if (checks && node.coordinates.y > tmp) {
+                    tmp = node.coordinates.y;
+                    key = node.id;
+                }
+            }
+        });
+
+        if (key !== undefined) {
+            this.selectNode(key);
+        }
+    }
 
 }
