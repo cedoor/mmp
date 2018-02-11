@@ -3,6 +3,9 @@ import Node, {ExportNodeProperties, NodeProperties} from "../models/node";
 import {Event} from "./events";
 import Log, {ErrorMessage} from "../../utils/log";
 
+/**
+ * Manage map history, for each change save a snapshot.
+ */
 export default class History {
 
     private map: Map;
@@ -10,6 +13,10 @@ export default class History {
     private index: number;
     private snapshots: MapSnapshot[];
 
+    /**
+     * Get the associated map instance, initialize index and snapshots.
+     * @param {Map} map
+     */
     constructor(map: Map) {
         this.map = map;
 
@@ -53,8 +60,7 @@ export default class History {
     };
 
     /**
-     * @name undo
-     * @desc Undo last changes.
+     * Undo last changes.
      */
     public undo = () => {
         if (this.index > 0) {
@@ -64,8 +70,7 @@ export default class History {
     };
 
     /**
-     * @name redo
-     * @desc Redo one change which was undone.
+     * Redo one change which was undone.
      */
     public redo = () => {
         if (this.index < this.snapshots.length - 1) {
@@ -75,8 +80,7 @@ export default class History {
     };
 
     /**
-     * @name save
-     * @desc Save the current snapshot of the mind map.
+     * Save the current snapshot of the mind map.
      */
     public save() {
         if (this.index < this.snapshots.length - 1) {
@@ -87,7 +91,7 @@ export default class History {
     }
 
     /**
-     *
+     * Redraw the map with a new snapshot.
      * @param {MapSnapshot} snapshot
      */
     private redraw(snapshot: MapSnapshot) {
@@ -121,15 +125,14 @@ export default class History {
 
     /**
      * Return a copy of all fundamental node properties.
-     * @return {MapSnapshot} properties - Copy of all node properties.
+     * @return {MapSnapshot} properties
      */
     private getSnapshot(): MapSnapshot {
         return this.map.nodes.getNodes().map((node: Node) => node.getProperties());
     }
 
     /**
-     * @name setCounter
-     * @desc Set the right value of global counter.
+     * Set the right counter value of the nodes.
      */
     private setCounter() {
         let id = this.map.nodes.getNodes().map((node: Node) => parseInt(node.id.split("_")[2]));
@@ -137,21 +140,9 @@ export default class History {
     }
 
     /**
-     * @name check
-     * @param {Object} snapshot - A snapshot of mind map.
-     * @return {boolean} result
-     * @desc Check the snapshot structure and return true if it is authentic.
-     */
-    private check(snapshot: MapSnapshot): boolean {
-        return snapshot.constructor === Array &&
-            snapshot[0].id.split("_")[2] === "0" &&
-            this.checkProperties(snapshot);
-    }
-
-    /**
      * Sanitize an old map node id with a new.
      * @param {string} oldId
-     * @returns {string}
+     * @returns {string} newId
      */
     private sanitizeNodeId(oldId: string) {
         if (typeof oldId === "string") {
@@ -161,18 +152,31 @@ export default class History {
     }
 
     /**
-     * @name checkNodes
-     * @param {Object} snapshot - A snapshot of mind map.
+     * Check the snapshot structure and return true if it is authentic.
+     * @param {MapSnapshot} snapshot
      * @return {boolean} result
-     * @desc Check the snapshot nodes and return true if they are authentic.
+     */
+    private check(snapshot: MapSnapshot): boolean {
+        return snapshot.constructor === Array &&
+            snapshot[0].id.split("_")[2] === "0" &&
+            this.checkProperties(snapshot);
+    }
+
+    /**
+     * Check the snapshot node properties and return true if they are authentic.
+     * @param {MapSnapshot} snapshot
+     * @return {boolean} result
      */
     private checkProperties(snapshot: MapSnapshot) {
         for (let properties of snapshot) {
             if (typeof properties.id !== "string" ||
-                properties.constructor !== Object)
-            // TODO, to improve
+                properties.constructor !== Object
+                // TODO, to improve
+            ) {
                 return false;
+            }
         }
+
         return true;
     }
 

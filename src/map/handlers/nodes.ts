@@ -128,7 +128,7 @@ export default class Nodes {
     };
 
     /**
-     *
+     * Deselect the current selected node.
      */
     public deselectNode = () => {
         if (this.selectedNode) {
@@ -195,7 +195,7 @@ export default class Nodes {
     };
 
     /**
-     *
+     * Return the children of a node.
      * @param {Node} node
      * @returns {Node[]}
      */
@@ -206,7 +206,7 @@ export default class Nodes {
     }
 
     /**
-     * Return the orientation of a node in the map (true if left)
+     * Return the orientation of a node in the map (true if left).
      * @return {boolean}
      */
     public getOrientation(node: Node): boolean {
@@ -216,21 +216,26 @@ export default class Nodes {
         }
     }
 
+    /**
+     * Return true if the node is the root or false.
+     * @param {Node} node
+     * @returns {boolean}
+     */
     public isRoot(node: Node) {
         return node.id === this.map.id + "_node_0";
     }
 
     /**
      * Return the root node.
-     * @returns {Node}
+     * @returns {Node} rootNode
      */
     public getRoot(): Node {
         return this.nodes.get(this.map.id + "_node_0");
     }
 
     /**
-     *
-     * @returns {Node[]}
+     * Return all descendants of a node.
+     * @returns {Node[]} nodes
      */
     public getDescendants(node: Node): Node[] {
         let nodes = [];
@@ -242,7 +247,7 @@ export default class Nodes {
     }
 
     /**
-     * Return the x coordinate of a node based on parent x coordinate
+     * Return the x coordinate of a node based on parent x coordinate.
      * @returns {number}
      */
     public calculateXposition(node: Node): number {
@@ -277,7 +282,7 @@ export default class Nodes {
     }
 
     /**
-     *
+     * Return an array of all nodes.
      * @returns {Node[]}
      */
     public getNodes(): Node[] {
@@ -285,7 +290,7 @@ export default class Nodes {
     }
 
     /**
-     *
+     * Return the node with the id equal to key passed as parameter.
      * @param {string} key
      * @returns {Node}
      */
@@ -294,7 +299,7 @@ export default class Nodes {
     }
 
     /**
-     *
+     * Set a node as a id-value copy.
      * @param {string} key
      * @param {Node} node
      */
@@ -303,7 +308,7 @@ export default class Nodes {
     }
 
     /**
-     *
+     * Set the counter of the nodes.
      * @param {number} number
      */
     public setCounter(number: number) {
@@ -311,13 +316,16 @@ export default class Nodes {
     }
 
     /**
-     *
+     * Return the current selected node.
      * @returns {Node}
      */
     public getSelectedNode(): Node {
         return this.selectedNode;
     }
 
+    /**
+     * Delete all nodes.
+     */
     public clear() {
         this.nodes.clear();
     }

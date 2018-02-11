@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import Map from "../map";
 import Node from "../models/node";
 import {Event} from "./events";
+import {DragBehavior} from "d3-drag";
 
 /**
  * Manage the drag events of the nodes.
@@ -10,7 +11,7 @@ export default class Drag {
 
     private map: Map;
 
-    private dragBehavior: any;
+    private dragBehavior: DragBehavior<any, any, any>;
     private dragging: boolean;
     private orientation: boolean;
     private descendants: Node[];
@@ -30,9 +31,9 @@ export default class Drag {
 
     /**
      * Return the d3 drag behavior
-     * @returns dragBehavior
+     * @returns {DragBehavior} dragBehavior
      */
-    public getDragBehavior(): any {
+    public getDragBehavior(): DragBehavior<any, any, any> {
         return this.dragBehavior;
     }
 
