@@ -88,9 +88,6 @@ export default class Nodes {
         this.map.history.save();
 
         this.map.events.call(Event.nodeCreate, node.dom, node.getProperties());
-
-        this.selectNode(node.id);
-        Utils.focusWithCaretAtEnd(node.getNameDOM());
     };
 
     /**

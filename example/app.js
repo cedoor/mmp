@@ -21,7 +21,7 @@ function message(message, ...arguments) {
 
 // Download the json of the map
 function downloadMap(map) {
-    let data = map.data(),
+    let data = map.exportAsJSON(),
         json = JSON.stringify(data),
         blob = new Blob([json], {type: "application/json"}),
         a = document.createElement("a");
@@ -45,7 +45,7 @@ function uploadMap(map, e) {
 
 // Save the image of the map
 function downloadImage(map) {
-    map.image(function (url) {
+    map.exportAsImage(function (url) {
         let a = document.createElement("a");
         a.download = "example";
         a.href = url;

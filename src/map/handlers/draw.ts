@@ -66,7 +66,8 @@ export default class Draw {
             .attr("transform", (node: Node) => "translate(" + node.coordinates.x + "," + node.coordinates.y + ")")
             .on("dblclick", (node: Node) => {
                 d3.event.stopPropagation();
-                Utils.focusWithCaretAtEnd(node.getNameDOM());
+
+                this.setNodeName(node);
             });
 
         if (this.map.options.drag === true) {
@@ -77,7 +78,7 @@ export default class Draw {
         outer.insert("foreignObject")
             .html((node: Node) => this.createNodeNameDOM(node))
             .each((node: Node) => {
-                this.setNodeName(node);
+                this.updateForeignObject(node.getNameDOM());
             });
 
         // Set background of the node
@@ -225,19 +226,29 @@ export default class Draw {
      * @param {Node} node
      */
     private setNodeName(node: Node) {
-        let text = node.getNameDOM();
+        let name = node.getNameDOM();
 
-        text.oninput = () => {
+        Utils.focusWithCaretAtEnd(name);
+
+        name.style.setProperty("cursor", "auto");
+
+        name.ondblclick = name.onmousedown = (event) => {
+            event.stopPropagation();
+        };
+
+        name.oninput = () => {
             this.updateNodeShapes(node);
         };
 
-        text.onblur = () => {
-            if (text.innerHTML !== node.name) {
-                this.map.nodes.updateNode("name", text.innerHTML);
+        name.onblur = () => {
+            if (name.innerHTML !== node.name) {
+                this.map.nodes.updateNode("name", name.innerHTML);
             }
-        };
+            console.log("blur");
 
-        this.updateForeignObject(text);
+            name.style.setProperty("cursor", "pointer");
+            name.ondblclick = name.onmousedown = null;
+        };
     }
 
     /**
@@ -269,6 +280,7 @@ export default class Draw {
         element.style.setProperty("font-weight", Utils.fontWeight(node.bold));
         element.style.setProperty("font-family", this.map.options.fontFamily);
         element.style.setProperty("text-align", "center");
+        element.style.setProperty("padding", "2px");
 
         element.setAttribute("contenteditable", "true");
         element.setAttribute("spellcheck", "false");
