@@ -87,6 +87,32 @@ export default class Utils {
     }
 
     /**
+     * Return css rules of an element.
+     * @param {HTMLElement} element
+     * @return {string} css
+     */
+    static cssRules(element: HTMLElement) {
+        let css = "", sheets = document.styleSheets;
+
+        for (let i = 0; i < sheets.length; i++) {
+            let rules = (<any>sheets[i]).cssRules;
+
+            if (rules) {
+                for (let j = 0; j < rules.length; j++) {
+                    let rule = rules[j],
+                        fontFace = rule.cssText.match(/^@font-face/);
+
+                    if (element.querySelector(rule.selectorText) || fontFace) {
+                        css += rule.cssText;
+                    }
+                }
+            }
+        }
+
+        return css;
+    }
+
+    /**
      * Return true if the value is a primitive type.
      * @param value
      * @returns {boolean}

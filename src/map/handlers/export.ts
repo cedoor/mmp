@@ -1,6 +1,7 @@
 import Map from "../map";
 import {default as Log, ErrorMessage} from "../../utils/log";
 import {MapSnapshot} from "./history";
+import Utils from "../../utils/utils";
 
 /**
  * Manage map image exports.
@@ -18,7 +19,7 @@ export default class Export {
     }
 
     /**
-     * Return
+     * Return the snapshot (json) of the current map.
      * @returns {MapSnapshot} json
      */
     public asJSON = (): MapSnapshot => {
@@ -26,14 +27,14 @@ export default class Export {
     };
 
     /**
-     * Set image settings and pass its data URL in a callback function.
+     * Return the image data URI in the callback function.
      * @param {Function} callback
      * @param {string} type
      */
     public asImage = (callback: Function, type: string) => {
         this.map.nodes.deselectNode();
 
-        this.dataURL(url => {
+        this.dataURI(url => {
             let image = new Image();
 
             image.src = url;
@@ -45,12 +46,14 @@ export default class Export {
                 canvas.width = image.width;
                 canvas.height = image.height;
                 context.drawImage(image, 0, 0);
-
                 context.globalCompositeOperation = "destination-over";
                 context.fillStyle = "#ffffff";
                 context.fillRect(0, 0, canvas.width, canvas.height);
 
-                if (typeof type === "string") type = "image/" + type;
+                if (typeof type === "string") {
+                    type = "image/" + type;
+                }
+
                 callback(canvas.toDataURL(type));
             };
 
@@ -61,18 +64,17 @@ export default class Export {
     };
 
     /**
-     * Translate the mind map svg in data URI.
-     * @name dataURL
-     * @param {Function} cb - A callback with uri as parameter
+     * Convert the mind map svg in the data URI.
+     * @param {Function} callback
      */
-    private dataURL(cb) {
+    private dataURI(callback: Function) {
         let element = this.map.dom.g.node(),
             clone = element.cloneNode(true),
             svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"),
             box = element.getBBox(),
-            css = this.cssRules(element);
-        const
-            xmlns = "http://www.w3.org/2000/xmlns/", padding = 15,
+            css = Utils.cssRules(element),
+            xmlns = "http://www.w3.org/2000/xmlns/",
+            padding = 15,
             x = box.x - padding, y = box.y - padding,
             w = box.width + padding * 2, h = box.height + padding * 2;
 
@@ -97,7 +99,7 @@ export default class Export {
         clone.setAttribute("transform", "translate(0,0)");
         svg.appendChild(clone);
 
-        this.checkImages(clone, function () {
+        this.convertImages(clone, function () {
             let xmls = new XMLSerializer(),
                 reader = new FileReader();
 
@@ -108,64 +110,58 @@ export default class Export {
             });
 
             reader.readAsDataURL(blob);
+
             reader.onloadend = function () {
-                cb(reader.result);
+                callback(reader.result);
             };
         });
     }
 
     /**
-     * Return the css rules of an element.
-     * @param {Object} element - A dom element.
-     * @return {string} css - Css rules.
+     * If there are images in the map convert their href in dataURI.
+     * @param {HTMLElement} element
+     * @param {Function} callback
      */
-    private cssRules(element) {
-        let css = "", sheets = document.styleSheets;
-        for (let i = 0; i < sheets.length; i++) {
-            let rules = (<any>sheets[i]).cssRules;
-            if (rules) {
-                for (let j = 0; j < rules.length; j++) {
-                    let rule = rules[j], fontFace = rule.cssText.match(/^@font-face/);
-                    if (element.querySelector(rule.selectorText) || fontFace)
-                        css += rule.cssText;
-                }
-            }
-        }
-        return css;
-    }
-
-    /**
-     * If there are images in the map convert their href in dataURL.
-     * @param {Object} element - The DOM element to check.
-     * @param {Function} cb - A callback to execute after check.
-     */
-    private checkImages(element, cb) {
+    private convertImages(element: HTMLElement, callback: Function) {
         let images = element.querySelectorAll("image"),
-            l = images.length, counter = l;
+            counter = images.length;
 
-        if (l > 0) for (let image of images) {
+        if (counter > 0) {
+            for (let i in images) {
+                let imageDOM = images[i],
+                    canvas = document.createElement("canvas"),
+                    ctx = canvas.getContext("2d"),
+                    image = new Image(),
+                    href = imageDOM.getAttribute("href");
 
-            let canvas = document.createElement("canvas"),
-                ctx = canvas.getContext("2d"),
-                img = new Image(),
-                href = image.getAttribute("href");
+                image.crossOrigin = "Anonymous";
 
-            img.crossOrigin = "Anonymous";
-            img.src = href;
-            img.onload = function () {
-                canvas.width = this.clientWidth;
-                canvas.height = this.clientHeight;
-                ctx.drawImage(<any>this, 0, 0);
-                image.setAttribute("href", canvas.toDataURL("image/png"));
-                counter--;
-                if (counter === 0) cb();
-            };
-            img.onerror = function () {
-                counter--;
-                if (counter === 0) cb();
-            };
+                image.src = href;
 
-        } else cb();
+                image.onload = function () {
+                    canvas.width = this.clientWidth;
+                    canvas.height = this.clientHeight;
+                    ctx.drawImage(<any>this, 0, 0);
+                    imageDOM.setAttribute("href", canvas.toDataURL("image/png"));
+
+                    counter--;
+
+                    if (counter === 0) {
+                        callback();
+                    }
+                };
+                image.onerror = function () {
+                    counter--;
+
+                    if (counter === 0) {
+                        callback();
+                    }
+                };
+
+            }
+        } else {
+            callback();
+        }
     }
 
 }
