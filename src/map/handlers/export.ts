@@ -1,5 +1,6 @@
 import Map from "../map";
 import {default as Log, ErrorMessage} from "../../utils/log";
+import {MapSnapshot} from "./history";
 
 /**
  * Manage map image exports.
@@ -17,12 +18,19 @@ export default class Export {
     }
 
     /**
-     * Set image settings and pass its data URL in a callback function.
-     * @param {Function} cb - The callback.
-     * @param {string} [type] - Type of image, default png, others : jpeg, gif..
-     * @param {string} [bg] - Color of mind map background.
+     * Return
+     * @returns {MapSnapshot} json
      */
-    public image = (cb, type, bg) => {
+    public asJSON = (): MapSnapshot => {
+        return this.map.history.current();
+    };
+
+    /**
+     * Set image settings and pass its data URL in a callback function.
+     * @param {Function} callback
+     * @param {string} type
+     */
+    public asImage = (callback: Function, type: string) => {
         this.map.nodes.deselectNode();
 
         this.dataURL(url => {
@@ -39,25 +47,25 @@ export default class Export {
                 context.drawImage(image, 0, 0);
 
                 context.globalCompositeOperation = "destination-over";
-                context.fillStyle = bg || "#ffffff";
+                context.fillStyle = "#ffffff";
                 context.fillRect(0, 0, canvas.width, canvas.height);
 
                 if (typeof type === "string") type = "image/" + type;
-                cb(canvas.toDataURL(type));
+                callback(canvas.toDataURL(type));
             };
 
             image.onerror = function () {
                 Log.error(ErrorMessage.imageExportLoading);
             };
         });
-    }
+    };
 
     /**
      * Translate the mind map svg in data URI.
      * @name dataURL
      * @param {Function} cb - A callback with uri as parameter
      */
-    public dataURL(cb) {
+    private dataURL(cb) {
         let element = this.map.dom.g.node(),
             clone = element.cloneNode(true),
             svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"),
@@ -111,7 +119,7 @@ export default class Export {
      * @param {Object} element - A dom element.
      * @return {string} css - Css rules.
      */
-    public cssRules(element) {
+    private cssRules(element) {
         let css = "", sheets = document.styleSheets;
         for (let i = 0; i < sheets.length; i++) {
             let rules = (<any>sheets[i]).cssRules;
@@ -131,7 +139,7 @@ export default class Export {
      * @param {Object} element - The DOM element to check.
      * @param {Function} cb - A callback to execute after check.
      */
-    public checkImages(element, cb) {
+    private checkImages(element, cb) {
         let images = element.querySelectorAll("image"),
             l = images.length, counter = l;
 

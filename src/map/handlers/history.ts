@@ -18,12 +18,10 @@ export default class History {
     }
 
     /**
-     * @name data
-     * @return {MapSnapshot} [snapshot] - Last snapshot of the map.
-     * @desc
      * Return last snapshot of the current map.
+     * @return {MapSnapshot} [snapshot] - Last snapshot of the map.
      */
-    public data = (): MapSnapshot => {
+    public current = (): MapSnapshot => {
         return this.snapshots[this.index];
     };
 

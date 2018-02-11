@@ -84,9 +84,9 @@ export default class Map {
             on: this.events.on,
             remove: this.remove,
             new: this.history.new,
-            data: this.history.data,
             options: this.options.set,
-            getImage: this.export.image,
+            exportAsJSON: this.export.asJSON,
+            exportAsImage: this.export.asImage,
             undo: this.history.undo,
             redo: this.history.redo,
             zoomIn: this.zoom.zoomIn,
@@ -106,9 +106,9 @@ export interface MmpInstance {
     on: Function;
     remove: Function;
     new: Function;
-    data: Function;
     options: Function,
-    getImage: Function;
+    exportAsJSON: Function;
+    exportAsImage: Function;
     undo: Function;
     redo: Function;
     zoomIn: Function;
