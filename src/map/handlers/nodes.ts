@@ -195,13 +195,26 @@ export default class Nodes {
      * Move the node selection in the direction passed as parameter.
      * @param {string} direction
      */
-    public nodeSelectionTo = (direction: string) => {
-        let d = direction === "up" || direction === "left";
-
-        if (direction === "up" || direction === "down") {
-            this.moveSelectionOnLevel(d);
-        } else {
-            this.moveSelectionOnBranch(d);
+    public nodeSelectionTo = (direction: "up" | "down" | "left" | "right") => {
+        switch (direction) {
+            case "up":
+                this.moveSelectionOnLevel(true);
+                break;
+            case "down":
+                this.moveSelectionOnLevel(false);
+                break;
+            case "left":
+                this.moveSelectionOnBranch(true);
+                break;
+            case "right":
+                this.moveSelectionOnBranch(false);
+                break;
+            default:
+                if (typeof direction !== "string") {
+                    Log.error("The parameter is not a string", "type");
+                } else {
+                    Log.error("The direction is not correct (up, down, left, right)");
+                }
         }
     };
 
@@ -339,6 +352,24 @@ export default class Nodes {
      */
     public clear() {
         this.nodes.clear();
+    }
+
+    /**
+     * Return the lower node of a list of nodes.
+     * @param {Node[]} nodes
+     * @returns {Node} lowerNode
+     */
+    getLowerNode(nodes: Node[] = this.nodes.values()): Node {
+        let tmp = Number.MIN_VALUE, lowerNode;
+
+        for (let node of nodes) {
+            if (node.coordinates.y > tmp) {
+                tmp = node.coordinates.y;
+                lowerNode = node;
+            }
+        }
+
+        return lowerNode;
     }
 
     /**
@@ -539,61 +570,63 @@ export default class Nodes {
     };
 
     /**
-     * Move the node selection on the level of the current node.
+     * Move the node selection on the level of the current node (true: up).
      * @param {boolean} direction
      */
     private moveSelectionOnLevel(direction: boolean) {
-        let orientation = this.getOrientation(this.selectedNode),
-            key, tmp = Number.MAX_VALUE;
-
-        if (this.selectedNode.parent) {
-            this.getChildren(this.selectedNode.parent).forEach((node: Node) => {
-                let d = direction
-                    ? this.selectedNode.coordinates.y - node.coordinates.y
-                    : node.coordinates.y - this.selectedNode.coordinates.y;
-
-                if (
-                    this.selectedNode.id !== node.id &&
-                    orientation === this.getOrientation(node) &&
-                    d > 0 && d < tmp
-                ) {
-                    tmp = d;
-                    key = node.id;
-                }
+        if (!this.isRoot(this.selectedNode)) {
+            let siblings = this.getChildren(this.selectedNode.parent).filter((node: Node) => {
+                return direction === node.coordinates.y < this.selectedNode.coordinates.y &&
+                    node.id !== this.selectedNode.id;
             });
-        }
 
-        if (key !== undefined) {
-            this.selectNode(key);
+            if (this.isRoot(this.selectedNode.parent)) {
+                siblings = siblings.filter((node: Node) => {
+                    return this.getOrientation(node) === this.getOrientation(this.selectedNode);
+                });
+            }
+
+            if (siblings.length > 0) {
+                let closerNode: Node = siblings[0],
+                    tmp = Math.abs(siblings[0].coordinates.y - this.selectedNode.coordinates.y);
+
+                for (let node of siblings) {
+                    let distance = Math.abs(node.coordinates.y - this.selectedNode.coordinates.y);
+
+                    if (distance < tmp) {
+                        tmp = distance;
+                        closerNode = node;
+                    }
+                }
+
+                this.selectNode(closerNode.id);
+            }
         }
     }
 
     /**
-     * Move the node selection in a child node or in the parent node.
+     * Move the node selection in a child node or in the parent node (true: left)
      * @param {boolean} direction
      */
     private moveSelectionOnBranch(direction: boolean) {
-        let root = this.getRoot(),
-            key, checks, tmp = Number.MIN_VALUE;
+        if ((this.getOrientation(this.selectedNode) === false && direction) ||
+            (this.getOrientation(this.selectedNode) === true && !direction)) {
+            this.selectNode(this.selectedNode.parent.id);
+        } else {
+            let children = this.getChildren(this.selectedNode);
 
-        this.getNodes().forEach((node: Node) => {
-            if (this.selectedNode.coordinates.x < root.coordinates.x) {
-                checks = direction ? node.parent.id === this.selectedNode.id : this.selectedNode.parent.id === node.id;
-            } else if (this.selectedNode.coordinates.x > root.coordinates.x) {
-                checks = !direction ? node.parent.id === this.selectedNode.id : this.selectedNode.parent.id === node.id;
-            } else {
-                checks = (direction ? node.coordinates.x < root.coordinates.x : node.coordinates.x > root.coordinates.x)
-                    && node.parent.id === this.selectedNode.id;
-
-                if (checks && node.coordinates.y > tmp) {
-                    tmp = node.coordinates.y;
-                    key = node.id;
-                }
+            if (this.getOrientation(this.selectedNode) === undefined) {
+                // The selected node is the root
+                children = children.filter((node: Node) => {
+                    return this.getOrientation(node) === direction;
+                });
             }
-        });
 
-        if (key !== undefined) {
-            this.selectNode(key);
+            let lowerNode = this.getLowerNode(children);
+
+            if (children.length > 0) {
+                this.selectNode(lowerNode.id);
+            }
         }
     }
 
