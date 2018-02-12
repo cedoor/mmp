@@ -60,6 +60,8 @@ export default class Map {
 
         this.nodes.addRootNode();
 
+        this.history.save();
+
         return <any>this.createMmpInstance();
     }
 

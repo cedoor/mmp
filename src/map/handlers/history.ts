@@ -54,7 +54,7 @@ export default class History {
             this.map.draw.update();
             this.map.events.call(Event.create);
             this.map.nodes.addRootNode();
-            this.map.zoom.center();
+            this.map.zoom.center(null, 0);
             this.save();
         }
     };
