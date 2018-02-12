@@ -66,8 +66,7 @@ export default class Draw {
             .attr("transform", (node: Node) => "translate(" + node.coordinates.x + "," + node.coordinates.y + ")")
             .on("dblclick", (node: Node) => {
                 d3.event.stopPropagation();
-
-                this.setNodeName(node);
+                this.enableNodeNameEditing(node);
             });
 
         if (this.map.options.drag === true) {
@@ -78,7 +77,7 @@ export default class Draw {
         outer.insert("foreignObject")
             .html((node: Node) => this.createNodeNameDOM(node))
             .each((node: Node) => {
-                this.updateForeignObject(node.getNameDOM());
+                this.updateNodeNameContainer(node);
             });
 
         // Set background of the node
@@ -173,13 +172,12 @@ export default class Draw {
      * @param {Node} node
      */
     public updateNodeShapes(node: Node) {
-        let text = node.getNameDOM(),
-            background = node.getBackgroundDOM();
+        let background = node.getBackgroundDOM();
 
         d3.select(background).attr("d", (node: Node) => <any>this.drawNodeBackground(node));
         d3.selectAll("." + this.map.id + "_branch").attr("d", (node: Node) => <any>this.drawBranch(node));
 
-        this.updateForeignObject(text);
+        this.updateNodeNameContainer(node);
     }
 
     /**
@@ -222,10 +220,10 @@ export default class Draw {
     }
 
     /**
-     * Set the node text.
+     * Enable all events for the name editing.
      * @param {Node} node
      */
-    private setNodeName(node: Node) {
+    private enableNodeNameEditing(node: Node) {
         let name = node.getNameDOM();
 
         Utils.focusWithCaretAtEnd(name);
@@ -244,7 +242,6 @@ export default class Draw {
             if (name.innerHTML !== node.name) {
                 this.map.nodes.updateNode("name", name.innerHTML);
             }
-            console.log("blur");
 
             name.style.setProperty("cursor", "pointer");
             name.ondblclick = name.onmousedown = null;
@@ -252,16 +249,17 @@ export default class Draw {
     }
 
     /**
-     * Update node foreign object dimensions.
-     * @param {HTMLDivElement} text
+     * Update node name container (foreign object) dimensions.
+     * @param {Node} node
      */
-    private updateForeignObject(text: HTMLDivElement) {
-        let foreignObject: SVGForeignObjectElement = <SVGForeignObjectElement>text.parentNode;
+    private updateNodeNameContainer(node: Node) {
+        let name = node.getNameDOM(),
+            foreignObject: SVGForeignObjectElement = <SVGForeignObjectElement>name.parentNode;
 
-        foreignObject.setAttribute("x", (-text.clientWidth / 2).toString());
-        foreignObject.setAttribute("y", (-text.clientHeight / 2).toString());
-        foreignObject.setAttribute("width", text.clientWidth.toString());
-        foreignObject.setAttribute("height", text.clientHeight.toString());
+        foreignObject.setAttribute("x", (-name.clientWidth / 2).toString());
+        foreignObject.setAttribute("y", (-name.clientHeight / 2).toString());
+        foreignObject.setAttribute("width", name.clientWidth.toString());
+        foreignObject.setAttribute("height", name.clientHeight.toString());
     }
 
     /**
