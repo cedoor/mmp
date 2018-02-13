@@ -53,7 +53,7 @@ export default class Draw {
         let nodes = this.map.nodes.getNodes(),
             dom = {
                 nodes: this.map.dom.g.selectAll("." + this.map.id + "_node").data(nodes),
-                branches: this.map.dom.g.selectAll(".branch").data(nodes.slice(1))
+                branches: this.map.dom.g.selectAll("." + this.map.id + "_branch").data(nodes.slice(1))
             };
 
         let outer = dom.nodes.enter().append("g")

@@ -62,22 +62,21 @@ export default class Drag {
         let x = node.coordinates.x += dx,
             y = node.coordinates.y += dy;
 
-        // Check if old and new orientation are equal
-        let newOrientation = this.map.nodes.getOrientation(node),
-            orientationIsChanged = newOrientation !== this.orientation;
-
         // Move graphically the node in new coordinates
         node.dom.setAttribute("transform", "translate(" + [x, y] + ")");
 
         // If the node is locked move also descendants
         if (node.locked) {
-            let root = node.coordinates;
+            // Check if old and new orientation are equal
+            let newOrientation = this.map.nodes.getOrientation(node),
+                orientationIsChanged = newOrientation !== this.orientation,
+                root = node;
 
             for (let node of this.descendants) {
                 let x = node.coordinates.x += dx, y = node.coordinates.y += dy;
 
                 if (orientationIsChanged) {
-                    x = node.coordinates.x += (root.x - node.coordinates.x) * 2;
+                    x = node.coordinates.x += (root.coordinates.x - node.coordinates.x) * 2;
                 }
 
                 node.dom.setAttribute("transform", "translate(" + [x, y] + ")");

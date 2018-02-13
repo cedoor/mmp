@@ -66,7 +66,7 @@ export default class Utils {
         for (let property in object2) {
             let value = object2[property];
 
-            if (!restricted || result[property]) {
+            if (!restricted || result[property] !== undefined) {
                 if (this.isPrimitiveType(value) || value === null) {
                     result[property] = value;
                 } else if (Array.isArray(value)) {
