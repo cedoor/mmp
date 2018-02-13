@@ -142,6 +142,7 @@ export default class Nodes {
         let properties = {
                 name: this.updateNodeName,
                 locked: this.updateNodeLockedStatus,
+                coordinates: this.updateNodeCoordinates,
                 backgroundColor: this.updateNodeBackgroundColor,
                 branchColor: this.updateNodeBranchColor,
                 textColor: this.updateNodeTextColor,
@@ -357,7 +358,7 @@ export default class Nodes {
      * @param {Node[]} nodes
      * @returns {Node} lowerNode
      */
-    getLowerNode(nodes: Node[] = this.nodes.values()): Node {
+    private getLowerNode(nodes: Node[] = this.nodes.values()): Node {
         let tmp = Number.MIN_VALUE, lowerNode;
 
         for (let node of nodes) {
@@ -386,6 +387,51 @@ export default class Nodes {
             if (!visual) {
                 node.name = value;
             }
+        } else {
+            return false;
+        }
+    };
+
+    /**
+     * Update the node coordinates with a new value.
+     * @param {Node} node
+     * @param value
+     * @returns {boolean}
+     */
+    private updateNodeCoordinates = (node: Node, value: any) => {
+        let coordinates: Coordinates = Utils.mergeObjects(node.coordinates, value, true) as Coordinates;
+
+        if (!(coordinates.x === node.coordinates.x && coordinates.y === node.coordinates.y)) {
+            let oldOrientation = this.getOrientation(this.selectedNode),
+                dx = node.coordinates.x - coordinates.x,
+                dy = node.coordinates.y - coordinates.y;
+
+            node.coordinates = Utils.cloneObject(coordinates) as Coordinates;
+
+            node.dom.setAttribute("transform", "translate(" + [coordinates.x, coordinates.y] + ")");
+
+            // TODO
+
+            // If the node is locked move also descendants
+            if (this.selectedNode.locked) {
+                let root = this.selectedNode,
+                    descendants = this.getDescendants(this.selectedNode),
+                    newOrientation = this.getOrientation(this.selectedNode);
+
+                for (let node of descendants) {
+                    let x = node.coordinates.x += dx, y = node.coordinates.y += dy;
+
+                    if (oldOrientation !== newOrientation) {
+                        x = node.coordinates.x += (root.coordinates.x - node.coordinates.x) * 2;
+                    }
+
+                    node.dom.setAttribute("transform", "translate(" + [x, y] + ")");
+                }
+            }
+
+            d3.selectAll("." + this.map.id + "_branch").attr("d", (node: Node) => {
+                return <any>this.map.draw.drawBranch(node);
+            });
         } else {
             return false;
         }
