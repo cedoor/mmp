@@ -43,9 +43,9 @@ describe("Tests", function () {
             (function () {
                 testMap.options({
                     unknown: function () {
-                        return "Hello world"
+                        return "Hello world";
                     }
-                })
+                });
             }).should.to.throw(Error);
         });
     });
@@ -160,6 +160,40 @@ describe("Tests", function () {
         });
     });
 
+    describe("§ testMap.nodeSelectionTo()", function () {
+        it("Should move node selection in the left direction", function () {
+            testMap.new();
+            testMap.addNode();
+
+            testMap.nodeSelectionTo("left");
+
+            testMap.selectNode().id.should.to.equal("mmp2_node_1");
+        });
+
+        it("Should move node selection in the right direction", function () {
+            testMap.selectNode("mmp2_node_0");
+            testMap.addNode();
+            testMap.nodeSelectionTo("right");
+
+            testMap.selectNode().id.should.to.equal("mmp2_node_2");
+        });
+
+        it("Should move node selection in the up direction", function () {
+            testMap.selectNode("mmp2_node_0");
+            testMap.addNode();
+            testMap.selectNode("mmp2_node_3");
+            testMap.nodeSelectionTo("up");
+
+            testMap.selectNode().id.should.to.equal("mmp2_node_1");
+        });
+
+        it("Should move node selection in the down direction", function () {
+            testMap.nodeSelectionTo("down");
+
+            testMap.selectNode().id.should.to.equal("mmp2_node_3");
+        });
+    });
+
     describe("§ testMap.exportAsJSON()", function () {
         it("Should get mind map data without errors", function () {
             testMap.exportAsJSON.should.to.not.throw(Error);
@@ -175,7 +209,8 @@ describe("Tests", function () {
     describe("§ testMap.exportAsImage()", function () {
         it("Should get mind map data without errors", function () {
             (function () {
-                testMap.exportAsImage(() => {});
+                testMap.exportAsImage(() => {
+                });
             }).should.to.not.throw(Error);
         });
 
