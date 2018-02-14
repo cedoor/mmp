@@ -48,7 +48,6 @@ export default class Log {
 
 export enum ErrorMessage {
     incorrectEvent = "The event does not exist",
-    incorrectKey = "The key does not exist in this map",
     incorrectSnapshot = "The snapshot is not correct",
     incorrectUpdateProperty = "The property does not exist",
     rootNodeDeletion = "The root node can not be deleted",

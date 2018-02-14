@@ -90,32 +90,38 @@ export default class Nodes {
 
     /**
      * Select a node or return the current selected node.
-     * @param {string} key
+     * @param {string} id
      * @returns {ExportNodeProperties}
      */
-    public selectNode = (key?: string): ExportNodeProperties => {
-        if (key) {
-            if (this.nodes.has(key)) {
-                let node = this.nodes.get(key),
-                    background = node.getBackgroundDOM();
+    public selectNode = (id?: string): ExportNodeProperties => {
+        if (id !== undefined) {
+            if (typeof id !== "string") {
+                Log.error("The parameter is not a string", "type");
+            }
 
-                if (!background.style.stroke) {
-                    if (this.selectedNode) {
-                        this.selectedNode.getBackgroundDOM().style.stroke = "";
+            if (!this.nodeSelectionTo(id)) {
+                if (this.nodes.has(id)) {
+                    let node = this.nodes.get(id),
+                        background = node.getBackgroundDOM();
+
+                    if (!background.style.stroke) {
+                        if (this.selectedNode) {
+                            this.selectedNode.getBackgroundDOM().style.stroke = "";
+                        }
+
+                        let color = d3.color(background.style.fill).darker(.5);
+                        background.style.stroke = color.toString();
+
+                        Utils.removeAllRanges();
+                        this.selectedNode.getNameDOM().blur();
+
+                        this.selectedNode = node;
+
+                        this.map.events.call(Event.nodeSelect, node.dom, node.getProperties());
                     }
-
-                    let color = d3.color(background.style.fill).darker(.5);
-                    background.style.stroke = color.toString();
-
-                    Utils.removeAllRanges();
-                    this.selectedNode.getNameDOM().blur();
-
-                    this.selectedNode = node;
-
-                    this.map.events.call(Event.nodeSelect, node.dom, node.getProperties());
+                } else {
+                    Log.error("The node id or the direction is not correct");
                 }
-            } else {
-                Log.error(ErrorMessage.incorrectKey);
             }
         }
 
@@ -193,27 +199,24 @@ export default class Nodes {
     /**
      * Move the node selection in the direction passed as parameter.
      * @param {string} direction
+     * @returns {boolean}
      */
-    public nodeSelectionTo = (direction: "up" | "down" | "left" | "right") => {
+    private nodeSelectionTo(direction: string): boolean {
         switch (direction) {
             case "up":
                 this.moveSelectionOnLevel(true);
-                break;
+                return true;
             case "down":
                 this.moveSelectionOnLevel(false);
-                break;
+                return true;
             case "left":
                 this.moveSelectionOnBranch(true);
-                break;
+                return true;
             case "right":
                 this.moveSelectionOnBranch(false);
-                break;
+                return true;
             default:
-                if (typeof direction !== "string") {
-                    Log.error("The parameter is not a string", "type");
-                } else {
-                    Log.error("The direction is not correct (up, down, left, right)");
-                }
+                return false;
         }
     };
 

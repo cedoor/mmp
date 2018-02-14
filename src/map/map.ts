@@ -98,8 +98,7 @@ export default class Map {
             selectNode: this.nodes.selectNode,
             deselectNode: this.nodes.deselectNode,
             updateNode: this.nodes.updateNode,
-            removeNode: this.nodes.removeNode,
-            nodeSelectionTo: this.nodes.nodeSelectionTo
+            removeNode: this.nodes.removeNode
         };
     }
 
@@ -122,7 +121,6 @@ export interface MmpInstance {
     deselectNode: Function;
     updateNode: Function;
     removeNode: Function;
-    nodeSelectionTo: Function;
 }
 
 export interface DomElements {
