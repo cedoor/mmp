@@ -90,6 +90,38 @@ describe("Tests", function () {
 
             testMap.selectNode().should.to.have.property("id").and.equal("mmp2_node_0");
         });
+
+        it("Should move node selection in the left direction", function () {
+            testMap.new();
+            testMap.addNode();
+
+            testMap.selectNode("left");
+
+            testMap.selectNode().id.should.to.equal("mmp2_node_1");
+        });
+
+        it("Should move node selection in the right direction", function () {
+            testMap.selectNode("mmp2_node_0");
+            testMap.addNode();
+            testMap.selectNode("right");
+
+            testMap.selectNode().id.should.to.equal("mmp2_node_2");
+        });
+
+        it("Should move node selection in the up direction", function () {
+            testMap.selectNode("mmp2_node_0");
+            testMap.addNode();
+            testMap.selectNode("mmp2_node_3");
+            testMap.selectNode("up");
+
+            testMap.selectNode().id.should.to.equal("mmp2_node_1");
+        });
+
+        it("Should move node selection in the down direction", function () {
+            testMap.selectNode("down");
+
+            testMap.selectNode().id.should.to.equal("mmp2_node_3");
+        });
     });
 
     describe("§ testMap.addNode()", function () {
@@ -103,6 +135,8 @@ describe("Tests", function () {
         });
 
         it("Should add a node with custom parameters", function () {
+            testMap.new();
+
             testMap.addNode({
                 name: "Custom node",
                 backgroundColor: "#c9dfc0",
@@ -112,7 +146,7 @@ describe("Tests", function () {
                 }
             });
 
-            let node = document.getElementById("mmp2_node_2"),
+            let node = document.getElementById("mmp2_node_1"),
                 background = node.childNodes[0],
                 text = node.childNodes[1].childNodes[0],
                 image = node.childNodes[2];
@@ -157,40 +191,6 @@ describe("Tests", function () {
         it("Should update the properties of a node", function () {
             testMap.updateNode("textColor", "gray");
             testMap.selectNode().textColor.should.to.equal("gray");
-        });
-    });
-
-    describe("§ testMap.nodeSelectionTo()", function () {
-        it("Should move node selection in the left direction", function () {
-            testMap.new();
-            testMap.addNode();
-
-            testMap.nodeSelectionTo("left");
-
-            testMap.selectNode().id.should.to.equal("mmp2_node_1");
-        });
-
-        it("Should move node selection in the right direction", function () {
-            testMap.selectNode("mmp2_node_0");
-            testMap.addNode();
-            testMap.nodeSelectionTo("right");
-
-            testMap.selectNode().id.should.to.equal("mmp2_node_2");
-        });
-
-        it("Should move node selection in the up direction", function () {
-            testMap.selectNode("mmp2_node_0");
-            testMap.addNode();
-            testMap.selectNode("mmp2_node_3");
-            testMap.nodeSelectionTo("up");
-
-            testMap.selectNode().id.should.to.equal("mmp2_node_1");
-        });
-
-        it("Should move node selection in the down direction", function () {
-            testMap.nodeSelectionTo("down");
-
-            testMap.selectNode().id.should.to.equal("mmp2_node_3");
         });
     });
 
