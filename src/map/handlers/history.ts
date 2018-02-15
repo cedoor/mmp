@@ -128,7 +128,7 @@ export default class History {
      * @return {MapSnapshot} properties
      */
     private getSnapshot(): MapSnapshot {
-        return this.map.nodes.getNodes().map((node: Node) => node.getProperties());
+        return this.map.nodes.getNodes().map((node: Node) => this.map.nodes.getNodeProperties(node));
     }
 
     /**

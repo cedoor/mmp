@@ -48,7 +48,7 @@ export default class Nodes {
 
         this.map.draw.update();
 
-        this.map.events.call(Event.nodeCreate, node.dom, node.getProperties());
+        this.map.events.call(Event.nodeCreate, node.dom, this.getNodeProperties(node));
 
         this.deselectNode();
     }
@@ -65,16 +65,15 @@ export default class Nodes {
 
         let node: Node = new Node(properties);
 
+        node.coordinates = {
+            x: this.calculateXposition(node),
+            y: this.calculateYposition(node)
+        };
+
         if (userProperties && userProperties.coordinates) {
-            node.coordinates = Utils.mergeObjects({
-                x: this.calculateXposition(node),
-                y: this.calculateYposition(node)
-            }, userProperties.coordinates, true) as Coordinates;
-        } else {
-            node.coordinates = {
-                x: this.calculateXposition(node),
-                y: this.calculateYposition(node)
-            };
+            let fixedCoordinates = this.fixCoordinates(userProperties.coordinates);
+
+            node.coordinates = Utils.mergeObjects(node.coordinates, fixedCoordinates, true) as Coordinates;
         }
 
         this.nodes.set(properties.id, node);
@@ -85,7 +84,7 @@ export default class Nodes {
 
         this.map.history.save();
 
-        this.map.events.call(Event.nodeCreate, node.dom, node.getProperties());
+        this.map.events.call(Event.nodeCreate, node.dom, this.getNodeProperties(node));
     };
 
     /**
@@ -117,7 +116,7 @@ export default class Nodes {
 
                         this.selectedNode = node;
 
-                        this.map.events.call(Event.nodeSelect, node.dom, node.getProperties());
+                        this.map.events.call(Event.nodeSelect, node.dom, this.getNodeProperties(node));
                     }
                 } else {
                     Log.error("The node id or the direction is not correct");
@@ -125,7 +124,7 @@ export default class Nodes {
             }
         }
 
-        return this.selectedNode.getProperties();
+        return this.getNodeProperties(this.selectedNode);
     };
 
     /**
@@ -164,7 +163,7 @@ export default class Nodes {
             if (func(this.selectedNode, value, visual) !== false) {
                 if (!visual) {
                     this.map.history.save();
-                    this.map.events.call(Event.nodeUpdate, this.selectedNode.dom, this.selectedNode.getProperties());
+                    this.map.events.call(Event.nodeUpdate, this.selectedNode.dom, this.getNodeProperties(this.selectedNode));
                 }
             }
         } else {
@@ -190,11 +189,58 @@ export default class Nodes {
 
             this.map.history.save();
 
-            this.map.events.call(Event.nodeRemove, null, this.selectedNode.getProperties());
+            this.map.events.call(Event.nodeRemove, null, this.getNodeProperties(this.selectedNode));
         } else {
             Log.error(ErrorMessage.rootNodeDeletion);
         }
     };
+
+    /**
+     * Return the export properties of the node.
+     * @param {Node} node
+     * @returns {ExportNodeProperties} properties
+     */
+    public getNodeProperties(node: Node): ExportNodeProperties {
+        return {
+            id: node.id,
+            parent: node.parent ? node.parent.id : "",
+            name: node.name,
+            coordinates: this.fixCoordinates(node.coordinates, true),
+            image: {
+                src: node.image.src,
+                size: node.image.size
+            },
+            backgroundColor: node.backgroundColor,
+            textColor: node.textColor,
+            branchColor: node.branchColor,
+            fontSize: node.fontSize,
+            italic: node.italic,
+            bold: node.bold,
+            locked: node.locked,
+            k: node.k
+        };
+    }
+
+    /**
+     * Convert external coordinates to internal or otherwise.
+     * @param {Coordinates} coordinates
+     * @param {boolean} reverse
+     * @returns {Coordinates}
+     */
+    private fixCoordinates(coordinates: Coordinates, reverse: boolean = false): Coordinates {
+        let zoomCoordinates = d3.zoomTransform(this.map.dom.svg.node()),
+            fixedCoordinates: Coordinates = {} as Coordinates;
+
+        if (coordinates.x) {
+            fixedCoordinates.x = coordinates.x - zoomCoordinates.x * (reverse ? -1 : 1);
+        }
+
+        if (coordinates.y) {
+            fixedCoordinates.y = coordinates.y - zoomCoordinates.y * (reverse ? -1 : 1);
+        }
+
+        return fixedCoordinates;
+    }
 
     /**
      * Move the node selection in the direction passed as parameter.
@@ -402,7 +448,8 @@ export default class Nodes {
      * @returns {boolean}
      */
     private updateNodeCoordinates = (node: Node, value: any) => {
-        let coordinates: Coordinates = Utils.mergeObjects(node.coordinates, value, true) as Coordinates;
+        let fixedCoordinates = this.fixCoordinates(value),
+            coordinates: Coordinates = Utils.mergeObjects(node.coordinates, fixedCoordinates, true) as Coordinates;
 
         if (!(coordinates.x === node.coordinates.x && coordinates.y === node.coordinates.y)) {
             let oldOrientation = this.getOrientation(this.selectedNode),
@@ -412,8 +459,6 @@ export default class Nodes {
             node.coordinates = Utils.cloneObject(coordinates) as Coordinates;
 
             node.dom.setAttribute("transform", "translate(" + [coordinates.x, coordinates.y] + ")");
-
-            // TODO
 
             // If the node is locked move also descendants
             if (this.selectedNode.locked) {

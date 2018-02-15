@@ -105,7 +105,7 @@ export default class Drag {
         if (this.dragging) {
             this.dragging = false;
             this.map.history.save();
-            this.map.events.call(Event.nodeUpdate, node.dom, node.getProperties());
+            this.map.events.call(Event.nodeUpdate, node.dom, this.map.nodes.getNodeProperties(node));
         }
     }
 

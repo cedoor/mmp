@@ -85,34 +85,6 @@ export default class Node implements NodeProperties {
         return this.dom.querySelector("image");
     }
 
-    /**
-     * Return the export properties of the node.
-     * @returns {ExportNodeProperties} properties
-     */
-    public getProperties(): ExportNodeProperties {
-        return {
-            id: this.id,
-            parent: this.parent ? this.parent.id : "",
-            name: this.name,
-            coordinates: {
-                x: this.coordinates.x,
-                y: this.coordinates.y
-            },
-            image: {
-                src: this.image.src,
-                size: this.image.size
-            },
-            backgroundColor: this.backgroundColor,
-            textColor: this.textColor,
-            branchColor: this.branchColor,
-            fontSize: this.fontSize,
-            italic: this.italic,
-            bold: this.bold,
-            locked: this.locked,
-            k: this.k
-        };
-    }
-
 }
 
 export interface UserNodeProperties {
