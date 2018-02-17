@@ -220,7 +220,7 @@ export default class Draw {
     }
 
     /**
-     * Enable all events for the name editing.
+     * Enable and manage all events for the name editing.
      * @param {Node} node
      */
     private enableNodeNameEditing(node: Node) {
@@ -238,6 +238,7 @@ export default class Draw {
             this.updateNodeShapes(node);
         };
 
+        // Allow only some shortcuts
         name.onkeydown = (event) => {
             if (event.ctrlKey || event.metaKey) {
                 switch (event.keyCode) {
@@ -266,6 +267,7 @@ export default class Draw {
             return true;
         };
 
+        // Remove html formatting when paste text on node
         name.onpaste = (event) => {
             event.preventDefault();
 
@@ -281,7 +283,9 @@ export default class Draw {
 
             name.ondblclick = name.onmousedown = name.onblur =
                 name.onkeydown = name.oninput = name.onpaste = null;
+
             name.style.setProperty("cursor", "pointer");
+
             name.blur();
         };
     }
