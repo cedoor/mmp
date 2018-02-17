@@ -37,7 +37,8 @@ export default class Nodes {
                 x: parseInt(this.map.dom.container.style("width")) / 2,
                 y: parseInt(this.map.dom.container.style("height")) / 2
             },
-            id: this.map.id + "_node_" + this.counter
+            id: this.map.id + "_node_" + this.counter,
+            parent: null
         }) as NodeProperties;
 
         let node: Node = new Node(properties);

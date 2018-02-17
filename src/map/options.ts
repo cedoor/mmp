@@ -1,7 +1,8 @@
-import {UserNodeProperties} from "./models/node";
+import {Colors, Font, Image} from "./models/node";
 import Utils from "../utils/utils";
 import Map from "./map";
 import * as d3 from "d3";
+import Log from "../utils/log";
 
 /**
  * Manage default map options.
@@ -15,8 +16,8 @@ export default class Options implements OptionParameters {
     public drag: boolean;
     public zoom: boolean;
 
-    public node: UserNodeProperties;
-    public rootNode: UserNodeProperties;
+    public node: DefaultNodeProperties;
+    public rootNode: DefaultNodeProperties;
 
     /**
      * Initialize all options.
@@ -34,10 +35,6 @@ export default class Options implements OptionParameters {
         // Default node properties
         this.node = Utils.mergeObjects({
             name: "Node",
-            coordinates: {
-                x: 0,
-                y: 0
-            },
             image: {
                 src: "",
                 size: 60
@@ -53,15 +50,11 @@ export default class Options implements OptionParameters {
                 weight: "normal"
             },
             locked: true
-        }, parameters.node, true) as UserNodeProperties;
+        }, parameters.node, true) as DefaultNodeProperties;
 
         // Default root node properties
         this.rootNode = Utils.mergeObjects({
             name: "Root node",
-            coordinates: {
-                x: 0,
-                y: 0
-            },
             image: {
                 src: "",
                 size: 70
@@ -75,48 +68,64 @@ export default class Options implements OptionParameters {
                 size: 20,
                 style: "normal",
                 weight: "normal"
-            },
-            locked: false
-        }, parameters.rootNode, true) as UserNodeProperties;
+            }
+        }, parameters.rootNode, true) as DefaultNodeProperties;
     }
 
-    /**
-     * Set option parameters and return them updated.
-     * @param {OptionParameters} parameters
-     * @returns {OptionParameters} parameters
-     */
-    public set = (parameters: OptionParameters): OptionParameters => {
-        parameters = Utils.mergeObjects(this.get(), parameters);
+    public update = (property: string, value: any) => {
+        if (typeof property !== "string") {
+            Log.error("The property must be a string", "type");
+        }
 
-        this.fontFamily = parameters.fontFamily;
-        this.centerOnResize = parameters.centerOnResize;
-        this.drag = parameters.drag;
-        this.zoom = parameters.zoom;
-        this.node = parameters.node;
-        this.rootNode = parameters.rootNode;
-
-        this.update();
-
-        return this.get();
+        switch (property) {
+            case "fontFamily":
+                this.updateFontFamily(value);
+                break;
+            case "centerOnResize":
+                this.updateCenterOnResize(value);
+                break;
+            case "drag":
+                this.updateDrag(value);
+                break;
+            case "zoom":
+                this.updateZoom(value);
+                break;
+            case "defaultNode":
+                this.updateDefaultNode(value);
+                break;
+            case "defaultRootNode":
+                this.updateDefaultRootNode(value);
+                break;
+            default:
+                Log.error("The property does not exist");
+        }
     };
 
     /**
-     * Return current option parameters.
-     * @returns {OptionParameters} parameters
+     * Update the font family of all nodes.
+     * @param {string} font
      */
-    private get(): OptionParameters {
-        return {
-            fontFamily: this.fontFamily,
-            centerOnResize: this.centerOnResize,
-            drag: this.drag,
-            zoom: this.zoom,
-            node: Utils.cloneObject(this.node) as UserNodeProperties,
-            rootNode: Utils.cloneObject(this.rootNode) as UserNodeProperties
-        };
+    private updateFontFamily(font: string) {
+        if (typeof font !== "string") {
+            Log.error("The property must be a string", "type");
+        }
+
+        this.fontFamily = font;
+
+        this.map.draw.update();
     }
 
-    private update() {
-        // Update centerOnResize behavior
+    /**
+     * Update centerOnResize behavior.
+     * @param {boolean} flag
+     */
+    private updateCenterOnResize(flag: boolean) {
+        if (typeof flag !== "boolean") {
+            Log.error("The property must be a boolean", "type");
+        }
+
+        this.centerOnResize = flag;
+
         if (this.centerOnResize === true) {
             d3.select(window).on("resize." + this.map.id, () => {
                 this.map.zoom.center();
@@ -124,17 +133,65 @@ export default class Options implements OptionParameters {
         } else {
             d3.select(window).on("resize." + this.map.id, null);
         }
-        // Update zoom behavior
-        if (this.map.options.zoom === true) {
-            this.map.dom.svg.call(this.map.zoom.getZoomBehavior());
-        } else {
-            this.map.dom.svg.on(".zoom", null);
+    }
+
+    /**
+     * Update drag behavior.
+     * @param {boolean} flag
+     */
+    private updateDrag(flag: boolean) {
+        if (typeof flag !== "boolean") {
+            Log.error("The property must be a boolean", "type");
         }
-        // Redraw map to update drag behavior
+
+        this.drag = flag;
+
         this.map.draw.clear();
         this.map.draw.update();
     }
 
+    /**
+     * Update zoom behavior.
+     * @param {boolean} flag
+     */
+    private updateZoom(flag: boolean) {
+        if (typeof flag !== "boolean") {
+            Log.error("The property must be a boolean", "type");
+        }
+
+        this.zoom = flag;
+
+        if (this.zoom === true) {
+            this.map.dom.svg.call(this.map.zoom.getZoomBehavior());
+        } else {
+            this.map.dom.svg.on(".zoom", null);
+        }
+    }
+
+    /**
+     * Update default node properties.
+     * @param {DefaultNodeProperties} properties
+     */
+    private updateDefaultNode(properties: DefaultNodeProperties) {
+        this.node = Utils.mergeObjects(this.node, properties, true) as DefaultNodeProperties;
+    }
+
+    /**
+     * Update default root node properties.
+     * @param {DefaultNodeProperties} properties
+     */
+    private updateDefaultRootNode(properties: DefaultNodeProperties) {
+        this.rootNode = Utils.mergeObjects(this.rootNode, properties, true) as DefaultNodeProperties;
+    }
+
+}
+
+export interface DefaultNodeProperties {
+    name: string;
+    image: Image;
+    colors: Colors;
+    font: Font;
+    locked: boolean;
 }
 
 export interface OptionParameters {
@@ -142,6 +199,6 @@ export interface OptionParameters {
     centerOnResize?: boolean;
     drag?: boolean;
     zoom?: boolean;
-    node?: UserNodeProperties;
-    rootNode?: UserNodeProperties;
+    node?: DefaultNodeProperties;
+    rootNode?: DefaultNodeProperties;
 }

@@ -71,6 +71,10 @@ export default class Draw {
 
         if (this.map.options.drag === true) {
             outer.call(this.map.drag.getDragBehavior());
+        } else {
+            outer.on("mousedown", (node: Node) => {
+                this.map.nodes.selectNode(node.id);
+            });
         }
 
         // Set text of the node
