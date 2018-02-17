@@ -141,33 +141,56 @@ export default class Nodes {
      * Update the properties of the selected node.
      * @param {string} property
      * @param value
-     * @param {boolean} visual
+     * @param {boolean} graphic
      */
-    public updateNode = (property: string, value: any, visual?: boolean) => {
-        let properties = {
-                name: this.updateNodeName,
-                locked: this.updateNodeLockedStatus,
-                coordinates: this.updateNodeCoordinates,
-                backgroundColor: this.updateNodeBackgroundColor,
-                branchColor: this.updateNodeBranchColor,
-                textColor: this.updateNodeTextColor,
-                imageSrc: this.updateNodeImageSrc,
-                imageSize: this.updateNodeImageSize,
-                fontSize: this.updateNodeFontSize,
-                italic: this.updateNodeItalicFont,
-                bold: this.updateNodeBoldFont
-            },
-            func = properties[property];
+    public updateNode = (property: string, value: any, graphic: boolean = false) => {
+        if (typeof property !== "string") {
+            Log.error("The property must be a string", "type");
+        }
 
-        if (func !== undefined) {
-            if (func(this.selectedNode, value, visual) !== false) {
-                if (!visual) {
-                    this.map.history.save();
-                    this.map.events.call(Event.nodeUpdate, this.selectedNode.dom, this.getNodeProperties(this.selectedNode));
-                }
-            }
-        } else {
-            Log.error(ErrorMessage.incorrectUpdateProperty);
+        let updated: any;
+
+        switch (property) {
+            case "name":
+                updated = this.updateNodeName(this.selectedNode, value, graphic);
+                break;
+            case "locked":
+                updated = this.updateNodeLockedStatus(this.selectedNode, value);
+                break;
+            case "coordinates":
+                updated = this.updateNodeCoordinates(this.selectedNode, value);
+                break;
+            case "imageSrc":
+                updated = this.updateNodeImageSrc(this.selectedNode, value);
+                break;
+            case "imageSize":
+                updated = this.updateNodeImageSize(this.selectedNode, value, graphic);
+                break;
+            case "backgroundColor":
+                updated = this.updateNodeBackgroundColor(this.selectedNode, value, graphic);
+                break;
+            case "branchColor":
+                updated = this.updateNodeBranchColor(this.selectedNode, value, graphic);
+                break;
+            case "fontWeight":
+                updated = this.updateNodeFontWeight(this.selectedNode, value, graphic);
+                break;
+            case "fontStyle":
+                updated = this.updateNodeFontStyle(this.selectedNode, value, graphic);
+                break;
+            case "fontSize":
+                updated = this.updateNodeFontSize(this.selectedNode, value, graphic);
+                break;
+            case "nameColor":
+                updated = this.updateNodeNameColor(this.selectedNode, value, graphic);
+                break;
+            default:
+                Log.error("The property does not exist");
+        }
+
+        if (graphic === false && updated !== false) {
+            this.map.history.save();
+            this.map.events.call(Event.nodeUpdate, this.selectedNode.dom, this.getNodeProperties(this.selectedNode));
         }
     };
 
@@ -184,7 +207,6 @@ export default class Nodes {
 
             this.deselectNode();
 
-            this.map.draw.clear();
             this.map.draw.update();
 
             this.map.history.save();
@@ -210,12 +232,8 @@ export default class Nodes {
                 src: node.image.src,
                 size: node.image.size
             },
-            backgroundColor: node.backgroundColor,
-            textColor: node.textColor,
-            branchColor: node.branchColor,
-            fontSize: node.fontSize,
-            italic: node.italic,
-            bold: node.bold,
+            colors: node.colors,
+            font: node.font,
             locked: node.locked,
             k: node.k
         };
@@ -423,17 +441,17 @@ export default class Nodes {
     /**
      * Update the node name with a new value.
      * @param {Node} node
-     * @param value
-     * @param {boolean} visual
+     * @param {string} value
+     * @param {boolean} graphic
      * @returns {boolean}
      */
-    private updateNodeName = (node: Node, value: any, visual?: boolean) => {
-        if (node.name != value || visual) {
+    private updateNodeName = (node: Node, value: string, graphic: boolean = false) => {
+        if (node.name != value || graphic) {
             node.getNameDOM().innerHTML = value;
 
             this.map.draw.updateNodeShapes(node);
 
-            if (!visual) {
+            if (graphic === false) {
                 node.name = value;
             }
         } else {
@@ -444,10 +462,10 @@ export default class Nodes {
     /**
      * Update the node coordinates with a new value.
      * @param {Node} node
-     * @param value
+     * @param {Coordinates} value
      * @returns {boolean}
      */
-    private updateNodeCoordinates = (node: Node, value: any) => {
+    private updateNodeCoordinates = (node: Node, value: Coordinates) => {
         let fixedCoordinates = this.fixCoordinates(value),
             coordinates: Coordinates = Utils.mergeObjects(node.coordinates, fixedCoordinates, true) as Coordinates;
 
@@ -488,12 +506,12 @@ export default class Nodes {
     /**
      * Update the node background color with a new value.
      * @param {Node} node
-     * @param value
-     * @param {boolean} visual
+     * @param {string} value
+     * @param {boolean} graphic
      * @returns {boolean}
      */
-    private updateNodeBackgroundColor = (node: Node, value: any, visual?: boolean) => {
-        if (node.backgroundColor !== value || visual) {
+    private updateNodeBackgroundColor = (node: Node, value: string, graphic: boolean = false) => {
+        if (node.colors.background !== value || graphic) {
             let background = node.getBackgroundDOM();
 
             background.style["fill"] = value;
@@ -502,8 +520,8 @@ export default class Nodes {
                 background.style["stroke"] = d3.color(value).darker(.5).toString();
             }
 
-            if (!visual) {
-                node.backgroundColor = value;
+            if (graphic === false) {
+                node.colors.background = value;
             }
         } else {
             return false;
@@ -513,16 +531,16 @@ export default class Nodes {
     /**
      * Update the node text color with a new value.
      * @param {Node} node
-     * @param value
-     * @param {boolean} visual
+     * @param {string} value
+     * @param {boolean} graphic
      * @returns {boolean}
      */
-    private updateNodeTextColor = (node: Node, value: any, visual?: boolean) => {
-        if (node.textColor !== value || visual) {
+    private updateNodeNameColor = (node: Node, value: string, graphic: boolean = false) => {
+        if (node.colors.name !== value || graphic) {
             node.getNameDOM().style["color"] = value;
 
-            if (!visual) {
-                node.textColor = value;
+            if (graphic === false) {
+                node.colors.name = value;
             }
         } else {
             return false;
@@ -532,19 +550,19 @@ export default class Nodes {
     /**
      * Update the node branch color with a new value.
      * @param {Node} node
-     * @param value
-     * @param {boolean} visual
+     * @param {string} value
+     * @param {boolean} graphic
      * @returns {boolean}
      */
-    private updateNodeBranchColor = (node: Node, value: any, visual?: boolean) => {
+    private updateNodeBranchColor = (node: Node, value: string, graphic: boolean = false) => {
         if (!this.isRoot(node)) {
-            if (node.branchColor !== value || visual) {
+            if (node.colors.name !== value || graphic) {
                 let branch = document.getElementById(node.id + "_branch");
 
                 branch.style["fill"] = branch.style["stroke"] = value;
 
-                if (!visual) {
-                    node.branchColor = value;
+                if (graphic === false) {
+                    node.colors.branch = value;
                 }
             } else {
                 return false;
@@ -557,12 +575,12 @@ export default class Nodes {
     /**
      * Update the node font size with a new value.
      * @param {Node} node
-     * @param value
-     * @param {boolean} visual
+     * @param {number} value
+     * @param {boolean} graphic
      * @returns {boolean}
      */
-    private updateNodeFontSize = (node: Node, value: any, visual?: boolean) => {
-        if (node.fontSize != value || visual) {
+    private updateNodeFontSize = (node: Node, value: number, graphic: boolean = false) => {
+        if (node.font.size != value || graphic) {
             node.getNameDOM().style["font-size"] = value + "px";
 
             this.map.draw.updateNodeShapes(node);
@@ -573,8 +591,8 @@ export default class Nodes {
                 image.setAttribute("y", y.toString());
             }
 
-            if (!visual) {
-                node.fontSize = value;
+            if (graphic === false) {
+                node.font.size = value;
             }
         } else {
             return false;
@@ -584,16 +602,16 @@ export default class Nodes {
     /**
      * Update the node image size with a new value.
      * @param {Node} node
-     * @param value
-     * @param {boolean} visual
+     * @param {number} value
+     * @param {boolean} graphic
      * @returns {boolean}
      */
-    private updateNodeImageSize = (node: Node, value: any, visual?: boolean) => {
+    private updateNodeImageSize = (node: Node, value: number, graphic: boolean = false) => {
         if (node.image.src !== "") {
-            if (node.image.size != value || visual) {
+            if (node.image.size !== value || graphic) {
                 let image = node.getImageDOM(),
                     box = (<any>image).getBBox(),
-                    height = parseInt(value),
+                    height = value,
                     width = box.width * height / box.height,
                     y = -(height + node.dimensions.height / 2 + 5),
                     x = -width / 2;
@@ -603,7 +621,7 @@ export default class Nodes {
                 image.setAttribute("y", y.toString());
                 image.setAttribute("x", x.toString());
 
-                if (!visual) {
+                if (graphic === false) {
                     node.image.size = height;
                 }
             } else {
@@ -615,10 +633,10 @@ export default class Nodes {
     /**
      * Update the node image src with a new value.
      * @param {Node} node
-     * @param value
+     * @param {string} value
      * @returns {boolean}
      */
-    private updateNodeImageSrc = (node: Node, value: any) => {
+    private updateNodeImageSrc = (node: Node, value: string) => {
         if (node.image.src !== value) {
             node.image.src = value;
 
@@ -631,33 +649,54 @@ export default class Nodes {
     /**
      * Update the node font style.
      * @param {Node} node
+     * @param {string} value
+     * @param {boolean} graphic
      * @returns {boolean}
      */
-    private updateNodeItalicFont = (node: Node) => {
-        node.getNameDOM().style["font-style"] = Utils.fontStyle(node.italic = !node.italic);
+    private updateNodeFontStyle = (node: Node, value: string, graphic: boolean = false) => {
+        if (node.font.style !== value) {
+            node.getNameDOM().style["font-style"] = value;
+
+            if (graphic === false) {
+                node.font.style = value;
+            }
+        } else {
+            return false;
+        }
     };
 
     /**
-     * Update the node font wight.
+     * Update the node font weight.
      * @param {Node} node
+     * @param {string} value
+     * @param {boolean} graphic
      * @returns {boolean}
      */
-    private updateNodeBoldFont = (node: Node) => {
-        node.getNameDOM().style["font-weight"] = Utils.fontWeight(node.bold = !node.bold);
+    private updateNodeFontWeight = (node: Node, value: string, graphic: boolean = false) => {
+        if (node.font.weight !== value) {
+            node.getNameDOM().style["font-weight"] = value;
 
-        this.map.draw.updateNodeShapes(node);
+            if (graphic === false) {
+                node.font.weight = value;
+            }
+
+            this.map.draw.updateNodeShapes(node);
+        } else {
+            return false;
+        }
     };
 
     /**
      * Update the node locked status.
      * @param {Node} node
+     * @param {boolean} value
      * @returns {boolean}
      */
-    private updateNodeLockedStatus = (node: Node) => {
+    private updateNodeLockedStatus = (node: Node, value: boolean) => {
         if (!this.isRoot(node)) {
-            node.locked = !node.locked;
+            node.locked = value || !node.locked;
         } else {
-            Log.error(ErrorMessage.rootNodeLocking);
+            Log.error("The root node can not be locked");
         }
     };
 

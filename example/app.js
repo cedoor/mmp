@@ -11,7 +11,7 @@ let map = mmp.create("mmp1", { rootNode: { name: "Map" } }),
         uploadMap: document.getElementsByClassName("upload-map"),
         backgroundColor: document.getElementsByClassName("background-color"),
         branchColor: document.getElementsByClassName("branch-color"),
-        textColor: document.getElementsByClassName("text-color")
+        nameColor: document.getElementsByClassName("name-color")
     };
 
 // Console messages
@@ -72,9 +72,9 @@ function insertImage(map) {
 function updateValues(node, map) {
     dom.fontSize[map].value = node.fontSize;
     dom.imageSize[map].value = node.image.size;
-    dom.backgroundColor[map].value = node.backgroundColor;
-    dom.branchColor[map].value = node.branchColor || "#ffffff";
-    dom.textColor[map].value = node.textColor;
+    dom.backgroundColor[map].value = node.colors.background;
+    dom.branchColor[map].value = node.colors.branch || "#ffffff";
+    dom.nameColor[map].value = node.colors.name;
 }
 
 // Initialize values of map controls

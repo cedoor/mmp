@@ -139,7 +139,9 @@ describe("Tests", function () {
 
             testMap.addNode({
                 name: "Custom node",
-                backgroundColor: "#c9dfc0",
+                colors: {
+                    background: "#c9dfc0"
+                },
                 image: {
                     src: "https://raw.githubusercontent.com/Mindmapp/mindmapp/master/src/assets/icon/png/64x64.png",
                     size: 100
@@ -182,15 +184,15 @@ describe("Tests", function () {
 
     describe("§ testMap.updateNode()", function () {
         it("Should visually update the properties of a node", function () {
-            let color = testMap.selectNode("mmp2_node_0").textColor;
+            let color = testMap.selectNode("mmp2_node_0").colors.name;
 
-            testMap.updateNode("textColor", "red", true);
-            testMap.selectNode().textColor.should.to.equal(color);
+            testMap.updateNode("nameColor", "red", true);
+            testMap.selectNode().colors.name.should.to.equal(color);
         });
 
         it("Should update the properties of a node", function () {
-            testMap.updateNode("textColor", "gray");
-            testMap.selectNode().textColor.should.to.equal("gray");
+            testMap.updateNode("nameColor", "gray");
+            testMap.selectNode().colors.name.should.to.equal("gray");
         });
     });
 

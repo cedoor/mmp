@@ -42,12 +42,16 @@ export default class Options implements OptionParameters {
                 src: "",
                 size: 60
             },
-            backgroundColor: "#f9f9f9",
-            textColor: "#787878",
-            branchColor: "#577a96",
-            fontSize: 16,
-            italic: false,
-            bold: false,
+            colors: {
+                name: "#787878",
+                background: "#f9f9f9",
+                branch: "#577a96"
+            },
+            font: {
+                size: 16,
+                style: "normal",
+                weight: "normal"
+            },
             locked: true
         }, parameters.node, true) as UserNodeProperties;
 
@@ -62,12 +66,16 @@ export default class Options implements OptionParameters {
                 src: "",
                 size: 70
             },
-            backgroundColor: "#f0f6f5",
-            textColor: "#787878",
-            branchColor: "",
-            fontSize: 20,
-            italic: false,
-            bold: false,
+            colors: {
+                name: "#787878",
+                background: "#f0f6f5",
+                branch: ""
+            },
+            font: {
+                size: 20,
+                style: "normal",
+                weight: "normal"
+            },
             locked: false
         }, parameters.rootNode, true) as UserNodeProperties;
     }

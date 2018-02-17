@@ -141,24 +141,6 @@ export default class Utils {
     }
 
     /**
-     * Translate a boolean value in a font style value (italic/normal).
-     * @param {boolean} flag
-     * @returns {string}
-     */
-    static fontStyle(flag: boolean): string {
-        return flag ? "italic" : "normal";
-    }
-
-    /**
-     * Translate a boolean value in a font weight value (bold/normal).
-     * @param {boolean} flag
-     * @returns {string}
-     */
-    static fontWeight(flag: boolean): string {
-        return flag ? "bold" : "normal";
-    }
-
-    /**
      * Focus an element putting the cursor in the end.
      * @param {HTMLElement} element
      */

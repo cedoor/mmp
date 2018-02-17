@@ -82,7 +82,7 @@ export default class Draw {
 
         // Set background of the node
         outer.insert("path", "foreignObject")
-            .style("fill", (node: Node) => node.backgroundColor)
+            .style("fill", (node: Node) => node.colors.background)
             .style("stroke-width", 3)
             .attr("d", (node: Node) => this.drawNodeBackground(node));
 
@@ -93,8 +93,8 @@ export default class Draw {
 
 
         dom.branches.enter().insert("path", "g")
-            .style("fill", (node: Node) => node.branchColor)
-            .style("stroke", (node: Node) => node.branchColor)
+            .style("fill", (node: Node) => node.colors.branch)
+            .style("stroke", (node: Node) => node.colors.branch)
             .attr("class", this.map.id + "_branch")
             .attr("id", (node: Node) => node.id + "_branch")
             .attr("d", (node: Node) => this.drawBranch(node));
@@ -116,11 +116,11 @@ export default class Draw {
      * @returns {Path} path
      */
     public drawNodeBackground(node: Node): Path {
-        let text = node.getNameDOM(),
+        let name = node.getNameDOM(),
             path = d3.path();
 
-        node.dimensions.width = text.clientWidth + 50;
-        node.dimensions.height = text.clientHeight + 35;
+        node.dimensions.width = name.clientWidth + 50;
+        node.dimensions.height = name.clientHeight + 35;
 
         let x = node.dimensions.width / 2,
             y = node.dimensions.height / 2,
@@ -238,13 +238,51 @@ export default class Draw {
             this.updateNodeShapes(node);
         };
 
+        name.onkeydown = (event) => {
+            if (event.ctrlKey || event.metaKey) {
+                switch (event.keyCode) {
+                    case 65: // ctrl + a/A (select all)
+                    case 97:
+                        return true;
+                    case 67: // ctrl + c/C (copy)
+                    case 99:
+                        return true;
+                    case 86: // ctrl + v/V (paste)
+                    case 118:
+                        return true;
+                    case 90: // ctrl + z/Z (undo/redo)
+                    case 122:
+                        return true;
+                    case 37: // Arrow keys
+                    case 38:
+                    case 39:
+                    case 40:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            return true;
+        };
+
+        name.onpaste = (event) => {
+            event.preventDefault();
+
+            let text = event.clipboardData.getData("text/plain");
+
+            document.execCommand("insertHTML", false, text);
+        };
+
         name.onblur = () => {
             if (name.innerHTML !== node.name) {
                 this.map.nodes.updateNode("name", name.innerHTML);
             }
 
+            name.ondblclick = name.onmousedown = name.onblur =
+                name.onkeydown = name.oninput = name.onpaste = null;
             name.style.setProperty("cursor", "pointer");
-            name.ondblclick = name.onmousedown = null;
+            name.blur();
         };
     }
 
@@ -268,24 +306,25 @@ export default class Draw {
      * @returns {string} html
      */
     private createNodeNameDOM(node: Node) {
-        let element = document.createElement("div");
+        let div = document.createElement("div");
 
-        element.style.setProperty("font-size", node.fontSize.toString() + "px");
-        element.style.setProperty("display", "inline-block");
-        element.style.setProperty("white-space", "nowrap");
-        element.style.setProperty("color", node.textColor);
-        element.style.setProperty("font-style", Utils.fontStyle(node.italic));
-        element.style.setProperty("font-weight", Utils.fontWeight(node.bold));
-        element.style.setProperty("font-family", this.map.options.fontFamily);
-        element.style.setProperty("text-align", "center");
-        element.style.setProperty("padding", "2px");
+        div.style.setProperty("font-size", node.font.size.toString() + "px");
+        div.style.setProperty("color", node.colors.name);
+        div.style.setProperty("font-style", node.font.style);
+        div.style.setProperty("font-weight", node.font.weight);
 
-        element.setAttribute("contenteditable", "true");
-        element.setAttribute("spellcheck", "false");
+        div.style.setProperty("display", "inline-block");
+        div.style.setProperty("white-space", "nowrap");
+        div.style.setProperty("font-family", this.map.options.fontFamily);
+        div.style.setProperty("text-align", "center");
+        div.style.setProperty("padding", "2px");
 
-        element.innerHTML = node.name;
+        div.setAttribute("contenteditable", "true");
+        div.setAttribute("spellcheck", "false");
 
-        return element.outerHTML;
+        div.innerHTML = node.name;
+
+        return div.outerHTML;
     }
 
 }

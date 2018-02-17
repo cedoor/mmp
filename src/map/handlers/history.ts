@@ -105,12 +105,8 @@ export default class History {
                 name: property.name,
                 coordinates: property.coordinates,
                 image: property.image,
-                backgroundColor: property.backgroundColor,
-                textColor: property.textColor,
-                branchColor: property.branchColor,
-                fontSize: property.fontSize,
-                italic: property.italic,
-                bold: property.bold,
+                colors: property.colors,
+                font: property.font,
                 locked: property.locked
             };
 

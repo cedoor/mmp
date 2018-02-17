@@ -8,16 +8,13 @@ export default class Node implements NodeProperties {
     public id: string;
     public parent: Node;
     public k: number;
+
     public name: string;
     public dimensions: Dimensions;
     public coordinates: Coordinates;
     public image: Image;
-    public backgroundColor: string;
-    public textColor: string;
-    public branchColor: string;
-    public fontSize: number;
-    public italic: boolean;
-    public bold: boolean;
+    public colors: Colors;
+    public font: Font;
     public locked: boolean;
     public dom: SVGGElement;
 
@@ -30,13 +27,9 @@ export default class Node implements NodeProperties {
         this.parent = properties.parent;
         this.name = properties.name;
         this.coordinates = properties.coordinates;
-        this.backgroundColor = properties.backgroundColor;
-        this.textColor = properties.textColor;
-        this.branchColor = properties.branchColor;
+        this.colors = properties.colors;
         this.image = properties.image;
-        this.fontSize = properties.fontSize;
-        this.italic = properties.italic;
-        this.bold = properties.bold;
+        this.font = properties.font;
         this.locked = properties.locked;
 
         this.dimensions = {
@@ -91,12 +84,8 @@ export interface UserNodeProperties {
     name: string;
     coordinates: Coordinates;
     image: Image;
-    backgroundColor: string;
-    textColor: string;
-    branchColor: string;
-    fontSize: number;
-    italic: boolean;
-    bold: boolean;
+    colors: Colors;
+    font: Font;
     locked: boolean;
 }
 
@@ -125,4 +114,16 @@ export interface Dimensions {
 export interface Image {
     src: string;
     size: number;
+}
+
+export interface Colors {
+    name: string;
+    background: string;
+    branch: string
+}
+
+export interface Font {
+    size: number;
+    style: string;
+    weight: string
 }
