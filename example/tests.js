@@ -19,34 +19,16 @@ describe("Tests", function () {
     });
 
     describe("§ testMap.options()", function () {
-        it("Should get mind map options without errors", function () {
-            testMap.options.should.to.not.throw(Error);
-        });
-
-        it("Should set some mind map options", function () {
-            testMap.options({
-                drag: false
+        it("Should update the default node parameters of mind map", function () {
+            testMap.updateOptions("defaultNode", {
+                name: "Hello world"
             });
 
-            testMap.options().drag.should.to.equal(false);
-        });
+            testMap.new();
+            testMap.addNode();
+            testMap.selectNode("mmp2_node_1");
 
-        it("Should not set unknown mind map options", function () {
-            testMap.options({
-                unknown: false
-            });
-
-            testMap.options().should.to.not.have.property("unknown");
-        });
-
-        it("Should not set function type in mind map options", function () {
-            (function () {
-                testMap.options({
-                    unknown: function () {
-                        return "Hello world";
-                    }
-                });
-            }).should.to.throw(Error);
+            testMap.selectNode().name.should.to.equal("Hello world");
         });
     });
 
