@@ -39,12 +39,12 @@
             <div class="ranges">
                 <input
                         class="font-size" type="range" name="font-size" min="10" max="50"
-                        oninput="map.updateNode('fontSize', value, true)"
-                        onchange="map.updateNode('fontSize', value)">
+                        oninput="map.updateNode('fontSize', parseInt(value), true)"
+                        onchange="map.updateNode('fontSize', parseInt(value))">
                 <input
                         class="image-size" type="range" name="image-size" min="50" max="200"
-                        oninput="map.updateNode('imageSize', value, true)"
-                        onchange="map.updateNode('imageSize', value)">
+                        oninput="map.updateNode('imageSize', parseInt(value), true)"
+                        onchange="map.updateNode('imageSize', parseInt(value))">
             </div>
             <div class="colors">
                 <input class="background-color" type="color" name="background-color"
