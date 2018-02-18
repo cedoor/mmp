@@ -2,7 +2,7 @@
 
 Mmp is a javaScript UMD module and a logic engine to create mind maps applications, allowing a separation between business logic and view. Mmp is easily editable and customizable, it is written using the latest features of es2015 syntax and the famous D3.js library. All its functions are documented with JSDoc markup language and tested with mocha and chai.
 
-![mmp.js](https://raw.githubusercontent.com/cedoor/mmp/master/test/img/logo.png)
+![mmp.js](https://raw.githubusercontent.com/Mindmapp/mindmapp/master/src/assets/icon/png/256x256.png)
 
 **# For the moment only tested on the latest versions of Google Chrome**
 
@@ -131,22 +131,29 @@ Executes a callback when an event is detected.
     |  +--mmp.js
     |  +--mmp.min.js
     |
+    +--docs
+    |
+    +--example
+    |  +--img
+    |  +--app.js
+    |  +--layout.css
+    |  +--test.js
+    |
     +--node_modules
     |
     +--src
-    |  +--*.js
+    |  +--map
+    |  +--utils
+    |  +--index.ts
+    |  +--typings.ts
     |
-    +--test
-    |  +--img
-    |  +--index.html
-    |  +--app.js
-    |  +--test.js
-    |  +--layout.css
+    +--index.html
     |
-    +--LICENSE.md
+    +--LICENSE
     +--README.md
     +--package.json
     +--rollup.config.js
+    +--tsconfig.json
 
 ## Development
 
@@ -208,7 +215,7 @@ Examples:
 | D3 | Mike Bostock | [BSD-3-Clause](https://github.com/d3/d3/blob/master/LICENSE) | https://d3js.org/ |
 
 ## License
-* See [LICENSE](https://github.com/cedoor/mmp/blob/master/LICENSE.md) file
+* See [LICENSE](https://github.com/cedoor/mmp/blob/master/LICENSE) file
 
 ## Contact
 #### Developer
