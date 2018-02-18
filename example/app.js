@@ -68,6 +68,18 @@ function insertImage(map) {
     }
 }
 
+// Update bold status
+function bold(map) {
+    let value = map.selectNode().font.weight !== "bold" ? "bold" : "normal";
+    map.updateNode("fontWeight", value);
+}
+
+// Update italic status
+function italic(map) {
+    let value = map.selectNode().font.style !== "italic" ? "italic" : "normal";
+    map.updateNode("fontStyle", value);
+}
+
 // Update the values of map controls
 function updateValues(node, map) {
     dom.fontSize[map].value = node.fontSize;
