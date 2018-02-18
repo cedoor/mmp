@@ -1,5 +1,5 @@
 import Map from "../map";
-import {default as Log, ErrorMessage} from "../../utils/log";
+import Log from "../../utils/log";
 import {MapSnapshot} from "./history";
 import Utils from "../../utils/utils";
 
@@ -31,7 +31,15 @@ export default class Export {
      * @param {Function} callback
      * @param {string} type
      */
-    public asImage = (callback: Function, type: string) => {
+    public asImage = (callback: Function, type?: string) => {
+        if (typeof callback !== "function") {
+            Log.error("The first parameter must be a function", "type");
+        }
+
+        if (type && typeof type !== "string") {
+            Log.error("The second optional parameter must be a string", "type");
+        }
+
         this.map.nodes.deselectNode();
 
         this.dataURI(url => {
@@ -58,7 +66,7 @@ export default class Export {
             };
 
             image.onerror = function () {
-                Log.error(ErrorMessage.imageExportLoading);
+                Log.error("The image has not been loaded correctly");
             };
         });
     };

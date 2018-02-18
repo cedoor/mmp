@@ -2,6 +2,7 @@ import * as d3 from "d3";
 import Map from "../map";
 import {Event} from "./events";
 import {ZoomBehavior} from "d3-zoom";
+import Log from "../../utils/log";
 
 /**
  * Manage the zoom events of the map.
@@ -29,6 +30,10 @@ export default class Zoom {
      * @param {number} duration
      */
     public zoomIn = (duration?: number) => {
+        if (duration && typeof duration !== "number") {
+            Log.error("The parameter must be a number", "type");
+        }
+
         this.move(true, duration);
     };
 
@@ -37,6 +42,10 @@ export default class Zoom {
      * @param {number} duration
      */
     public zoomOut = (duration?: number) => {
+        if (duration && typeof duration !== "number") {
+            Log.error("The parameter must be a number", "type");
+        }
+
         this.move(false, duration);
     };
 
@@ -46,6 +55,14 @@ export default class Zoom {
      * @param {number} type
      */
     public center = (type?: "zoom" | "position", duration: number = 500) => {
+        if (type && type !== "zoom" && type !== "position") {
+            Log.error("The type must be a string (\"zoom\" or \"position\")", "type");
+        }
+
+        if (duration && typeof duration !== "number") {
+            Log.error("The duration must be a number", "type");
+        }
+
         let root = this.map.nodes.getRoot(),
             w = parseInt(this.map.dom.container.style("width")),
             h = parseInt(this.map.dom.container.style("height")),

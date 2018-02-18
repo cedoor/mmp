@@ -1,7 +1,7 @@
 import {dispatch} from "d3";
 import {Dispatch} from "d3-dispatch";
 import Utils from "../../utils/utils";
-import Log, {ErrorMessage} from "../../utils/log";
+import Log from "../../utils/log";
 
 /**
  * Manage the events of the map.
@@ -34,8 +34,12 @@ export default class Events {
      * @param {Function} callback
      */
     public on = (event: string, callback: Function) => {
+        if (typeof event !== "string") {
+            Log.error("The event must be a string", "type");
+        }
+
         if (!Event[event]) {
-            Log.error(ErrorMessage.incorrectEvent);
+            Log.error("The event does not exist");
         }
 
         this.dispatcher.on(Event[event], <any>callback);

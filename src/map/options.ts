@@ -107,7 +107,7 @@ export default class Options implements OptionParameters {
      */
     private updateFontFamily(font: string) {
         if (typeof font !== "string") {
-            Log.error("The property must be a string", "type");
+            Log.error("The font must be a string", "type");
         }
 
         this.fontFamily = font;
@@ -121,7 +121,7 @@ export default class Options implements OptionParameters {
      */
     private updateCenterOnResize(flag: boolean) {
         if (typeof flag !== "boolean") {
-            Log.error("The property must be a boolean", "type");
+            Log.error("The value must be a boolean", "type");
         }
 
         this.centerOnResize = flag;
@@ -141,7 +141,7 @@ export default class Options implements OptionParameters {
      */
     private updateDrag(flag: boolean) {
         if (typeof flag !== "boolean") {
-            Log.error("The property must be a boolean", "type");
+            Log.error("The value must be a boolean", "type");
         }
 
         this.drag = flag;
@@ -156,7 +156,7 @@ export default class Options implements OptionParameters {
      */
     private updateZoom(flag: boolean) {
         if (typeof flag !== "boolean") {
-            Log.error("The property must be a boolean", "type");
+            Log.error("The value must be a boolean", "type");
         }
 
         this.zoom = flag;

@@ -1,7 +1,7 @@
 import Map from "../map";
 import Node, {ExportNodeProperties, NodeProperties} from "../models/node";
 import {Event} from "./events";
-import Log, {ErrorMessage} from "../../utils/log";
+import Log from "../../utils/log";
 
 /**
  * Manage map history, for each change save a snapshot.
@@ -37,17 +37,7 @@ export default class History {
      * @param {MapSnapshot} snapshot
      */
     public new = (snapshot?: MapSnapshot) => {
-        if (snapshot) {
-            if (this.check(snapshot)) {
-                this.redraw(snapshot);
-                this.setCounter();
-                this.map.events.call(Event.create);
-                this.map.zoom.center();
-                this.save();
-            } else {
-                Log.error(ErrorMessage.incorrectSnapshot);
-            }
-        } else {
+        if (snapshot === undefined) {
             this.map.nodes.setCounter(0);
             this.map.nodes.clear();
             this.map.draw.clear();
@@ -56,6 +46,16 @@ export default class History {
             this.map.nodes.addRootNode();
             this.map.zoom.center(null, 0);
             this.save();
+        } else {
+            if (this.check(snapshot)) {
+                this.redraw(snapshot);
+                this.setCounter();
+                this.map.events.call(Event.create);
+                this.map.zoom.center();
+                this.save();
+            } else {
+                Log.error("The snapshot is not correct");
+            }
         }
     };
 
@@ -153,7 +153,7 @@ export default class History {
      * @return {boolean} result
      */
     private check(snapshot: MapSnapshot): boolean {
-        return snapshot.constructor === Array &&
+        return Array.isArray(snapshot) &&
             snapshot[0].id.split("_")[2] === "0" &&
             this.checkProperties(snapshot);
     }

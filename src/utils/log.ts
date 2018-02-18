@@ -5,10 +5,10 @@ export default class Log {
 
     /**
      * Throw an Error with a message.
-     * @param {ErrorMessage} message
+     * @param {string} message
      * @param {string} type
      */
-    static error(message: ErrorMessage | string,
+    static error(message: string,
                  type?: "eval" | "range" | "reference" | "syntax" | "type" | "uri") {
         switch (type) {
             case "eval":
@@ -44,13 +44,4 @@ export default class Log {
         console.debug(message);
     }
 
-}
-
-export enum ErrorMessage {
-    incorrectEvent = "The event does not exist",
-    incorrectSnapshot = "The snapshot is not correct",
-    rootNodeDeletion = "The root node can not be deleted",
-    imageExportLoading = "The image has not been loaded correctly",
-    rootNodeBranches = "The root node has no branches",
-    nodeEmptyImage = "The node does not have an image"
 }
