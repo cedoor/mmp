@@ -219,6 +219,7 @@ export default class Nodes {
 
             this.deselectNode();
 
+            this.map.draw.clear();
             this.map.draw.update();
 
             this.map.history.save();
