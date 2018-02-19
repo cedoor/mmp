@@ -135,7 +135,10 @@ export default class Nodes {
         if (this.selectedNode) {
             this.selectedNode.getBackgroundDOM().style.stroke = "";
         }
+
         this.selectedNode = this.nodes.get(this.map.id + "_node_0");
+
+        this.map.events.call(Event.nodeDeselect, this.selectedNode.dom, this.getNodeProperties(this.selectedNode));
     };
 
     /**

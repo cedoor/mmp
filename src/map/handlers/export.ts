@@ -2,6 +2,7 @@ import Map from "../map";
 import Log from "../../utils/log";
 import {MapSnapshot} from "./history";
 import Utils from "../../utils/utils";
+import {Event} from "./events";
 
 /**
  * Manage map image exports.
@@ -23,7 +24,11 @@ export default class Export {
      * @returns {MapSnapshot} json
      */
     public asJSON = (): MapSnapshot => {
-        return this.map.history.current();
+        let snapshot = this.map.history.current();
+
+        this.map.events.call(Event.exportJSON);
+
+        return snapshot;
     };
 
     /**
@@ -47,7 +52,7 @@ export default class Export {
 
             image.src = url;
 
-            image.onload = function () {
+            image.onload = () => {
                 let canvas = document.createElement("canvas"),
                     context = canvas.getContext("2d");
 
@@ -63,9 +68,10 @@ export default class Export {
                 }
 
                 callback(canvas.toDataURL(type));
+                this.map.events.call(Event.exportImage);
             };
 
-            image.onerror = function () {
+            image.onerror = () => {
                 Log.error("The image has not been loaded correctly");
             };
         });
@@ -107,7 +113,7 @@ export default class Export {
         clone.setAttribute("transform", "translate(0,0)");
         svg.appendChild(clone);
 
-        this.convertImages(clone, function () {
+        this.convertImages(clone, () => {
             let xmls = new XMLSerializer(),
                 reader = new FileReader();
 
@@ -119,7 +125,7 @@ export default class Export {
 
             reader.readAsDataURL(blob);
 
-            reader.onloadend = function () {
+            reader.onloadend = () => {
                 callback(reader.result);
             };
         });
@@ -158,7 +164,7 @@ export default class Export {
                         callback();
                     }
                 };
-                image.onerror = function () {
+                image.onerror = () => {
                     counter--;
 
                     if (counter === 0) {

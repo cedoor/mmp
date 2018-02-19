@@ -52,7 +52,12 @@ export enum Event {
     center = "mmp-center",
     undo = "mmp-undo",
     redo = "mmp-redo",
+    exportJSON = "mmp-export-json",
+    exportImage = "mmp-export-image",
+    zoomIn = "mmp-zoom-in",
+    zoomOut = "mmp-zoom-out",
     nodeSelect = "mmp-node-select",
+    nodeDeselect = "mmp-node-deselect",
     nodeUpdate = "mmp-node-update",
     nodeCreate = "mmp-node-create",
     nodeRemove = "mmp-node-remove"

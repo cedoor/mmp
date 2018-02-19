@@ -35,6 +35,7 @@ export default class Zoom {
         }
 
         this.move(true, duration);
+        this.map.events.call(Event.zoomIn);
     };
 
     /**
@@ -47,6 +48,7 @@ export default class Zoom {
         }
 
         this.move(false, duration);
+        this.map.events.call(Event.zoomOut);
     };
 
     /**

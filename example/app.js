@@ -141,10 +141,32 @@ map.on("redo", function () {
     message("§ map.redo()");
 });
 
+map.on("zoomIn", function () {
+    message("§ map.zoomIn()");
+});
+
+map.on("zoomOut", function () {
+    message("§ map.zoomOut()");
+});
+
+map.on("exportJSON", function () {
+    message("§ map.exportAsJSON()");
+});
+
+map.on("exportImage", function () {
+    message("§ map.exportAsImage()");
+});
+
 map.on("nodeSelect", function (node) {
     updateValues(node, 0);
 
     message("§ map.selectNode", node.id);
+});
+
+map.on("nodeDeselect", function (node) {
+    updateValues(node, 0);
+
+    message("§ map.deselectNode", node.id);
 });
 
 testMap.on("nodeSelect", function (node) {
