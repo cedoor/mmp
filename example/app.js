@@ -163,10 +163,10 @@ map.on("nodeSelect", function (node) {
     message("§ map.selectNode", node.id);
 });
 
-map.on("nodeDeselect", function (node) {
-    updateValues(node, 0);
+map.on("nodeDeselect", function () {
+    updateValues(map.selectNode(), 0);
 
-    message("§ map.deselectNode", node.id);
+    message("§ map.deselectNode");
 });
 
 testMap.on("nodeSelect", function (node) {

@@ -123,8 +123,8 @@ export default class Draw {
         let name = node.getNameDOM(),
             path = d3.path();
 
-        node.dimensions.width = name.clientWidth + 50;
-        node.dimensions.height = name.clientHeight + 35;
+        node.dimensions.width = name.clientWidth + 45;
+        node.dimensions.height = name.clientHeight + 30;
 
         let x = node.dimensions.width / 2,
             y = node.dimensions.height / 2,
@@ -325,7 +325,6 @@ export default class Draw {
         div.style.setProperty("white-space", "nowrap");
         div.style.setProperty("font-family", this.map.options.fontFamily);
         div.style.setProperty("text-align", "center");
-        div.style.setProperty("padding", "2px");
 
         div.setAttribute("contenteditable", "true");
         div.setAttribute("spellcheck", "false");

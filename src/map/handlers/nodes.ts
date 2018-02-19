@@ -1,4 +1,12 @@
-import Node, {Coordinates, ExportNodeProperties, NodeProperties, UserNodeProperties} from "../models/node";
+import Node, {
+    Colors,
+    Coordinates,
+    ExportNodeProperties,
+    Font,
+    Image,
+    NodeProperties,
+    UserNodeProperties
+} from "../models/node";
 import Map from "../map";
 import * as d3 from "d3";
 import {Map as D3Map} from "d3-collection";
@@ -51,7 +59,7 @@ export default class Nodes {
 
         this.map.events.call(Event.nodeCreate, node.dom, this.getNodeProperties(node));
 
-        this.deselectNode();
+        this.selectRootNode();
     }
 
     /**
@@ -136,9 +144,9 @@ export default class Nodes {
             this.selectedNode.getBackgroundDOM().style.stroke = "";
         }
 
-        this.selectedNode = this.nodes.get(this.map.id + "_node_0");
+        this.selectRootNode();
 
-        this.map.events.call(Event.nodeDeselect, this.selectedNode.dom, this.getNodeProperties(this.selectedNode));
+        this.map.events.call(Event.nodeDeselect);
     };
 
     /**
@@ -220,14 +228,14 @@ export default class Nodes {
                 this.nodes.remove(node.id);
             });
 
-            this.deselectNode();
-
             this.map.draw.clear();
             this.map.draw.update();
 
             this.map.history.save();
 
             this.map.events.call(Event.nodeRemove, null, this.getNodeProperties(node));
+
+            this.deselectNode();
         } else {
             Log.error("The root node can not be deleted");
         }
@@ -244,12 +252,9 @@ export default class Nodes {
             parent: node.parent ? node.parent.id : "",
             name: node.name,
             coordinates: this.fixCoordinates(node.coordinates, true),
-            image: {
-                src: node.image.src,
-                size: node.image.size
-            },
-            colors: node.colors,
-            font: node.font,
+            image: Utils.cloneObject(node.image) as Image,
+            colors: Utils.cloneObject(node.colors) as Colors,
+            font: Utils.cloneObject(node.font) as Font,
             locked: node.locked,
             k: node.k
         };
@@ -427,6 +432,14 @@ export default class Nodes {
      */
     public getSelectedNode(): Node {
         return this.selectedNode;
+    }
+
+    /**
+     * Set the root node as selected node.
+     */
+    public selectRootNode() {
+        this.selectedNode = this.nodes.get(this.map.id + "_node_0");
+        ;
     }
 
     /**

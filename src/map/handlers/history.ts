@@ -1,7 +1,8 @@
 import Map from "../map";
-import Node, {ExportNodeProperties, NodeProperties} from "../models/node";
+import Node, {Colors, Coordinates, ExportNodeProperties, Font, Image, NodeProperties} from "../models/node";
 import {Event} from "./events";
 import Log from "../../utils/log";
+import Utils from "../../utils/utils";
 
 /**
  * Manage map history, for each change save a snapshot.
@@ -86,6 +87,7 @@ export default class History {
         if (this.index < this.snapshots.length - 1) {
             this.snapshots.splice(this.index + 1);
         }
+
         this.snapshots.push(this.getSnapshot());
         this.index++;
     }
@@ -103,10 +105,10 @@ export default class History {
                 parent: this.map.nodes.getNode(this.sanitizeNodeId(property.parent)),
                 k: property.k,
                 name: property.name,
-                coordinates: property.coordinates,
-                image: property.image,
-                colors: property.colors,
-                font: property.font,
+                coordinates: Utils.cloneObject(property.coordinates) as Coordinates,
+                image: Utils.cloneObject(property.image) as Image,
+                colors: Utils.cloneObject(property.colors) as Colors,
+                font: Utils.cloneObject(property.font) as Font,
                 locked: property.locked
             };
 
@@ -116,7 +118,7 @@ export default class History {
 
         this.map.draw.clear();
         this.map.draw.update();
-        this.map.nodes.deselectNode();
+        this.map.nodes.selectRootNode();
     }
 
     /**
@@ -124,7 +126,7 @@ export default class History {
      * @return {MapSnapshot} properties
      */
     private getSnapshot(): MapSnapshot {
-        return this.map.nodes.getNodes().map((node: Node) => this.map.nodes.getNodeProperties(node));
+        return this.map.nodes.getNodes().map((node: Node) => this.map.nodes.getNodeProperties(node)).slice();
     }
 
     /**
