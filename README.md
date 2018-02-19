@@ -1,126 +1,97 @@
-# Mmp
+<h1>
+    <img src="https://raw.githubusercontent.com/Mindmapp/mindmapp/master/src/assets/icon/png/32x32.png">
+    Mmp<sup>beta</sup>
+</h1>
 
-Mmp is a javaScript UMD module and a logic engine to create mind maps applications, allowing a separation between business logic and view. Mmp is easily editable and customizable, it is written using the latest features of es2015 syntax and the famous D3.js library. All its functions are documented with JSDoc markup language and tested with mocha and chai.
+[![](https://img.shields.io/badge/project-Mindmapp-blue.svg?style=flat-square)](https://github.com/Mindmapp)
+[![](https://img.shields.io/github/license/mindmapp/mmp.svg?style=flat-square)](https://github.com/Mindmapp/mmp/blob/dev/LICENSE)
+[![](https://img.shields.io/david/mindmapp/mmp.svg?style=flat-square)](https://david-dm.org/mindmapp/mmp)
+[![](https://img.shields.io/david/dev/mindmapp/mmp.svg?style=flat-square)](https://david-dm.org/mindmapp/mmp?type=dev)
+[![](https://img.shields.io/npm/dt/mmp.svg)](https://www.npmjs.com/package/mmp)
+[![](https://img.shields.io/readthedocs/mmp.svg)](http://mmp.readthedocs.io/en/latest/)
 
-![mmp.js](https://raw.githubusercontent.com/Mindmapp/mindmapp/master/src/assets/icon/png/256x256.png)
+Mmp was born with the intention to make the creation of maps extremely simple, while maintaining the fundamental properties that make the mind maps so efficient:
 
-**# For the moment only tested on the latest versions of Google Chrome**
+* Colors :rainbow:
+* Images :mount_fuji:
+* Neural branches :arrow_heading_up:
+* Hierarchical structure :family:
+* Radial geometry :palm_tree:
+
+Mmp is a light JavaScript library (which uses the UMD pattern) with which it is possible to create mind map applications. 
+It is highly customizable, easy to use and it is written using TypeScript and the famous D3.js library. All its functions are documented with JSDoc markup language and tested with mocha and chai.
 
 ## Installing
 
-You can install this package with npm :
+### npm
+
+You can install mmp package with npm:
 
     npm install mmp --save
 
-Then add the mmp library with d3.js to your `index.html` :
+Then add the mmp library with d3.js to your `index.html`:
     
-    <div id="mmp"></div>
+    <div id="map"></div>
     
     <script src="node_modules/d3/build/d3.min.js"></script>
     <script src="node_modules/mmp/build/mmp.min.js"></script>
     <script>
-        mmp.init('mmp');
+        let myMap = mmp.create("map");
     </script>
+    
+### CDN
 
+You can also load it using a <script> using the unpkg CDN:
+    
+    <div id="map"></div>
+    
+    <script src="https://unpkg.com/d3/build/d3.min.js"></script>
+    <script src="https://unpkg.com/mmp/build/mmp.min.js"></script>
+    <script>
+        let myMap = mmp.create("map");
+    </script>
+    
 ## API Reference
 
-### Map
+The library uses an OOP paradigm and allows you to create multiple instances.
 
-\# mmp.**init**( id, *options* )
+<a name="mmp_create" href="#mmp_create">#</a> <i>mmp</i>.<b>create</b>(<i>id</i>, [<i>options</i>])
 
-Initializes the mind map, creating the svg element and the root node. 
-You can pass various options as the following example:
-    
-    mmp.init('mmp', {
-        'center-onresize': true,
-        'drag': false,
-        'zoom': false,
-        'node': {'name': 'Default name'},
-        'root-node': {'background-color': '#E4DDC7'}
+Creates a mmp instance. Draw the mind map creating the svg element with the root node within the div element with id equal to the id string passed as parameter. You can optionally pass various options as the following example:
+
+    var map = mmp.create("map", {
+        centerOnResize: true,
+        drag: false,
+        zoom: false,
+        node: {
+            name: "Default name"
+        },
+        rootNode: {
+            image: {
+                size: 100
+            }
+        }
     });
 
-\# mmp.**remove**()
+<a name="mmp_version" href="#mmp_version">#</a> <i>mmp</i>.<b>version</b>
 
-Removes the svg element of the mind map and resets all default values. 
+Contains the version of the current used mmp library.
 
-\# mmp.**new**()
+<a name="map_remove" href="#map_remove">#</a> <i>map</i>.<b>remove</b>()
 
-Resets the mind map. Removes old mind map and creates a new. 
+Removes map instance and the svg element of the mind map. 
 
-\# mmp.**zoomIn**()
+<a name="map_new" href="#map_new">#</a> <i>map</i>.<b>new</b>([<i>map</i>])
+
+Creates a new empty mind map or an existance map passed as parameter. 
+
+<a name="map_zoomIn" href="#map_zoomIn">#</a> <i>map</i>.<b>zoomIn</b>([<i>duration</i>])
 
 Zooms in the mind map.
 
-\# mmp.**zoomOut**()
+<a name="map_zoomOut" href="#map_zoomOut">#</a> <i>map</i>.<b>zoomOut</b>([<i>duration</i>])
 
 Zooms out the mind map.
-
-\# mmp.**center**()
-
-Centers the mind map. Moves the root node at the center of the svg element.  
-
-\# mmp.**undo**()
-
-Undo the last change. Loads the previous snapshot of the mind map if it exists.
-
-\# mmp.**repeat**()
-
-Repeats the last change. Loads the next snapshot of the mind map if it exists.
-
-\# mmp.**data**( *snapshot* )
-
-Without parameter returns the data of the last snapshot of the mind map. If you pass the parameter with the data 
-of an old snapshot of the mind map, these data will be loades creating a new snapshot.
-
-\# mmp.**image**( callback, *type, background* )
-
-Returns the data URL of the mind map image in the parameter of the callback. 
-
-### Nodes
-
-\# mmp.node.**add**( *options* )
-
-Adds a new node in the mind map. 
-
-\# mmp.node.**remove**()
-
-Removes the current selected node in the mind map.
-
-\# mmp.node.**select**( *key* )
-
-Without parameter returns the key and the value of the current selected node. 
-With a node key as parameter selects the node with that key. 
-
-\# mmp.node.**moveTo**( direction, *range* )
-
-Moves the current selected node in the specified direction.
-
-\# mmp.node.**selectTo**( direction )
-
-Moves the current selection in the specified direction.
-
-\# mmp.node.**update**( property, value, *visual* )
-
-Updates a property of the current selected node with a new value. 
-If you pass `true` as third parameter the change will only visual.
-
-### Events
-
-\# mmp.**on**( event, callback )
-
-Executes a callback when an event is detected.
-
-| Events        |
-|---------------|
-| mmcreate      |
-| mmcenter      |
-| mmundo        |
-| mmrepeat      |
-| nodedblclick  |
-| nodeselect    |
-| nodeupdate    |
-| nodecreate    |
-| noderemove    |
 
 ## File tree
 ##### After `npm start`
@@ -154,6 +125,15 @@ Executes a callback when an event is detected.
     +--package.json
     +--rollup.config.js
     +--tsconfig.json
+
+## Compatibility
+
+| Browser        | Version       |
+| -------------- | ------------- |
+| Chromium       | 64.0.3282.140 |
+| Chrome         | 64.0.3282.167 |
+| Firefox        | 58.0.2        |
+| Opera          | 51.0.2830.34  |
 
 ## Development
 
