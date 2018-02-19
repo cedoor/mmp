@@ -1,9 +1,9 @@
-import typescript from "rollup-plugin-typescript2"
-import serve from "rollup-plugin-serve"
-import livereload from "rollup-plugin-livereload"
-import json from "rollup-plugin-json"
+import typescript from "rollup-plugin-typescript2";
+import serve from "rollup-plugin-serve";
+import livereload from "rollup-plugin-livereload";
+import json from "rollup-plugin-json";
 
-const pkg = require("./package.json")
+const pkg = require("./package.json");
 
 let config = {
     input: "src/index.ts",
@@ -20,7 +20,7 @@ let config = {
         json(),
         typescript()
     ]
-}
+};
 
 if (process.env.BUILD === "production") {
     config.output.banner = `/**
@@ -30,7 +30,7 @@ if (process.env.BUILD === "production") {
  * @copyright ${pkg.author.name} ${new Date().getFullYear()}
  * @license ${pkg.license}
  * @see {@link ${pkg.homepage}|GitHub}
-*/`
+*/`;
 } else {
     config.plugins = config.plugins.concat([
         serve({
@@ -38,7 +38,7 @@ if (process.env.BUILD === "production") {
             contentBase: ""
         }),
         livereload()
-    ])
+    ]);
 }
 
-export default config
+export default config;

@@ -1,7 +1,7 @@
 {
     "name": "mmp",
     "version": "0.1.7",
-    "description": "JavaScript UMD module & logic engine to create mind maps applications",
+    "description": "JavaScript library to draw mind maps.",
     "keywords": [
         "mmp",
         "mindmap",
@@ -18,15 +18,16 @@
         "email": "omardesogus9@gmail.com",
         "url": "https://cedoor.github.io"
     },
-    "main": "build/mmp.js",
+    "main": "build/mmp.min.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/Mindmapp/mmp.git"
     },
     "scripts": {
         "start": "rollup -c -w",
-        "docs": "typedoc ./src --out ./docs --module umd --ignoreCompilerErrors",
-        "prepare": "rollup -c --environment BUILD:production && uglifyjs build/mmp.js --comments -c -m -o build/mmp.min.js"
+        "docs": "typedoc ./src --out ./docs --module umd",
+        "build": "rollup -c --environment BUILD:production && uglifyjs build/mmp.js --comments -c -m -o build/mmp.min.js",
+        "prepare": "npm run build"
     },
     "dependencies": {
         "d3": "4.13.0"
