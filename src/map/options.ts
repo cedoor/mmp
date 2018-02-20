@@ -16,7 +16,7 @@ export default class Options implements OptionParameters {
     public drag: boolean;
     public zoom: boolean;
 
-    public node: DefaultNodeProperties;
+    public defaultNode: DefaultNodeProperties;
     public rootNode: DefaultNodeProperties;
 
     /**
@@ -33,7 +33,7 @@ export default class Options implements OptionParameters {
         this.zoom = parameters.zoom || true;
 
         // Default node properties
-        this.node = Utils.mergeObjects({
+        this.defaultNode = Utils.mergeObjects({
             name: "Node",
             image: {
                 src: "",
@@ -50,7 +50,7 @@ export default class Options implements OptionParameters {
                 weight: "normal"
             },
             locked: true
-        }, parameters.node, true) as DefaultNodeProperties;
+        }, parameters.defaultNode, true) as DefaultNodeProperties;
 
         // Default root node properties
         this.rootNode = Utils.mergeObjects({
@@ -93,7 +93,7 @@ export default class Options implements OptionParameters {
             case "defaultNode":
                 this.updateDefaultNode(value);
                 break;
-            case "defaultRootNode":
+            case "rootNode":
                 this.updateDefaultRootNode(value);
                 break;
             default:
@@ -173,7 +173,7 @@ export default class Options implements OptionParameters {
      * @param {DefaultNodeProperties} properties
      */
     private updateDefaultNode(properties: DefaultNodeProperties) {
-        this.node = Utils.mergeObjects(this.node, properties, true) as DefaultNodeProperties;
+        this.defaultNode = Utils.mergeObjects(this.defaultNode, properties, true) as DefaultNodeProperties;
     }
 
     /**
@@ -199,6 +199,6 @@ export interface OptionParameters {
     centerOnResize?: boolean;
     drag?: boolean;
     zoom?: boolean;
-    node?: DefaultNodeProperties;
+    defaultNode?: DefaultNodeProperties;
     rootNode?: DefaultNodeProperties;
 }

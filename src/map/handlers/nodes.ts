@@ -67,7 +67,7 @@ export default class Nodes {
      * @param {UserNodeProperties} userProperties
      */
     public addNode = (userProperties?: UserNodeProperties) => {
-        let properties: NodeProperties = Utils.mergeObjects(this.map.options.node, userProperties, true) as NodeProperties;
+        let properties: NodeProperties = Utils.mergeObjects(this.map.options.defaultNode, userProperties, true) as NodeProperties;
 
         properties.id = this.map.id + "_node_" + this.counter;
         properties.parent = this.selectedNode;
