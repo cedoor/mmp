@@ -57,21 +57,51 @@ The library uses an OOP paradigm and allows you to create multiple instances.
 
 <a name="mmp_create" href="#mmp_create">#</a> <i>mmp</i>.<b>create</b>(<i>id</i>, [<i>options</i>])
 
-Creates a mmp instance. Draw the mind map creating the svg element with the root node within the div element with id equal to the id string passed as parameter. You can optionally pass various options as the following example:
+Creates a mmp instance. Draw the mind map creating an svg element with the root node within the div element with id equal to the id string passed as parameter. You can optionally pass various options as the following example:
 
     var map = mmp.create("map", {
+        fontFamily: "Arial, Helvetica, sans-serif",
         centerOnResize: true,
         drag: false,
         zoom: false,
-        node: {
-            name: "Default name"
+        defaultNode: {
+            name: "Default node name",
+            image: {
+                src: "",
+                size: 60
+            },
+            colors: {
+                name: "#787878",
+                background: "#f9f9f9",
+                branch: "#577a96"
+            },
+            font: {
+                size: 16,
+                style: "normal",
+                weight: "normal"
+            },
+            locked: true
         },
         rootNode: {
+            name: "Default root node name",
             image: {
-                size: 100
+                src: "",
+                size: 70
+            },
+            colors: {
+                name: "#787878",
+                background: "#f0f6f5",
+                branch: ""
+            },
+            font: {
+                size: 20,
+                style: "normal",
+                weight: "normal"
             }
         }
     });
+    
+You can change these options later using the function [map.updateOptions](#map_updateOptions).
 
 <a name="mmp_version" href="#mmp_version">#</a> <i>mmp</i>.<b>version</b>
 
@@ -79,19 +109,23 @@ Contains the version of the current used mmp library.
 
 <a name="map_remove" href="#map_remove">#</a> <i>map</i>.<b>remove</b>()
 
-Removes map instance and the svg element of the mind map. 
+Removes the map instance and the svg element of the mind map. 
 
 <a name="map_new" href="#map_new">#</a> <i>map</i>.<b>new</b>([<i>map</i>])
 
-Creates a new empty mind map or an existance map passed as parameter. 
+Creates a new empty mind map or an existance map passed as parameter. The <i>map</i> parameter must be a JSON-like object, [here](https://gist.github.com/cedoor/9f884ab0d7ad0550aa8edbc3326d6d05) an example.
 
 <a name="map_zoomIn" href="#map_zoomIn">#</a> <i>map</i>.<b>zoomIn</b>([<i>duration</i>])
 
-Zooms in the mind map.
+Zooms in the mind map. If <i>duration</i> is specified, sets the duration of the zoom animation.
 
 <a name="map_zoomOut" href="#map_zoomOut">#</a> <i>map</i>.<b>zoomOut</b>([<i>duration</i>])
 
-Zooms out the mind map.
+Zooms out the mind map. If <i>duration</i> is specified, sets the duration of the zoom animation.
+
+<a name="map_updateOptions" href="#map_updateOptions">#</a> <i>map</i>.<b>updateOptions</b>(<i>property</i>, <i>value</i>)
+
+Updates the option property (fontFamily, centerOnResize, drag, zoom, defaultNode or rootNode) with the relative value passed as parameter.
 
 ## File tree
 ##### After `npm start`
