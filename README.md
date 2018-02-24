@@ -113,19 +113,132 @@ Removes the map instance and the svg element of the mind map.
 
 <a name="map_new" href="#map_new">#</a> <i>map</i>.<b>new</b>([<i>map</i>])
 
-Creates a new empty mind map or an existance map passed as parameter. The <i>map</i> parameter must be a JSON-like object, [here](https://gist.github.com/cedoor/9f884ab0d7ad0550aa8edbc3326d6d05) an example.
+Creates a new empty mind map. If <i>map</i> is specified, creates a new mind map using mmp json structure. The <i>map</i> parameter must be a JSON-like object, [here](https://gist.github.com/cedoor/9f884ab0d7ad0550aa8edbc3326d6d05) an example. The function [map.exportAsJson](#map_exportAsJson) is available to obtain the json of a map.
 
 <a name="map_zoomIn" href="#map_zoomIn">#</a> <i>map</i>.<b>zoomIn</b>([<i>duration</i>])
 
-Zooms in the mind map. If <i>duration</i> is specified, sets the duration of the zoom animation.
+Zooms in the mind map. If <i>duration</i> (int, milliseconds) is specified, sets the duration of the zoom animation.
 
 <a name="map_zoomOut" href="#map_zoomOut">#</a> <i>map</i>.<b>zoomOut</b>([<i>duration</i>])
 
-Zooms out the mind map. If <i>duration</i> is specified, sets the duration of the zoom animation.
+Zooms out the mind map. If <i>duration</i> (int, milliseconds) is specified, sets the duration of the zoom animation.
 
 <a name="map_updateOptions" href="#map_updateOptions">#</a> <i>map</i>.<b>updateOptions</b>(<i>property</i>, <i>value</i>)
 
-Updates the option property (fontFamily, centerOnResize, drag, zoom, defaultNode or rootNode) with the relative value passed as parameter.
+Updates the option <i>property</i> (string, "fontFamily", "centerOnResize", "drag", "zoom", "defaultNode", "rootNode") with the relative value passed as parameter.
+
+<a name="map_exportAsJson" href="#map_exportAsJson">#</a> <i>map</i>.<b>exportAsJson</b>()
+
+Returns a json with the structure of the current mind map.
+
+<a name="map_exportAsImage" href="#map_exportAsImage">#</a> <i>map</i>.<b>exportAsImage</b>(<i>callback</i>, [<i>type</i>])
+
+Calls the callback passing the URI of the map image as parameter. The <i>type</i> (string) optional parameter is the standard MIME type for the image format to return. If you do not specify this parameter, the default value is a PNG format image.
+
+<a name="map_undo" href="#map_undo">#</a> <i>map</i>.<b>undo</b>()
+
+Allows to reverse the last one change.
+
+<a name="map_redo" href="#map_redo">#</a> <i>map</i>.<b>redo</b>()
+
+Repeats a previously undoed change.
+
+<a name="map_center" href="#map_center">#</a> <i>map</i>.<b>center</b>([<i>type</i>], [<i>duration</i>])
+
+Places the root node in the middle of the map and sets the zoom to the original state. If <i>type</i> (string, "position" or "zoom") is specified, updates only the location or updates only the zoom. If <i>duration</i> (int, milliseconds) is specified, sets the duration of the center animation.
+
+<a name="map_on" href="#map_on">#</a> <i>map</i>.<b>on</b>(<i>event</i>, <i>callback</i>)
+
+Calls the callback of the related event passing some parameters.
+
+| Events         | Callback parameters |
+| -------------- | ------------------- |
+| create         | (nothing)           |
+| center         | (nothing)           |
+| undo           | (nothing)           |
+| redo           | (nothing)           |
+| exportJSON     | (nothing)           |
+| exportImage    | (nothing)           |
+| zoomIn         | (nothing)           |
+| zoomOut        | (nothing)           |
+| nodeSelect     | (node*)             |
+| nodeDeselect   | (nothing)           |
+| nodeUpdate     | (node*)             |
+| nodeCreate     | (node*)             |
+| nodeRemove     | (node*)             |
+
+\*node properties:
+
+    {
+        id: string;
+        parent: string;
+        k: number;
+        name: string;
+        coordinates: {
+            x: number;
+            y: number;
+        };
+        image: {
+            src: string;
+            size: number;
+        };
+        colors: {
+            name: string;
+            background: string;
+            branch: string
+        };
+        font: {
+            size: number;
+            style: string;
+            weight: string
+        };
+        locked: boolean;
+    }
+
+<a name="map_addNode" href="#map_addNode">#</a> <i>map</i>.<b>addNode</b>([<i>properties</i>])
+
+Adds a node in the map. The added node will be the child of the current selected node. If <i>properties</i> is specified, adds the node with those node properties.
+
+Properties:
+
+    {
+        name: string;
+        coordinates: {
+            x: number;
+            y: number;
+        };
+        image: {
+            src: string;
+            size: number;
+        };
+        colors: {
+            name: string;
+            background: string;
+            branch: string
+        };
+        font: {
+            size: number;
+            style: string;
+            weight: string
+        };
+        locked: boolean;
+    }
+
+<a name="map_selectNode" href="#map_selectNode">#</a> <i>map</i>.<b>selectNode</b>([<i>id</i>])
+
+Selects the node with the <i>id</i> (string) passed as parameter or if the id is not specified returns the current selected node. 
+
+<a name="map_deselectNode" href="#map_deselectNode">#</a> <i>map</i>.<b>deselectNode</b>()
+
+Deselects the selected node. The deselection is the same as selecting the root node without highlighting.
+
+<a name="map_updateNode" href="#map_updateNode">#</a> <i>map</i>.<b>updateNode</b>(<i>property</i>, <i>value</i>, [<i>graphic</i>])
+
+Updates the node <i>property</i> (string, "name", "locked", "coordinates", "imageSrc", "imageSize", "backgroundColor", "branchColor", "fontWeight", "fontStyle", "fontSize", "nameColor") with the relative value passed as parameter. If <i>graphic</i> (boolean) is specified and is true, update only graphically the node.
+
+<a name="map_removeNode" href="#map_removeNode">#</a> <i>map</i>.<b>removeNode</b>([<i>id</i>])
+
+Removes the selected node or if <i>id</i> (string) is specified, removes the node with the id passed as parameter.
 
 ## File tree
 ##### After `npm start`
