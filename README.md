@@ -344,7 +344,7 @@ Examples:
 ## License
 * See [LICENSE](https://github.com/cedoor/mmp/blob/master/LICENSE) file
 
-## Contact
+## Contacts
 #### Developer
 * e-mail : omardesogus9@gmail.com
 * github : [@cedoor](https://github.com/cedoor)
