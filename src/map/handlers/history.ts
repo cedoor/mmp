@@ -48,11 +48,11 @@ export default class History {
             this.map.zoom.center(null, 0);
             this.save();
         } else {
-            if (this.check(snapshot)) {
+            if (this.checkSnapshotStructure(snapshot)) {
                 this.redraw(snapshot);
                 this.setCounter();
                 this.map.events.call(Event.create);
-                this.map.zoom.center();
+                this.map.zoom.center("position", 0);
                 this.save();
             } else {
                 Log.error("The snapshot is not correct");
@@ -154,28 +154,89 @@ export default class History {
      * @param {MapSnapshot} snapshot
      * @return {boolean} result
      */
-    private check(snapshot: MapSnapshot): boolean {
-        return Array.isArray(snapshot) &&
-            snapshot[0].id.split("_")[2] === "0" &&
-            this.checkProperties(snapshot);
-    }
+    private checkSnapshotStructure(snapshot: MapSnapshot): boolean {
+        if (!Array.isArray(snapshot)) {
+            return false;
+        }
 
-    /**
-     * Check the snapshot node properties and return true if they are authentic.
-     * @param {MapSnapshot} snapshot
-     * @return {boolean} result
-     */
-    private checkProperties(snapshot: MapSnapshot) {
-        for (let properties of snapshot) {
-            if (typeof properties.id !== "string" ||
-                properties.constructor !== Object
-                // TODO, to improve
-            ) {
+        if (((<any>snapshot[0]).key && (<any>snapshot[0]).value)) {
+            this.convertOldMmp(snapshot);
+        }
+
+        for (let node of snapshot) {
+            if (!this.checkNodeProperties(node)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * Check the snapshot node properties and return true if they are authentic.
+     * @param {ExportNodeProperties} node
+     * @return {boolean} result
+     */
+    private checkNodeProperties(node: ExportNodeProperties) {
+        let conditions: boolean[] = [
+            typeof node.id === "string",
+            typeof node.parent === "string",
+            typeof node.k === "number",
+            typeof node.name === "string",
+            typeof node.locked === "boolean",
+            node.coordinates
+            && typeof node.coordinates.x === "number"
+            && typeof node.coordinates.y === "number",
+            node.image
+            && typeof node.image.size === "number"
+            && typeof node.image.src === "string",
+            node.colors
+            && typeof node.colors.background === "string"
+            && typeof node.colors.branch === "string"
+            && typeof node.colors.name === "string",
+            node.font
+            && typeof node.font.size === "number"
+            && typeof node.font.weight === "string"
+            && typeof node.font.style === "string"
+        ];
+
+        return conditions.every(condition => condition);
+    }
+
+    /**
+     * Convert the old mmp (version: 0.1.7) snapshot to new.
+     * @param {Array} snapshot
+     */
+    private convertOldMmp(snapshot: Array<any>) {
+        for (let node of snapshot) {
+            let oldNode = Utils.cloneObject(node);
+            Utils.clearObject(node);
+
+            node.id = "map_node_" + oldNode.key.substr(4);
+            node.parent = oldNode.value.parent ? "map_node_" + oldNode.value.parent.substr(4) : "";
+            node.k = oldNode.value.k;
+            node.name = oldNode.value.name;
+            node.locked = oldNode.value.fixed;
+            node.coordinates = {
+                x: oldNode.value.x,
+                y: oldNode.value.y
+            };
+            node.image = {
+                size: oldNode.value["image-size"],
+                src: oldNode.value["image-src"]
+            };
+            node.colors = {
+                background: oldNode.value["background-color"],
+                branch: oldNode.value["branch-color"],
+                name: oldNode.value["text-color"]
+            };
+            node.font = {
+                size: oldNode.value["font-size"],
+                weight: oldNode.value.bold ? "bold" : "normal",
+                style: oldNode.value.italic ? "italic" : "normal"
+            };
+        }
+        console.log(snapshot);
     }
 
 }

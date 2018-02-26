@@ -8,9 +8,9 @@ export default class Utils {
     /**
      * Clone an object, in depth if specified.
      * @param {object} object
-     * @returns {object} object
+     * @returns object
      */
-    static cloneObject(object: object): object {
+    static cloneObject(object: object): any {
         if (object === null) {
             return null;
         } else if (typeof object === "object") {
