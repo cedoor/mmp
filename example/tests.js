@@ -188,6 +188,13 @@ describe("Tests", function () {
 
             json[0].should.to.have.property("id").and.equal("mmp2_node_0");
         });
+
+        it("Should create an existing mind map", function () {
+            (function () {
+                testMap.new(testMap.exportAsJSON()
+                );
+            }).should.to.not.throw(Error);
+        });
     });
 
     describe("§ testMap.exportAsImage()", function () {
