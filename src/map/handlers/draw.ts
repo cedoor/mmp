@@ -181,6 +181,8 @@ export default class Draw {
         d3.select(background).attr("d", (node: Node) => <any>this.drawNodeBackground(node));
         d3.selectAll("." + this.map.id + "_branch").attr("d", (node: Node) => <any>this.drawBranch(node));
 
+        this.updateImagePosition(node);
+
         this.updateNodeNameContainer(node);
     }
 
@@ -220,6 +222,18 @@ export default class Draw {
             };
         } else {
             domImage.remove();
+        }
+    }
+
+    /**
+     * Update the node image position.
+     * @param {Node} node
+     */
+    public updateImagePosition(node: Node) {
+        if (node.image.src !== "") {
+            let image = node.getImageDOM(),
+                y = -((<any>image).getBBox().height + node.dimensions.height / 2 + 5);
+            image.setAttribute("y", y.toString());
         }
     }
 

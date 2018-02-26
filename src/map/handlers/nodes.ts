@@ -45,6 +45,7 @@ export default class Nodes {
                 x: parseInt(this.map.dom.container.style("width")) / 2,
                 y: parseInt(this.map.dom.container.style("height")) / 2
             },
+            locked: false,
             id: this.map.id + "_node_" + this.counter,
             parent: null
         }) as NodeProperties;
@@ -635,12 +636,6 @@ export default class Nodes {
 
             this.map.draw.updateNodeShapes(node);
 
-            if (node.image.src !== "") {
-                let image = node.getImageDOM(),
-                    y = -((<any>image).getBBox().height + node.dimensions.height / 2 + 5);
-                image.setAttribute("y", y.toString());
-            }
-
             if (graphic === false) {
                 node.font.size = size;
             }
@@ -742,11 +737,11 @@ export default class Nodes {
         if (node.font.weight !== weight) {
             node.getNameDOM().style["font-weight"] = weight;
 
+            this.map.draw.updateNodeShapes(node);
+
             if (graphic === false) {
                 node.font.weight = weight;
             }
-
-            this.map.draw.updateNodeShapes(node);
         } else {
             return false;
         }
