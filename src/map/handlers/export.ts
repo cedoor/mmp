@@ -141,30 +141,31 @@ export default class Export {
             counter = images.length;
 
         if (counter > 0) {
-            for (let i in images) {
-                let imageDOM = images[i],
-                    canvas = document.createElement("canvas"),
+            for (let image of <any>images) {
+                let canvas = document.createElement("canvas"),
                     ctx = canvas.getContext("2d"),
-                    image = new Image(),
-                    href = imageDOM.getAttribute("href");
+                    img = new Image(),
+                    href = image.getAttribute("href");
 
-                image.crossOrigin = "Anonymous";
+                img.crossOrigin = "Anonymous";
 
-                image.src = href;
+                img.src = href;
 
-                image.onload = function () {
-                    canvas.width = this.clientWidth;
-                    canvas.height = this.clientHeight;
-                    ctx.drawImage(<any>this, 0, 0);
-                    imageDOM.setAttribute("href", canvas.toDataURL("image/png"));
+                img.onload = function () {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+
+                    image.setAttribute("href", canvas.toDataURL("image/png"));
 
                     counter--;
 
                     if (counter === 0) {
                         callback();
+                        console.log(images);
                     }
                 };
-                image.onerror = () => {
+                img.onerror = () => {
                     counter--;
 
                     if (counter === 0) {
