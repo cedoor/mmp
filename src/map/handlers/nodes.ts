@@ -75,20 +75,18 @@ export default class Nodes {
 
         let node: Node = new Node(properties);
 
-        node.coordinates = {
-            x: this.calculateXposition(node),
-            y: this.calculateYposition(node)
-        };
+        this.nodes.set(properties.id, node);
+
+        this.counter++;
+
+        // Set coordinates
+        node.coordinates = this.calculateCoordinates(node);
 
         if (userProperties && userProperties.coordinates) {
             let fixedCoordinates = this.fixCoordinates(userProperties.coordinates);
 
             node.coordinates = Utils.mergeObjects(node.coordinates, fixedCoordinates, true) as Coordinates;
         }
-
-        this.nodes.set(properties.id, node);
-
-        this.counter++;
 
         this.map.draw.update();
 
@@ -222,7 +220,7 @@ export default class Nodes {
             Log.error("There are no nodes with id \"" + id + "\"");
         }
 
-        if (!this.isRoot(node)) {
+        if (!node.isRoot()) {
             this.nodes.remove(node.id);
 
             this.getDescendants(node).forEach((node: Node) => {
@@ -322,19 +320,10 @@ export default class Nodes {
      * @return {boolean}
      */
     public getOrientation(node: Node): boolean {
-        if (!this.isRoot(node)) {
+        if (!node.isRoot()) {
             let root = this.nodes.get(this.map.id + "_node_0");
             return node.coordinates.x < root.coordinates.x;
         }
-    }
-
-    /**
-     * Return true if the node is the root or false.
-     * @param {Node} node
-     * @returns {boolean}
-     */
-    public isRoot(node: Node) {
-        return node.id === this.map.id + "_node_0";
     }
 
     /**
@@ -356,41 +345,6 @@ export default class Nodes {
             nodes = nodes.concat(this.getDescendants(node));
         });
         return nodes;
-    }
-
-    /**
-     * Return the x coordinate of a node based on parent x coordinate.
-     * @returns {number}
-     */
-    public calculateXposition(node: Node): number {
-        if (this.isRoot(node.parent)) {
-            let root = this.nodes.get(this.map.id + "_node_0");
-            return node.parent.coordinates.x + 200 * (this.getChildren(root).length % 2 === 0 ? -1 : 1);
-        } else {
-            return node.parent.coordinates.x + 200 * (this.getOrientation(node.parent) ? -1 : 1);
-        }
-    }
-
-    /**
-     * Return the y coordinate of a node based on parent y coordinate.
-     * @return {number}
-     */
-    public calculateYposition(node: Node): number {
-        let siblings = this.getChildren(node.parent);
-
-        if (siblings.length > 0) {
-            let min = siblings[0].coordinates.y;
-
-            siblings.forEach((node: Node) => {
-                if (node.coordinates.y > min) {
-                    min = node.coordinates.y;
-                }
-            });
-
-            return min + (this.isRoot(node.parent) ? 30 : 60);
-        } else {
-            return node.parent.coordinates.y - 120;
-        }
     }
 
     /**
@@ -440,7 +394,6 @@ export default class Nodes {
      */
     public selectRootNode() {
         this.selectedNode = this.nodes.get(this.map.id + "_node_0");
-        ;
     }
 
     /**
@@ -451,21 +404,88 @@ export default class Nodes {
     }
 
     /**
+     * Return the siblings of a node.
+     * @param {Node} node
+     * @returns {Array<Node>} siblings
+     */
+    private getSiblings(node: Node): Array<Node> {
+        if (!node.isRoot()) {
+            let parentChildren: Array<Node> = this.getChildren(node.parent);
+
+            if (parentChildren.length > 1) {
+                parentChildren.splice(parentChildren.indexOf(node), 1);
+                return parentChildren;
+            } else {
+                return [];
+            }
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Return the appropriate coordinates of the node.
+     * @param {Node} node
+     * @returns {Coordinates} coordinates
+     */
+    private calculateCoordinates(node: Node): Coordinates {
+        let coordinates: Coordinates = {
+                x: node.parent.coordinates.x,
+                y: node.parent.coordinates.y
+            },
+            siblings: Array<Node> = this.getSiblings(node);
+
+        if (node.parent.isRoot()) {
+            let rightNodes: Array<Node> = [],
+                leftNodes: Array<Node> = [];
+
+            for (let sibling of siblings) {
+                this.getOrientation(sibling) ? leftNodes.push(sibling) : rightNodes.push(sibling);
+            }
+
+            if (leftNodes.length <= rightNodes.length) {
+                coordinates.x -= 200;
+                siblings = leftNodes;
+            } else {
+                coordinates.x += 200;
+                siblings = rightNodes;
+            }
+        } else {
+            if (this.getOrientation(node.parent)) {
+                coordinates.x -= 200;
+            } else {
+                coordinates.x += 200;
+            }
+        }
+
+        if (siblings.length > 0) {
+            let lowerNode = this.getLowerNode(siblings);
+            coordinates.y = lowerNode.coordinates.y + 60;
+        } else {
+            coordinates.y -= 120;
+        }
+
+        return coordinates;
+    }
+
+    /**
      * Return the lower node of a list of nodes.
      * @param {Node[]} nodes
      * @returns {Node} lowerNode
      */
     private getLowerNode(nodes: Node[] = this.nodes.values()): Node {
-        let tmp = Number.MIN_VALUE, lowerNode;
+        if (nodes.length > 0) {
+            let tmp = nodes[0].coordinates.y, lowerNode = nodes[0];
 
-        for (let node of nodes) {
-            if (node.coordinates.y > tmp) {
-                tmp = node.coordinates.y;
-                lowerNode = node;
+            for (let node of nodes) {
+                if (node.coordinates.y > tmp) {
+                    tmp = node.coordinates.y;
+                    lowerNode = node;
+                }
             }
-        }
 
-        return lowerNode;
+            return lowerNode;
+        }
     }
 
     /**
@@ -602,7 +622,7 @@ export default class Nodes {
             Log.error("The branch color must be a string", "type");
         }
 
-        if (!this.isRoot(node)) {
+        if (!node.isRoot()) {
             if (node.colors.name !== color || graphic) {
                 let branch = document.getElementById(node.id + "_branch");
 
@@ -758,7 +778,7 @@ export default class Nodes {
             Log.error("The node locked status must be a boolean", "type");
         }
 
-        if (!this.isRoot(node)) {
+        if (!node.isRoot()) {
             node.locked = flag || !node.locked;
         } else {
             Log.error("The root node can not be locked");
@@ -770,13 +790,12 @@ export default class Nodes {
      * @param {boolean} direction
      */
     private moveSelectionOnLevel(direction: boolean) {
-        if (!this.isRoot(this.selectedNode)) {
-            let siblings = this.getChildren(this.selectedNode.parent).filter((node: Node) => {
-                return direction === node.coordinates.y < this.selectedNode.coordinates.y &&
-                    node.id !== this.selectedNode.id;
+        if (!this.selectedNode.isRoot()) {
+            let siblings = this.getSiblings(this.selectedNode).filter((node: Node) => {
+                return direction === node.coordinates.y < this.selectedNode.coordinates.y
             });
 
-            if (this.isRoot(this.selectedNode.parent)) {
+            if (this.selectedNode.parent.isRoot()) {
                 siblings = siblings.filter((node: Node) => {
                     return this.getOrientation(node) === this.getOrientation(this.selectedNode);
                 });

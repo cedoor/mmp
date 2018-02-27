@@ -40,6 +40,14 @@ export default class Node implements NodeProperties {
     }
 
     /**
+     * Return true if the node is the root or false.
+     * @returns {boolean}
+     */
+    public isRoot() {
+        return this.id.split("_")[2] === "0";
+    }
+
+    /**
      * Return the level of the node.
      * @returns {number} level
      */
