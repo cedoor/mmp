@@ -141,6 +141,7 @@ export default class Nodes {
     public deselectNode = () => {
         if (this.selectedNode) {
             this.selectedNode.getBackgroundDOM().style.stroke = "";
+            Utils.removeAllRanges();
         }
 
         this.selectRootNode();

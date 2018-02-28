@@ -258,6 +258,12 @@ export default class Draw {
 
         // Allow only some shortcuts
         name.onkeydown = (event) => {
+            // Unfocus the node
+            if (event.keyCode === 27) {
+                Utils.removeAllRanges();
+                name.blur();
+            }
+
             if (event.ctrlKey || event.metaKey) {
                 switch (event.keyCode) {
                     case 65: // ctrl + a/A (select all)
