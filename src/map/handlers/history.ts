@@ -236,7 +236,6 @@ export default class History {
                 style: oldNode.value.italic ? "italic" : "normal"
             };
         }
-        console.log(snapshot);
     }
 
 }

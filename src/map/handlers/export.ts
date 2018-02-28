@@ -162,7 +162,6 @@ export default class Export {
 
                     if (counter === 0) {
                         callback();
-                        console.log(images);
                     }
                 };
                 img.onerror = () => {
