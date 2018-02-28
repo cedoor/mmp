@@ -342,7 +342,7 @@ export default class Draw {
         div.style.setProperty("font-weight", node.font.weight);
 
         div.style.setProperty("display", "inline-block");
-        div.style.setProperty("white-space", "nowrap");
+        div.style.setProperty("white-space", "pre");
         div.style.setProperty("font-family", this.map.options.fontFamily);
         div.style.setProperty("text-align", "center");
 
