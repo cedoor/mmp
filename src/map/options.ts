@@ -28,9 +28,9 @@ export default class Options implements OptionParameters {
         this.map = map;
 
         this.fontFamily = parameters.fontFamily || "Arial, Helvetica, sans-serif";
-        this.centerOnResize = parameters.centerOnResize || true;
-        this.drag = parameters.drag || true;
-        this.zoom = parameters.zoom || true;
+        this.centerOnResize = parameters.centerOnResize !== undefined ? parameters.centerOnResize : true;
+        this.drag = parameters.drag !== undefined ? parameters.drag : true;
+        this.zoom = parameters.zoom !== undefined ? parameters.zoom : true;
 
         // Default node properties
         this.defaultNode = Utils.mergeObjects({
