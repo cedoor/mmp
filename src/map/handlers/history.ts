@@ -222,7 +222,7 @@ export default class History {
                 y: oldNode.value.y
             };
             node.image = {
-                size: oldNode.value["image-size"],
+                size: parseInt(oldNode.value["image-size"]),
                 src: oldNode.value["image-src"]
             };
             node.colors = {
@@ -231,7 +231,7 @@ export default class History {
                 name: oldNode.value["text-color"]
             };
             node.font = {
-                size: oldNode.value["font-size"],
+                size: parseInt(oldNode.value["font-size"]),
                 weight: oldNode.value.bold ? "bold" : "normal",
                 style: oldNode.value.italic ? "italic" : "normal"
             };
