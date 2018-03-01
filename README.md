@@ -52,7 +52,7 @@ You can also load it using a \<script> using the unpkg CDN:
 
 The library uses an OOP paradigm and allows you to create multiple instances.
 
-<a name="mmp_create" href="#mmp_create">#</a> **mmp**.**create**(**id**, [**options**])
+<a name="mmp_create" href="#mmp_create">#</a> **mmp**.*create*(**id**, [**options**])
 
 Creates a mmp instance. Draw the mind map creating an svg element with the root node within the div element with id equal to the id string passed as parameter. You can optionally pass various options as the following example:
 
@@ -100,51 +100,51 @@ Creates a mmp instance. Draw the mind map creating an svg element with the root 
     
 You can change these options later using the function [map.updateOptions](#map_updateOptions).
 
-<a name="mmp_version" href="#mmp_version">#</a> **mmp**.**version**
+<a name="mmp_version" href="#mmp_version">#</a> **mmp**.*version*
 
 Contains the version of the current used mmp library.
 
-<a name="map_remove" href="#map_remove">#</a> **map**.**remove**()
+<a name="map_remove" href="#map_remove">#</a> **map**.*remove*()
 
 Removes the map instance and the svg element of the mind map. 
 
-<a name="map_new" href="#map_new">#</a> **map**.**new**([**map**])
+<a name="map_new" href="#map_new">#</a> **map**.*new*([**map**])
 
 Creates a new empty mind map. If **map** is specified, creates a new mind map using mmp json structure. The **map** parameter must be a JSON-like object, [here](https://gist.github.com/cedoor/9f884ab0d7ad0550aa8edbc3326d6d05) an example. The function [map.exportAsJson](#map_exportAsJson) is available to obtain the json of a map.
 
-<a name="map_zoomIn" href="#map_zoomIn">#</a> **map**.**zoomIn**([**duration**])
+<a name="map_zoomIn" href="#map_zoomIn">#</a> **map**.*zoomIn*([**duration**])
 
 Zooms in the mind map. If **duration** (int, milliseconds) is specified, sets the duration of the zoom animation.
 
-<a name="map_zoomOut" href="#map_zoomOut">#</a> **map**.**zoomOut**([**duration**])
+<a name="map_zoomOut" href="#map_zoomOut">#</a> **map**.*zoomOut*([**duration**])
 
 Zooms out the mind map. If **duration** (int, milliseconds) is specified, sets the duration of the zoom animation.
 
-<a name="map_updateOptions" href="#map_updateOptions">#</a> **map**.**updateOptions**(**property**, **value**)
+<a name="map_updateOptions" href="#map_updateOptions">#</a> **map**.*updateOptions*(**property**, **value**)
 
 Updates the option **property** (string, "fontFamily", "centerOnResize", "drag", "zoom", "defaultNode", "rootNode") with the relative value passed as parameter.
 
-<a name="map_exportAsJson" href="#map_exportAsJson">#</a> **map**.**exportAsJson**()
+<a name="map_exportAsJson" href="#map_exportAsJson">#</a> **map**.*exportAsJson*()
 
 Returns a json with the structure of the current mind map.
 
-<a name="map_exportAsImage" href="#map_exportAsImage">#</a> **map**.**exportAsImage**(**callback**, [**type**])
+<a name="map_exportAsImage" href="#map_exportAsImage">#</a> **map**.*exportAsImage*(**callback**, [**type**])
 
 Calls the callback passing the URI of the map image as parameter. The **type** (string) optional parameter is the standard MIME type for the image format to return. If you do not specify this parameter, the default value is a PNG format image.
 
-<a name="map_undo" href="#map_undo">#</a> **map**.**undo**()
+<a name="map_undo" href="#map_undo">#</a> **map**.*undo*()
 
 Allows to reverse the last one change.
 
-<a name="map_redo" href="#map_redo">#</a> **map**.**redo**()
+<a name="map_redo" href="#map_redo">#</a> **map**.*redo*()
 
 Repeats a previously undoed change.
 
-<a name="map_center" href="#map_center">#</a> **map**.**center**([**type**], [**duration**])
+<a name="map_center" href="#map_center">#</a> **map**.*center*([**type**], [**duration**])
 
 Places the root node in the middle of the map and sets the zoom to the original state. If **type** (string, "position" or "zoom") is specified, updates only the location or updates only the zoom. If **duration** (int, milliseconds) is specified, sets the duration of the center animation.
 
-<a name="map_on" href="#map_on">#</a> **map**.**on**(**event**, **callback**)
+<a name="map_on" href="#map_on">#</a> **map**.*on*(**event**, **callback**)
 
 Calls the callback of the related event passing some parameters.
 
@@ -192,7 +192,7 @@ Calls the callback of the related event passing some parameters.
         locked: boolean;
     }
 
-<a name="map_addNode" href="#map_addNode">#</a> **map**.**addNode**([**properties**])
+<a name="map_addNode" href="#map_addNode">#</a> **map**.*addNode*([**properties**])
 
 Adds a node in the map. The added node will be the child of the current selected node. If **properties** is specified, adds the node with those node properties.
 
@@ -221,19 +221,19 @@ Properties:
         locked: boolean;
     }
 
-<a name="map_selectNode" href="#map_selectNode">#</a> **map**.**selectNode**([**id**])
+<a name="map_selectNode" href="#map_selectNode">#</a> **map**.*selectNode*([**id**])
 
 Selects the node with the **id** (string) passed as parameter or if the id is not specified returns the current selected node. 
 
-<a name="map_deselectNode" href="#map_deselectNode">#</a> **map**.**deselectNode**()
+<a name="map_deselectNode" href="#map_deselectNode">#</a> **map**.*deselectNode*()
 
 Deselects the selected node. The deselection is the same as selecting the root node without highlighting.
 
-<a name="map_updateNode" href="#map_updateNode">#</a> **map**.**updateNode**(**property**, **value**, [**graphic**])
+<a name="map_updateNode" href="#map_updateNode">#</a> **map**.*updateNode*(**property**, **value**, [**graphic**])
 
 Updates the node **property** (string, "name", "locked", "coordinates", "imageSrc", "imageSize", "backgroundColor", "branchColor", "fontWeight", "fontStyle", "fontSize", "nameColor") with the relative value passed as parameter. If **graphic** (boolean) is specified and is true, update only graphically the node.
 
-<a name="map_removeNode" href="#map_removeNode">#</a> **map**.**removeNode**([**id**])
+<a name="map_removeNode" href="#map_removeNode">#</a> **map**.*removeNode*([**id**])
 
 Removes the selected node or if **id** (string) is specified, removes the node with the id passed as parameter.
 
