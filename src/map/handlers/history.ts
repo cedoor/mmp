@@ -134,7 +134,7 @@ export default class History {
      */
     private setCounter() {
         let id = this.map.nodes.getNodes().map((node: Node) => parseInt(node.id.split("_")[2]));
-        this.map.nodes.setCounter(Math.max(...id));
+        this.map.nodes.setCounter(Math.max(...id) + 1);
     }
 
     /**
