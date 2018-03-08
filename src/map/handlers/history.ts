@@ -39,24 +39,32 @@ export default class History {
      */
     public new = (snapshot?: MapSnapshot) => {
         if (snapshot === undefined) {
+            let oldRootCoordinates = Utils.cloneObject(this.map.nodes.getRoot().coordinates);
+
             this.map.nodes.setCounter(0);
+
             this.map.nodes.clear();
+
             this.map.draw.clear();
             this.map.draw.update();
+
             this.map.events.call(Event.create);
-            this.map.nodes.addRootNode();
+
+            this.map.nodes.addRootNode(oldRootCoordinates);
+
             this.map.zoom.center(null, 0);
+
+            this.save();
+        } else if (this.checkSnapshotStructure(snapshot)) {
+            this.redraw(snapshot);
+
+            this.map.events.call(Event.create);
+
+            this.map.zoom.center("position", 0);
+
             this.save();
         } else {
-            if (this.checkSnapshotStructure(snapshot)) {
-                this.redraw(snapshot);
-                this.setCounter();
-                this.map.events.call(Event.create);
-                this.map.zoom.center("position", 0);
-                this.save();
-            } else {
-                Log.error("The snapshot is not correct");
-            }
+            Log.error("The snapshot is not correct");
         }
     };
 
@@ -118,7 +126,10 @@ export default class History {
 
         this.map.draw.clear();
         this.map.draw.update();
+
         this.map.nodes.selectRootNode();
+
+        this.setCounter();
     }
 
     /**
@@ -126,7 +137,9 @@ export default class History {
      * @return {MapSnapshot} properties
      */
     private getSnapshot(): MapSnapshot {
-        return this.map.nodes.getNodes().map((node: Node) => this.map.nodes.getNodeProperties(node)).slice();
+        return this.map.nodes.getNodes().map((node: Node) => {
+            return this.map.nodes.getNodeProperties(node, false);
+        }).slice();
     }
 
     /**
@@ -168,6 +181,8 @@ export default class History {
                 return false;
             }
         }
+
+        this.translateNodePositions(snapshot);
 
         return true;
     }
@@ -235,6 +250,20 @@ export default class History {
                 weight: oldNode.value.bold ? "bold" : "normal",
                 style: oldNode.value.italic ? "italic" : "normal"
             };
+        }
+    }
+
+    private translateNodePositions(snapshot: MapSnapshot) {
+        let oldRootNode = this.map.nodes.getRoot(),
+            newRootNode = (<any>snapshot).find((node: ExportNodeProperties) => {
+                return node.id === "map_node_0";
+            }),
+            dx = newRootNode.coordinates.x - oldRootNode.coordinates.x,
+            dy = newRootNode.coordinates.y - oldRootNode.coordinates.y;
+
+        for (let node of snapshot) {
+            node.coordinates.x -= dx;
+            node.coordinates.y -= dy;
         }
     }
 

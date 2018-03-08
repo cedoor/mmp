@@ -77,7 +77,7 @@ export default class Zoom {
                 this.zoomBehavior.scaleTo(svg, 1);
                 break;
             case "position":
-                this.zoomBehavior.translateTo(svg, w / 2 -x, h / 2 - y);
+                this.zoomBehavior.translateTo(svg, w / 2 - x, h / 2 - y);
                 break;
             default:
                 this.zoomBehavior.transform(svg, d3.zoomIdentity.translate(x, y));
@@ -102,7 +102,7 @@ export default class Zoom {
     private move(direction: boolean, duration: number = 50) {
         let svg = this.map.dom.svg.transition().duration(duration);
 
-        this.zoomBehavior.scaleBy(svg, direction ? 4/3 : 3/4);
+        this.zoomBehavior.scaleBy(svg, direction ? 4 / 3 : 3 / 4);
     }
 
 }
