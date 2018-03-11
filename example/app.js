@@ -103,10 +103,12 @@ dom.downloadMap[1].onclick = function () {
 
 dom.uploadMap[0].onchange = function (event) {
     uploadMap(map, event);
+    dom.uploadMap[0].value = "";
 };
 
 dom.uploadMap[1].onchange = function (event) {
     uploadMap(testMap, event);
+    dom.uploadMap[1].value = "";
 };
 
 dom.downloadImage[0].onclick = function () {

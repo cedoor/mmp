@@ -38,8 +38,9 @@ export default class Nodes {
 
     /**
      * Add the root node to the map.
+     * @param {Coordinates} coordinates
      */
-    public addRootNode() {
+    public addRootNode(coordinates?: Coordinates) {
         let properties: NodeProperties = Utils.mergeObjects(this.map.options.rootNode, {
             coordinates: {
                 x: parseInt(this.map.dom.container.style("width")) / 2,
@@ -51,6 +52,11 @@ export default class Nodes {
         }) as NodeProperties;
 
         let node: Node = new Node(properties);
+
+        if (coordinates) {
+            node.coordinates.x = coordinates.x || node.coordinates.x;
+            node.coordinates.y = coordinates.y || node.coordinates.y;
+        }
 
         this.nodes.set(properties.id, node);
 
@@ -244,14 +250,17 @@ export default class Nodes {
     /**
      * Return the export properties of the node.
      * @param {Node} node
+     * @param {boolean} fixedCoordinates
      * @returns {ExportNodeProperties} properties
      */
-    public getNodeProperties(node: Node): ExportNodeProperties {
+    public getNodeProperties(node: Node, fixedCoordinates: boolean = true): ExportNodeProperties {
         return {
             id: node.id,
             parent: node.parent ? node.parent.id : "",
             name: node.name,
-            coordinates: this.fixCoordinates(node.coordinates, true),
+            coordinates: fixedCoordinates
+                ? this.fixCoordinates(node.coordinates, true)
+                : Utils.cloneObject(node.coordinates) as Coordinates,
             image: Utils.cloneObject(node.image) as Image,
             colors: Utils.cloneObject(node.colors) as Colors,
             font: Utils.cloneObject(node.font) as Font,
@@ -266,7 +275,7 @@ export default class Nodes {
      * @param {boolean} reverse
      * @returns {Coordinates}
      */
-    private fixCoordinates(coordinates: Coordinates, reverse: boolean = false): Coordinates {
+    public fixCoordinates(coordinates: Coordinates, reverse: boolean = false): Coordinates {
         let zoomCoordinates = d3.zoomTransform(this.map.dom.svg.node()),
             fixedCoordinates: Coordinates = {} as Coordinates;
 
@@ -793,7 +802,7 @@ export default class Nodes {
     private moveSelectionOnLevel(direction: boolean) {
         if (!this.selectedNode.isRoot()) {
             let siblings = this.getSiblings(this.selectedNode).filter((node: Node) => {
-                return direction === node.coordinates.y < this.selectedNode.coordinates.y
+                return direction === node.coordinates.y < this.selectedNode.coordinates.y;
             });
 
             if (this.selectedNode.parent.isRoot()) {
