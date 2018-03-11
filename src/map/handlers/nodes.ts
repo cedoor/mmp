@@ -550,7 +550,7 @@ export default class Nodes {
                     newOrientation = this.getOrientation(this.selectedNode);
 
                 for (let node of descendants) {
-                    let x = node.coordinates.x += dx, y = node.coordinates.y += dy;
+                    let x = node.coordinates.x -= dx, y = node.coordinates.y -= dy;
 
                     if (oldOrientation !== newOrientation) {
                         x = node.coordinates.x += (root.coordinates.x - node.coordinates.x) * 2;
