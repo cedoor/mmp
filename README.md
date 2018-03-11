@@ -140,6 +140,10 @@ Allows to reverse the last one change.
 
 Repeats a previously undoed change.
 
+<a name="map_history" href="#map_history">#</a> *map*.**history**()
+
+Return all snapshots of the map.
+
 <a name="map_center" href="#map_center">#</a> *map*.**center**([*type*], [*duration*])
 
 Places the root node in the middle of the map and sets the zoom to the original state. If *type* (string, "position" or "zoom") is specified, updates only the location or updates only the zoom. If *duration* (int, milliseconds) is specified, sets the duration of the center animation.
