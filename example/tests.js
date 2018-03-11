@@ -197,8 +197,7 @@ describe("Tests", function () {
 
         it("Should create an existing mind map", function () {
             (function () {
-                testMap.new(testMap.exportAsJSON()
-                );
+                testMap.new(testMap.exportAsJSON());
             }).should.to.not.throw(Error);
         });
     });
