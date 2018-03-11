@@ -104,8 +104,11 @@ export default class History {
      * Return all history of map with all snapshots.
      * @returns {MapSnapshot[]}
      */
-    public getSnapshots = (): MapSnapshot[] => {
-        return this.snapshots.slice(0);
+    public getHistory = (): ExportHistory => {
+        return {
+            snapshots: this.snapshots.slice(0),
+            index: this.index
+        };
     };
 
     /**
@@ -279,6 +282,11 @@ export default class History {
         }
     }
 
+}
+
+export interface ExportHistory {
+    snapshots: Array<MapSnapshot>,
+    index: number
 }
 
 export interface MapSnapshot extends Array<ExportNodeProperties> {

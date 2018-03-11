@@ -89,7 +89,7 @@ export default class Map {
             updateOptions: this.options.update,
             exportAsJSON: this.export.asJSON,
             exportAsImage: this.export.asImage,
-            history: this.history.getSnapshots,
+            history: this.history.getHistory,
             undo: this.history.undo,
             redo: this.history.redo,
             zoomIn: this.zoom.zoomIn,
