@@ -89,6 +89,7 @@ export default class Map {
             updateOptions: this.options.update,
             exportAsJSON: this.export.asJSON,
             exportAsImage: this.export.asImage,
+            history: this.history.getSnapshots,
             undo: this.history.undo,
             redo: this.history.redo,
             zoomIn: this.zoom.zoomIn,
@@ -111,6 +112,7 @@ export interface MmpInstance {
     updateOptions: Function,
     exportAsJSON: Function;
     exportAsImage: Function;
+    history: Function;
     undo: Function;
     redo: Function;
     zoomIn: Function;

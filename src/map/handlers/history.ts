@@ -93,6 +93,14 @@ export default class History {
     }
 
     /**
+     * Return all history of map with all snapshots.
+     * @returns {MapSnapshot[]}
+     */
+    public getSnapshots = (): MapSnapshot[] => {
+        return this.snapshots.slice(0);
+    };
+
+    /**
      * Redraw the map with a new snapshot.
      * @param {MapSnapshot} snapshot
      */
