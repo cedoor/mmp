@@ -62,6 +62,12 @@ describe("Tests", function () {
         });
     });
 
+    describe("§ testMap.history()", function () {
+        it("Should get the mind map history without errors", function () {
+            testMap.history.should.to.not.throw(Error);
+        });
+    });
+
     describe("§ testMap.selectNode()", function () {
         it("Should get selected node without errors", function () {
             testMap.selectNode.should.to.not.throw(Error);
@@ -191,8 +197,7 @@ describe("Tests", function () {
 
         it("Should create an existing mind map", function () {
             (function () {
-                testMap.new(testMap.exportAsJSON()
-                );
+                testMap.new(testMap.exportAsJSON());
             }).should.to.not.throw(Error);
         });
     });

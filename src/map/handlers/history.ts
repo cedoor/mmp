@@ -101,6 +101,14 @@ export default class History {
     }
 
     /**
+     * Return all history of map with all snapshots.
+     * @returns {MapSnapshot[]}
+     */
+    public getSnapshots = (): MapSnapshot[] => {
+        return this.snapshots.slice(0);
+    };
+
+    /**
      * Redraw the map with a new snapshot.
      * @param {MapSnapshot} snapshot
      */
@@ -253,10 +261,14 @@ export default class History {
         }
     }
 
+    /**
+     * Adapt the coordinates to the old map.
+     * @param {MapSnapshot} snapshot
+     */
     private translateNodePositions(snapshot: MapSnapshot) {
         let oldRootNode = this.map.nodes.getRoot(),
             newRootNode = (<any>snapshot).find((node: ExportNodeProperties) => {
-                return node.id === "map_node_0";
+                return node.id.split("_")[2] === "0";
             }),
             dx = newRootNode.coordinates.x - oldRootNode.coordinates.x,
             dy = newRootNode.coordinates.y - oldRootNode.coordinates.y;
