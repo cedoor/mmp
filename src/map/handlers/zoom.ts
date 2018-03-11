@@ -66,8 +66,8 @@ export default class Zoom {
         }
 
         let root = this.map.nodes.getRoot(),
-            w = parseInt(this.map.dom.container.style("width")),
-            h = parseInt(this.map.dom.container.style("height")),
+            w = this.map.dom.container.node().clientWidth,
+            h = this.map.dom.container.node().clientHeight,
             x = w / 2 - root.coordinates.x,
             y = h / 2 - root.coordinates.y,
             svg = this.map.dom.svg.transition().duration(duration);

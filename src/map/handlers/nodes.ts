@@ -43,8 +43,8 @@ export default class Nodes {
     public addRootNode(coordinates?: Coordinates) {
         let properties: NodeProperties = Utils.mergeObjects(this.map.options.rootNode, {
             coordinates: {
-                x: parseInt(this.map.dom.container.style("width")) / 2,
-                y: parseInt(this.map.dom.container.style("height")) / 2
+                x: this.map.dom.container.node().clientWidth / 2,
+                y: this.map.dom.container.node().clientHeight / 2
             },
             locked: false,
             id: this.map.id + "_node_" + this.counter,
