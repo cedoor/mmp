@@ -128,35 +128,35 @@ dom.imageSrc[1].onclick = function () {
 };
 
 map.on("create", function () {
-    message("§ map.new()");
+    message("§ map.new");
 });
 
 map.on("center", function () {
-    message("§ map.center()");
+    message("§ map.center");
 });
 
 map.on("undo", function () {
-    message("§ map.undo()");
+    message("§ map.undo");
 });
 
 map.on("redo", function () {
-    message("§ map.redo()");
+    message("§ map.redo");
 });
 
 map.on("zoomIn", function () {
-    message("§ map.zoomIn()");
+    message("§ map.zoomIn");
 });
 
 map.on("zoomOut", function () {
-    message("§ map.zoomOut()");
+    message("§ map.zoomOut");
 });
 
 map.on("exportJSON", function () {
-    message("§ map.exportAsJSON()");
+    message("§ map.exportAsJSON");
 });
 
 map.on("exportImage", function () {
-    message("§ map.exportAsImage()");
+    message("§ map.exportAsImage");
 });
 
 map.on("nodeSelect", function (node) {
