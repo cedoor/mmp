@@ -253,7 +253,7 @@ export default class History {
             };
             node.colors = {
                 background: oldNode.value["background-color"],
-                branch: oldNode.value["branch-color"],
+                branch: oldNode.value["branch-color"] || "",
                 name: oldNode.value["text-color"]
             };
             node.font = {
