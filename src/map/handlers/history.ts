@@ -48,21 +48,21 @@ export default class History {
             this.map.draw.clear();
             this.map.draw.update();
 
-            this.map.events.call(Event.create);
-
             this.map.nodes.addRootNode(oldRootCoordinates);
 
             this.map.zoom.center(null, 0);
 
             this.save();
-        } else if (this.checkSnapshotStructure(snapshot)) {
-            this.redraw(snapshot);
 
             this.map.events.call(Event.create);
+        } else if (this.checkSnapshotStructure(snapshot)) {
+            this.redraw(snapshot);
 
             this.map.zoom.center("position", 0);
 
             this.save();
+
+            this.map.events.call(Event.create);
         } else {
             Log.error("The snapshot is not correct");
         }
@@ -253,7 +253,7 @@ export default class History {
             };
             node.colors = {
                 background: oldNode.value["background-color"],
-                branch: oldNode.value["branch-color"],
+                branch: oldNode.value["branch-color"] || "",
                 name: oldNode.value["text-color"]
             };
             node.font = {
