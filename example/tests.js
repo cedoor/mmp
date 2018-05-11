@@ -131,7 +131,7 @@ describe("Tests", function () {
                     background: "#c9dfc0"
                 },
                 image: {
-                    src: "https://raw.githubusercontent.com/Mindmapp/mindmapp/master/src/assets/icon/png/64x64.png",
+                    src: "https://raw.githubusercontent.com/Mindmapp/mindmapp/master/resources/icons/64x64.png",
                     size: 100
                 }
             });
