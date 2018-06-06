@@ -28,7 +28,7 @@ export default class Export {
 
         this.map.events.call(Event.exportJSON);
 
-        return snapshot;
+        return  Utils.cloneObject(snapshot);
     };
 
     /**
