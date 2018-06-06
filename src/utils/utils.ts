@@ -6,7 +6,7 @@ import Log from "./log";
 export default class Utils {
 
     /**
-     * Clone an object, in depth if specified.
+     * Clone an object in depth.
      * @param {object} object
      * @returns object
      */

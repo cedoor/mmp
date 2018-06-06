@@ -72,12 +72,23 @@ export default class Nodes {
     /**
      * Add a node in the map.
      * @param {UserNodeProperties} userProperties
+     * @param {string} id
      */
-    public addNode = (userProperties?: UserNodeProperties) => {
+    public addNode = (userProperties?: UserNodeProperties, id?: string) => {
+        if (id && typeof id !== "string") {
+            Log.error("The node id must be a string", "type");
+        }
+
+        let parentNode: Node = id ? this.getNode(id) : this.selectedNode;
+
+        if (parentNode === undefined) {
+            Log.error("There are no nodes with id \"" + id + "\"");
+        }
+
         let properties: NodeProperties = Utils.mergeObjects(this.map.options.defaultNode, userProperties, true) as NodeProperties;
 
         properties.id = this.map.id + "_node_" + this.counter;
-        properties.parent = this.selectedNode;
+        properties.parent = parentNode;
 
         let node: Node = new Node(properties);
 
@@ -159,9 +170,20 @@ export default class Nodes {
      * Update the properties of the selected node.
      * @param {string} property
      * @param value
+     * @param {string} id
      * @param {boolean} graphic
      */
-    public updateNode = (property: string, value: any, graphic: boolean = false) => {
+    public updateNode = (property: string, value: any, graphic: boolean = false, id?: string) => {
+        if (id && typeof id !== "string") {
+            Log.error("The node id must be a string", "type");
+        }
+
+        let node: Node = id ? this.getNode(id) : this.selectedNode;
+
+        if (node === undefined) {
+            Log.error("There are no nodes with id \"" + id + "\"");
+        }
+
         if (typeof property !== "string") {
             Log.error("The property must be a string", "type");
         }
@@ -331,8 +353,7 @@ export default class Nodes {
      */
     public getOrientation(node: Node): boolean {
         if (!node.isRoot()) {
-            let root = this.nodes.get(this.map.id + "_node_0");
-            return node.coordinates.x < root.coordinates.x;
+            return node.coordinates.x < this.getRoot().coordinates.x;
         }
     }
 
@@ -381,6 +402,14 @@ export default class Nodes {
      */
     public setNode(key: string, node: Node) {
         this.nodes.set(key, node);
+    }
+
+    /**
+     * Get the counter number of the nodes.
+     * @returns {number} counter
+     */
+    public getCounter() {
+        return this.counter;
     }
 
     /**

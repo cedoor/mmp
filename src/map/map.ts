@@ -7,6 +7,7 @@ import History from "./handlers/history";
 import Drag from "./handlers/drag";
 import Nodes from "./handlers/nodes";
 import Export from "./handlers/export";
+import CopyPaste from "./handlers/copy-paste";
 
 /**
  * Initialize all handlers and return a mmp object.
@@ -24,6 +25,7 @@ export default class Map {
     public drag: Drag;
     public nodes: Nodes;
     public export: Export;
+    public copyPaste: CopyPaste;
 
     private instance: MmpInstance;
 
@@ -45,6 +47,7 @@ export default class Map {
         this.draw = new Draw(this);
         this.nodes = new Nodes(this);
         this.export = new Export(this);
+        this.copyPaste = new CopyPaste(this);
 
         this.draw.create();
 
@@ -99,7 +102,10 @@ export default class Map {
             selectNode: this.nodes.selectNode,
             deselectNode: this.nodes.deselectNode,
             updateNode: this.nodes.updateNode,
-            removeNode: this.nodes.removeNode
+            removeNode: this.nodes.removeNode,
+            copyNode: this.copyPaste.copy,
+            cutNode: this.copyPaste.cut,
+            pasteNode: this.copyPaste.paste
         };
     }
 
@@ -123,6 +129,9 @@ export interface MmpInstance {
     deselectNode: Function;
     updateNode: Function;
     removeNode: Function;
+    copyNode: Function;
+    cutNode: Function;
+    pasteNode: Function;
 }
 
 export interface DomElements {
