@@ -21,7 +21,8 @@ export default class CopyPaste {
     }
 
     /**
-     *
+     * Copy the node with the id passed as parameter or
+     * the selected node in the mmp clipboard.
      * @param {string} id
      */
     public copy = (id: string) => {
@@ -47,7 +48,8 @@ export default class CopyPaste {
     };
 
     /**
-     *
+     * Remove and copy the node with the id passed as parameter or
+     * the selected node in the mmp clipboard.
      * @param {string} id
      */
     public cut = (id: string) => {
@@ -73,7 +75,8 @@ export default class CopyPaste {
     };
 
     /**
-     *
+     * If there are nodes in the mmp clipboard paste them in the map as children
+     * of the node with the passed as parameter or of the selected node.
      * @param {string} id
      */
     public paste = (id: string) => {
