@@ -112,6 +112,18 @@ Removes the map instance and the svg element of the mind map.
 
 Creates a new empty mind map. If *map* is specified, creates a new mind map using mmp json structure. The *map* parameter must be a JSON-like object, [here](https://gist.github.com/cedoor/9f884ab0d7ad0550aa8edbc3326d6d05) an example. The function [map.exportAsJson](#map_exportAsJson) is available to obtain the json of a map.
 
+<a name="map_copyNode" href="#map_copyNode">#</a> *map*.**copyNode**([*id*])
+
+Copies a node with his children in the mmp clipboard. If *id* is not specified, copies the selected node.
+
+<a name="map_cutNode" href="#map_cutNode">#</a> *map*.**cutNode**([*id*])
+
+Removes and copy a node with his children in the mmp clipboard. If *id* is not specified, copies the selected node.
+
+<a name="map_pasteNode" href="#map_pasteNode">#</a> *map*.**pasteNode**([*id*])
+
+Paste the node of the mmp clipboard in the map. If *id* is not specified, paste the nodes of the mmp clipboard in the selected node.
+
 <a name="map_zoomIn" href="#map_zoomIn">#</a> *map*.**zoomIn**([*duration*])
 
 Zooms in the mind map. If *duration* (int, milliseconds) is specified, sets the duration of the zoom animation.
@@ -196,9 +208,9 @@ Calls the callback of the related event passing some parameters.
         locked: boolean;
     }
 
-<a name="map_addNode" href="#map_addNode">#</a> *map*.**addNode**([*properties*])
+<a name="map_addNode" href="#map_addNode">#</a> *map*.**addNode**([*properties*], [*id*])
 
-Adds a node in the map. The added node will be the child of the current selected node. If *properties* is specified, adds the node with those node properties.
+Adds a node in the map. The added node will be the child of the current selected node. If *properties* is specified, adds the node with those node properties. If *id* is not specified, adds the node as child of the selected node.
 
 Properties:
 
@@ -233,9 +245,9 @@ Selects the node with the *id* (string) passed as parameter or the position ("le
 
 Deselects the selected node. The deselection is the same as selecting the root node without highlighting.
 
-<a name="map_updateNode" href="#map_updateNode">#</a> *map*.**updateNode**(*property*, *value*, [*graphic*])
+<a name="map_updateNode" href="#map_updateNode">#</a> *map*.**updateNode**(*property*, *value*, [*graphic*], [*id*])
 
-Updates the node *property* (string, "name", "locked", "coordinates", "imageSrc", "imageSize", "backgroundColor", "branchColor", "fontWeight", "fontStyle", "fontSize", "nameColor") with the relative value passed as parameter. If *graphic* (boolean) is specified and is true, update only graphically the node.
+Updates the node *property* (string, "name", "locked", "coordinates", "imageSrc", "imageSize", "backgroundColor", "branchColor", "fontWeight", "fontStyle", "fontSize", "nameColor") with the relative value passed as parameter. If *graphic* (boolean) is specified and is true, update only graphically the node. If *id* is not specified, update the selected node.
 
 <a name="map_removeNode" href="#map_removeNode">#</a> *map*.**removeNode**([*id*])
 
