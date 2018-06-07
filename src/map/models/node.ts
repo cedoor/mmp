@@ -44,7 +44,8 @@ export default class Node implements NodeProperties {
      * @returns {boolean}
      */
     public isRoot() {
-        return this.id.split("_")[2] === "0";
+        let words = this.id.split("_");
+        return words[words.length - 1] === "0";
     }
 
     /**
