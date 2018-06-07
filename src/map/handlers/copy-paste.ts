@@ -29,7 +29,7 @@ export default class CopyPaste {
             Log.error("The node id must be a string", "type");
         }
 
-        let node: Node = id ? this.map.nodes.getNode(id) : this.map.nodes.getSelectedNode();
+        const node: Node = id ? this.map.nodes.getNode(id) : this.map.nodes.getSelectedNode();
 
         if (node === undefined) {
             Log.error("There are no nodes with id \"" + id + "\"");
@@ -55,7 +55,7 @@ export default class CopyPaste {
             Log.error("The node id must be a string", "type");
         }
 
-        let node: Node = id ? this.map.nodes.getNode(id) : this.map.nodes.getSelectedNode();
+        const node: Node = id ? this.map.nodes.getNode(id) : this.map.nodes.getSelectedNode();
 
         if (node === undefined) {
             Log.error("There are no nodes with id \"" + id + "\"");
@@ -85,39 +85,42 @@ export default class CopyPaste {
             Log.error("The node id must be a string", "type");
         }
 
-        let node: Node = id ? this.map.nodes.getNode(id) : this.map.nodes.getSelectedNode();
+        const node: Node = id ? this.map.nodes.getNode(id) : this.map.nodes.getSelectedNode();
 
         if (node === undefined) {
             Log.error("There are no nodes with id \"" + id + "\"");
         }
 
-        let addNodes = (nodeProperties: ExportNodeProperties, newParentNodeId: string) => {
+        const rootNode = this.map.nodes.getRoot();
+
+        const addNodes = (nodeProperties: ExportNodeProperties, newParentNode: Node) => {
             let coordinates: Coordinates;
+
             if (nodeProperties.id !== this.copiedNodes[0].id) {
                 coordinates = {x: 0, y: 0};
 
-                let newParent = this.map.nodes.getNode(newParentNodeId);
-                let oldParent = (<any>this.copiedNodes).find((np) => {
+                const oldParentNode = (<any>this.copiedNodes).find((np) => {
                     return np.id === nodeProperties.parent;
                 });
 
-                let dx = oldParent.coordinates.x - nodeProperties.coordinates.x;
-                let dy = oldParent.coordinates.y - nodeProperties.coordinates.y;
+                let dx = oldParentNode.coordinates.x - nodeProperties.coordinates.x;
+                let dy = oldParentNode.coordinates.y - nodeProperties.coordinates.y;
 
-                let newParentOrientation = this.map.nodes.getOrientation(newParent);
-                let oldParentOrientation = oldParent.coordinates.x < this.map.nodes.getRoot().coordinates.x;
+                const newParentOrientation = this.map.nodes.getOrientation(newParentNode);
+                const oldParentOrientation = oldParentNode.coordinates.x < rootNode.coordinates.x;
 
                 if (oldParentOrientation !== newParentOrientation) {
                     dx = -dx;
                 }
 
-                coordinates.x = newParent.coordinates.x - dx;
-                coordinates.y = newParent.coordinates.y - dy;
+                coordinates.x = newParentNode.coordinates.x - dx;
+                coordinates.y = newParentNode.coordinates.y - dy;
 
                 coordinates = this.map.nodes.fixCoordinates(coordinates, true);
             }
 
-            let nodePropertiesCopy = Utils.cloneObject(nodeProperties);
+            const nodePropertiesCopy = Utils.cloneObject(nodeProperties);
+
             this.map.nodes.addNode({
                 name: nodePropertiesCopy.name,
                 coordinates: coordinates,
@@ -125,22 +128,25 @@ export default class CopyPaste {
                 colors: nodePropertiesCopy.colors,
                 font: nodePropertiesCopy.font,
                 locked: nodePropertiesCopy.locked
-            }, newParentNodeId);
+            }, newParentNode.id);
 
-            let children = this.copiedNodes.filter((np: ExportNodeProperties) => {
+            const children = this.copiedNodes.filter((np: ExportNodeProperties) => {
                 return np.parent === nodeProperties.id;
             });
 
             // If there are children add them.
             if (children.length > 0) {
-                newParentNodeId = this.map.id + "_node_" + (this.map.nodes.getCounter() - 1);
+                const nodes = this.map.nodes.getNodes();
+
+                newParentNode = nodes[nodes.length - 1];
+
                 children.forEach((np: ExportNodeProperties) => {
-                    addNodes(np, newParentNodeId);
+                    addNodes(np, newParentNode);
                 });
             }
         };
 
-        addNodes(this.copiedNodes[0], node.id);
+        addNodes(this.copiedNodes[0], node);
     };
 
 }
