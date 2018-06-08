@@ -69,6 +69,8 @@ export default class CopyPaste {
             this.map.nodes.getDescendants(node).forEach((node: Node) => {
                 this.copiedNodes.push(this.map.nodes.getNodeProperties(node, false));
             });
+
+            this.map.nodes.removeNode(node.id);
         } else {
             Log.error("The root node can not be cut");
         }
