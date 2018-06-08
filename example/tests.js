@@ -184,6 +184,23 @@ describe("Tests", function () {
         });
     });
 
+    describe("§ testMap.copyNode()", function () {
+        it("Should copy the selected node without errors", function () {
+            testMap.new();
+            testMap.addNode();
+            testMap.selectNode("mmp2_node_1");
+            testMap.copyNode.should.to.not.throw(Error);
+        });
+
+        it("Should cut the selected node without errors", function () {
+            testMap.cutNode.should.to.not.throw(Error);
+        });
+
+        it("Should paste the copied node without errors", function () {
+            testMap.pasteNode.should.to.not.throw(Error);
+        });
+    });
+
     describe("§ testMap.exportAsJSON()", function () {
         it("Should get mind map data without errors", function () {
             testMap.exportAsJSON.should.to.not.throw(Error);
