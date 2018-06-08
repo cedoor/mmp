@@ -157,7 +157,10 @@ export default class History {
      * Set the right counter value of the nodes.
      */
     private setCounter() {
-        let id = this.map.nodes.getNodes().map((node: Node) => parseInt(node.id.split("_")[2]));
+        let id = this.map.nodes.getNodes().map((node: Node) => {
+            let words = node.id.split("_");
+            return parseInt(words[words.length - 1])
+        });
         this.map.nodes.setCounter(Math.max(...id) + 1);
     }
 
@@ -168,8 +171,8 @@ export default class History {
      */
     private sanitizeNodeId(oldId: string) {
         if (typeof oldId === "string") {
-            let oldIdSplitted = oldId.split("_");
-            return this.map.id + "_" + oldIdSplitted[1] + "_" + oldIdSplitted[2];
+            let words = oldId.split("_");
+            return this.map.id + "_" + words[words.length - 2] + "_" + words[words.length - 1];
         }
     }
 
@@ -271,7 +274,8 @@ export default class History {
     private translateNodePositions(snapshot: MapSnapshot) {
         let oldRootNode = this.map.nodes.getRoot(),
             newRootNode = (<any>snapshot).find((node: ExportNodeProperties) => {
-                return node.id.split("_")[2] === "0";
+                let words = node.id.split("_");
+                return words[words.length - 1] === "0";
             }),
             dx = newRootNode.coordinates.x - oldRootNode.coordinates.x,
             dy = newRootNode.coordinates.y - oldRootNode.coordinates.y;
