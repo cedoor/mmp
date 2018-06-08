@@ -112,18 +112,6 @@ Removes the map instance and the svg element of the mind map.
 
 Creates a new empty mind map. If *map* is specified, creates a new mind map using mmp json structure. The *map* parameter must be a JSON-like object, [here](https://gist.github.com/cedoor/9f884ab0d7ad0550aa8edbc3326d6d05) an example. The function [map.exportAsJson](#map_exportAsJson) is available to obtain the json of a map.
 
-<a name="map_copyNode" href="#map_copyNode">#</a> *map*.**copyNode**([*id*])
-
-Copies a node with his children in the mmp clipboard. If *id* is not specified, copies the selected node.
-
-<a name="map_cutNode" href="#map_cutNode">#</a> *map*.**cutNode**([*id*])
-
-Removes and copy a node with his children in the mmp clipboard. If *id* is not specified, copies the selected node.
-
-<a name="map_pasteNode" href="#map_pasteNode">#</a> *map*.**pasteNode**([*id*])
-
-Paste the node of the mmp clipboard in the map. If *id* is not specified, paste the nodes of the mmp clipboard in the selected node.
-
 <a name="map_zoomIn" href="#map_zoomIn">#</a> *map*.**zoomIn**([*duration*])
 
 Zooms in the mind map. If *duration* (int, milliseconds) is specified, sets the duration of the zoom animation.
@@ -252,6 +240,19 @@ Updates the node *property* (string, "name", "locked", "coordinates", "imageSrc"
 <a name="map_removeNode" href="#map_removeNode">#</a> *map*.**removeNode**([*id*])
 
 Removes the selected node or if *id* (string) is specified, removes the node with the id passed as parameter.
+
+<a name="map_copyNode" href="#map_copyNode">#</a> *map*.**copyNode**([*id*])
+
+Copies a node with his children in the mmp clipboard. If *id* is not specified, copies the selected node.
+
+<a name="map_cutNode" href="#map_cutNode">#</a> *map*.**cutNode**([*id*])
+
+Removes and copy a node with his children in the mmp clipboard. If *id* is not specified, copies the selected node.
+
+<a name="map_pasteNode" href="#map_pasteNode">#</a> *map*.**pasteNode**([*id*])
+
+Paste the node of the mmp clipboard in the map. If *id* is not specified, paste the nodes of the mmp clipboard in the selected node.
+
 
 ## File tree
 ##### After `npm start`
