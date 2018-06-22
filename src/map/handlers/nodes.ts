@@ -64,8 +64,6 @@ export default class Nodes {
 
         this.map.draw.update();
 
-        this.map.events.call(Event.nodeCreate, node.dom, this.getNodeProperties(node));
-
         this.selectRootNode();
     }
 
