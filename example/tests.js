@@ -201,6 +201,16 @@ describe("Tests", function () {
         });
     });
 
+    describe("§ testMap.nodeChildren()", function () {
+        it("Should return the children of the node without errors", function () {
+            testMap.nodeChildren.should.to.not.throw(Error);
+        });
+
+        it("Should return the only child of the root node", function () {
+            testMap.nodeChildren().length.should.to.equal(1);
+        });
+    });
+
     describe("§ testMap.exportAsJSON()", function () {
         it("Should get mind map data without errors", function () {
             testMap.exportAsJSON.should.to.not.throw(Error);
