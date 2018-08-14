@@ -268,6 +268,29 @@ export default class Nodes {
     };
 
     /**
+     * Return the children of the node.
+     * @param {string} id
+     * @returns {ExportNodeProperties[]}
+     */
+    public nodeChildren = (id?: string): ExportNodeProperties[] => {
+        if (id && typeof id !== "string") {
+            Log.error("The node id must be a string", "type");
+        }
+
+        let node: Node = id ? this.getNode(id) : this.selectedNode;
+
+        if (node === undefined) {
+            Log.error("There are no nodes with id \"" + id + "\"");
+        }
+
+        return this.nodes.values().filter((n: Node) => {
+            return n.parent && n.parent.id === node.id;
+        }).map((n: Node) => {
+            return this.getNodeProperties(n);
+        });
+    };
+
+    /**
      * Return the export properties of the node.
      * @param {Node} node
      * @param {boolean} fixedCoordinates

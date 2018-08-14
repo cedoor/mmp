@@ -101,6 +101,7 @@ export default class Map {
             addNode: this.nodes.addNode,
             selectNode: this.nodes.selectNode,
             deselectNode: this.nodes.deselectNode,
+            nodeChildren: this.nodes.nodeChildren,
             updateNode: this.nodes.updateNode,
             removeNode: this.nodes.removeNode,
             copyNode: this.copyPaste.copy,
@@ -127,6 +128,7 @@ export interface MmpInstance {
     addNode: Function;
     selectNode: Function;
     deselectNode: Function;
+    nodeChildren: Function;
     updateNode: Function;
     removeNode: Function;
     copyNode: Function;
