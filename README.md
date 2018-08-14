@@ -253,6 +253,10 @@ Removes and copy a node with his children in the mmp clipboard. If *id* is not s
 
 Paste the node of the mmp clipboard in the map. If *id* is not specified, paste the nodes of the mmp clipboard in the selected node.
 
+<a name="map_nodeChildren" href="#map_nodeChildren">#</a> *map*.**nodeChildren**([*id*])
+
+Return the children of the node specified with id. If *id* is not specified, return the children of the selected node.
+
 
 ## File tree
 ##### After `npm start`
