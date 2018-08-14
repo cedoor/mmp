@@ -30,19 +30,19 @@
         "prepare": "npm run build"
     },
     "dependencies": {
-        "d3": "4.13.0"
+        "d3": "5.5.0"
     },
     "devDependencies": {
         "chai": "4.1.2",
-        "mocha": "4.1.0",
-        "rollup": "0.55.5",
-        "rollup-plugin-json": "2.3.0",
+        "mocha": "5.2.0",
+        "rollup": "0.64.1",
+        "rollup-plugin-json": "3.0.0",
         "rollup-plugin-livereload": "0.6.0",
         "rollup-plugin-serve": "0.4.2",
-        "rollup-plugin-typescript2": "0.11.1",
-        "typedoc": "0.10.0",
-        "typescript": "2.7.1",
-        "@types/d3": "4.11.0",
-        "uglify-js": "3.3.10"
+        "rollup-plugin-typescript2": "0.16.1",
+        "typedoc": "0.11.1",
+        "typescript": "3.0.1",
+        "@types/d3": "5.0.0",
+        "uglify-js": "3.4.7"
     }
 }
