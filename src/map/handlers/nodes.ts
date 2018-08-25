@@ -151,6 +151,15 @@ export default class Nodes {
     };
 
     /**
+     * Enable the node name editing of the selected node.
+     */
+    public editNode = () => {
+        if (this.selectedNode) {
+            this.map.draw.enableNodeNameEditing(this.selectedNode);
+        }
+    };
+
+    /**
      * Deselect the current selected node.
      */
     public deselectNode = () => {

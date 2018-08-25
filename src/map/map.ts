@@ -100,6 +100,7 @@ export default class Map {
             center: this.zoom.center,
             addNode: this.nodes.addNode,
             selectNode: this.nodes.selectNode,
+            editNode: this.nodes.editNode,
             deselectNode: this.nodes.deselectNode,
             nodeChildren: this.nodes.nodeChildren,
             updateNode: this.nodes.updateNode,
@@ -127,6 +128,7 @@ export interface MmpInstance {
     center: Function;
     addNode: Function;
     selectNode: Function;
+    editNode: Function;
     deselectNode: Function;
     nodeChildren: Function;
     updateNode: Function;
