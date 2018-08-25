@@ -227,7 +227,11 @@ Properties:
 
 <a name="map_selectNode" href="#map_selectNode">#</a> *map*.**selectNode**([*id*])
 
-Selects the node with the *id* (string) passed as parameter or the position ("left", "right", "down", "up"). If the id is not specified returns the current selected node. 
+Selects the node with the *id* (string) passed as parameter or the position ("left", "right", "down", "up"). If the id is not specified returns the current selected node.
+
+<a name="map_editNode" href="#map_editNode">#</a> *map*.**editNode**()
+
+Focus on the text of the selected node.
 
 <a name="map_deselectNode" href="#map_deselectNode">#</a> *map*.**deselectNode**()
 
