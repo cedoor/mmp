@@ -73,6 +73,10 @@ describe("Tests", function () {
             testMap.selectNode.should.to.not.throw(Error);
         });
 
+        it("Should focus a node to edit it without errors", function () {
+            testMap.editNode();
+        });
+
         it("Should select a node", function () {
             testMap.selectNode("mmp2_node_0");
 
