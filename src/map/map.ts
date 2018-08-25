@@ -8,6 +8,7 @@ import Drag from "./handlers/drag";
 import Nodes from "./handlers/nodes";
 import Export from "./handlers/export";
 import CopyPaste from "./handlers/copy-paste";
+import {UserNodeProperties} from "./models/node";
 
 /**
  * Initialize all handlers and return a mmp object.
@@ -59,6 +60,19 @@ export default class Map {
 
         if (this.options.zoom === true) {
             this.dom.svg.call(this.zoom.getZoomBehavior());
+        }
+
+        if (this.options.addNodeOnRightClick === true) {
+            this.dom.svg.on("contextmenu", () => {
+                d3.event.preventDefault();
+
+                this.nodes.addNode({
+                    coordinates: {
+                        x: d3.event.offsetX,
+                        y: d3.event.offsetY
+                    }
+                } as UserNodeProperties);
+            });
         }
 
         this.nodes.addRootNode();

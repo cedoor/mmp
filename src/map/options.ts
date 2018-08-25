@@ -1,4 +1,4 @@
-import {Colors, Font, Image} from "./models/node";
+import {Colors, Font, Image, UserNodeProperties} from "./models/node";
 import Utils from "../utils/utils";
 import Map from "./map";
 import * as d3 from "d3";
@@ -13,6 +13,7 @@ export default class Options implements OptionParameters {
 
     public fontFamily: string;
     public centerOnResize: boolean;
+    public addNodeOnRightClick: boolean;
     public drag: boolean;
     public zoom: boolean;
 
@@ -29,6 +30,7 @@ export default class Options implements OptionParameters {
 
         this.fontFamily = parameters.fontFamily || "Arial, Helvetica, sans-serif";
         this.centerOnResize = parameters.centerOnResize !== undefined ? parameters.centerOnResize : true;
+        this.addNodeOnRightClick = parameters.addNodeOnRightClick !== undefined ? parameters.addNodeOnRightClick : true;
         this.drag = parameters.drag !== undefined ? parameters.drag : true;
         this.zoom = parameters.zoom !== undefined ? parameters.zoom : true;
 
@@ -84,6 +86,9 @@ export default class Options implements OptionParameters {
             case "centerOnResize":
                 this.updateCenterOnResize(value);
                 break;
+            case "addNodeOnRightClick":
+                this.updateAddNodeOnRightClick(value);
+                break;
             case "drag":
                 this.updateDrag(value);
                 break;
@@ -132,6 +137,33 @@ export default class Options implements OptionParameters {
             });
         } else {
             d3.select(window).on("resize." + this.map.id, null);
+        }
+    }
+
+    /**
+     * Update addNodeOnRightClick behavior.
+     * @param {boolean} flag
+     */
+    private updateAddNodeOnRightClick(flag: boolean) {
+        if (typeof flag !== "boolean") {
+            Log.error("The value must be a boolean", "type");
+        }
+
+        this.addNodeOnRightClick = flag;
+
+        if (this.addNodeOnRightClick === true) {
+            this.map.dom.svg.on("contextmenu", () => {
+                d3.event.preventDefault();
+
+                this.map.nodes.addNode({
+                    coordinates: {
+                        x: d3.event.offsetX,
+                        y: d3.event.offsetY
+                    }
+                } as UserNodeProperties);
+            });
+        } else {
+            this.map.dom.svg.on("contextmenu", null);
         }
     }
 
@@ -197,6 +229,7 @@ export interface DefaultNodeProperties {
 export interface OptionParameters {
     fontFamily?: string;
     centerOnResize?: boolean;
+    addNodeOnRightClick?: boolean;
     drag?: boolean;
     zoom?: boolean;
     defaultNode?: DefaultNodeProperties;
