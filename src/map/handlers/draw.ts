@@ -241,7 +241,7 @@ export default class Draw {
      * Enable and manage all events for the name editing.
      * @param {Node} node
      */
-    private enableNodeNameEditing(node: Node) {
+    public enableNodeNameEditing(node: Node) {
         let name = node.getNameDOM();
 
         Utils.focusWithCaretAtEnd(name);
