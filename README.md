@@ -59,6 +59,7 @@ Creates a mmp instance. Draw the mind map creating an svg element with the root 
     var map = mmp.create("map", {
         fontFamily: "Arial, Helvetica, sans-serif",
         centerOnResize: true,
+        addNodeOnRightClick: true
         drag: false,
         zoom: false,
         defaultNode: {
@@ -122,7 +123,7 @@ Zooms out the mind map. If *duration* (int, milliseconds) is specified, sets the
 
 <a name="map_updateOptions" href="#map_updateOptions">#</a> *map*.**updateOptions**(*property*, *value*)
 
-Updates the option *property* (string, "fontFamily", "centerOnResize", "drag", "zoom", "defaultNode", "rootNode") with the relative value passed as parameter.
+Updates the option *property* (string, "fontFamily", "centerOnResize", "addNodeOnRightClick", "drag", "zoom", "defaultNode", "rootNode") with the relative value passed as parameter.
 
 <a name="map_exportAsJson" href="#map_exportAsJson">#</a> *map*.**exportAsJson**()
 
