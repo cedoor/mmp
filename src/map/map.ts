@@ -62,19 +62,6 @@ export default class Map {
             this.dom.svg.call(this.zoom.getZoomBehavior());
         }
 
-        if (this.options.addNodeOnRightClick === true) {
-            this.dom.svg.on("contextmenu", () => {
-                d3.event.preventDefault();
-
-                this.nodes.addNode({
-                    coordinates: {
-                        x: d3.event.offsetX,
-                        y: d3.event.offsetY
-                    }
-                } as UserNodeProperties);
-            });
-        }
-
         this.nodes.addRootNode();
 
         this.history.save();
