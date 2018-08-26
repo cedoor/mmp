@@ -332,11 +332,13 @@ export default class Nodes {
             fixedCoordinates: Coordinates = {} as Coordinates;
 
         if (coordinates.x) {
-            fixedCoordinates.x = (coordinates.x - zoomCoordinates.x * (reverse ? -1 : 1)) / zoomCoordinates.k;
+            fixedCoordinates.x = (coordinates.x - zoomCoordinates.x * (reverse ? -1 : 1))
+                * (reverse ? zoomCoordinates.k : 1/zoomCoordinates.k);
         }
 
         if (coordinates.y) {
-            fixedCoordinates.y = (coordinates.y - zoomCoordinates.y * (reverse ? -1 : 1)) / zoomCoordinates.k;
+            fixedCoordinates.y = (coordinates.y - zoomCoordinates.y * (reverse ? -1 : 1))
+                * (reverse ? zoomCoordinates.k : 1/zoomCoordinates.k);
         }
 
         return fixedCoordinates;
