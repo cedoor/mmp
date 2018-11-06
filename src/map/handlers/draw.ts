@@ -268,20 +268,18 @@ export default class Draw {
                 switch (event.keyCode) {
                     case 65: // ctrl + a/A (select all)
                     case 97:
-                        return true;
                     case 67: // ctrl + c/C (copy)
                     case 99:
-                        return true;
                     case 86: // ctrl + v/V (paste)
                     case 118:
-                        return true;
                     case 90: // ctrl + z/Z (undo/redo)
                     case 122:
-                        return true;
                     case 37: // Arrow keys
                     case 38:
                     case 39:
                     case 40:
+                    case 8:  // ctrl + backspace
+                    case 46: // ctrl + delete
                         return true;
                     default:
                         return false;
