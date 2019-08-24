@@ -55,6 +55,7 @@ export default class Draw {
                 nodes: this.map.dom.g.selectAll("." + this.map.id + "_node").data(nodes),
                 branches: this.map.dom.g.selectAll("." + this.map.id + "_branch").data(nodes.slice(1))
             };
+        let tapedTwice = false;
 
         let outer = dom.nodes.enter().append("g")
             .style("cursor", "pointer")
@@ -66,6 +67,18 @@ export default class Draw {
             .attr("transform", (node: Node) => "translate(" + node.coordinates.x + "," + node.coordinates.y + ")")
             .on("dblclick", (node: Node) => {
                 d3.event.stopPropagation();
+                this.enableNodeNameEditing(node);
+            }).on('touchstart', (node: Node) => {
+                if (!tapedTwice) {
+                    tapedTwice = true;
+
+                    setTimeout(function () {
+                        tapedTwice = false;
+                    }, 300);
+
+                    return false;
+                }
+
                 this.enableNodeNameEditing(node);
             });
 
