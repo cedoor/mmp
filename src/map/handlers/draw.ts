@@ -269,37 +269,40 @@ export default class Draw {
             this.updateNodeShapes(node);
         };
 
-        // Allow only some shortcuts
+        // Allow only some shortcuts.
         name.onkeydown = (event) => {
-            // Unfocus the node
-            if (event.keyCode === 27) {
+            // Unfocus the node.
+            if (event.code === 'Enter') {
                 Utils.removeAllRanges();
                 name.blur();
             }
 
             if (event.ctrlKey || event.metaKey) {
-                switch (event.keyCode) {
-                    case 65: // ctrl + a/A (select all)
-                    case 97:
-                    case 67: // ctrl + c/C (copy)
-                    case 99:
-                    case 86: // ctrl + v/V (paste)
-                    case 118:
-                    case 90: // ctrl + z/Z (undo/redo)
-                    case 122:
-                    case 37: // Arrow keys
-                    case 38:
-                    case 39:
-                    case 40:
-                    case 8:  // ctrl + backspace
-                    case 46: // ctrl + delete
+                switch (event.code) {
+                    case 'KeyA':
+                    case 'KeyC':
+                    case 'KeyV':
+                    case 'KeyX':
+                    case 'KeyZ':
+                    case 'KeyS':
+                    case 'ArrowLeft':
+                    case 'ArrowRight':
+                    case 'ArrowUp':
+                    case 'ArrowDown':
+                    case 'Backspace':
+                    case 'Delete':
                         return true;
                     default:
                         return false;
                 }
             }
 
-            return true;
+            switch (event.code) {
+                case 'Tab':
+                    return false;
+                default:
+                    return true;
+            }
         };
 
         // Remove html formatting when paste text on node
