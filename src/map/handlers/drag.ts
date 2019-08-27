@@ -42,6 +42,8 @@ export default class Drag {
      * @param {Node} node
      */
     private started(node: Node) {
+        d3.event.sourceEvent.preventDefault();
+
         this.orientation = this.map.nodes.getOrientation(node);
         this.descendants = this.map.nodes.getDescendants(node);
 
