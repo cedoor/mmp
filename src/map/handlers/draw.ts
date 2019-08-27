@@ -284,7 +284,6 @@ export default class Draw {
                     case 'KeyV':
                     case 'KeyX':
                     case 'KeyZ':
-                    case 'KeyS':
                     case 'ArrowLeft':
                     case 'ArrowRight':
                     case 'ArrowUp':
