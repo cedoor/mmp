@@ -272,7 +272,7 @@ export default class Draw {
         // Allow only some shortcuts.
         name.onkeydown = (event) => {
             // Unfocus the node.
-            if (event.code === 'Enter') {
+            if (event.code === 'Escape') {
                 Utils.removeAllRanges();
                 name.blur();
             }
