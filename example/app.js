@@ -74,6 +74,12 @@ function bold(map) {
     map.updateNode("fontWeight", value);
 }
 
+// Update underline status
+function underline(map) {
+    let value = map.selectNode().font.decoration !== "underline" ? "underline" : "none";
+    map.updateNode("textDecoration", value);
+}
+
 // Update italic status
 function italic(map) {
     let value = map.selectNode().font.style !== "italic" ? "italic" : "normal";

@@ -222,6 +222,9 @@ export default class Nodes {
             case "fontWeight":
                 updated = this.updateNodeFontWeight(this.selectedNode, value, graphic);
                 break;
+            case "textDecoration":
+                updated = this.updateNodeTextDecoration(this.selectedNode, value, graphic);
+                break;
             case "fontStyle":
                 updated = this.updateNodeFontStyle(this.selectedNode, value, graphic);
                 break;
@@ -838,6 +841,31 @@ export default class Nodes {
 
             if (graphic === false) {
                 node.font.weight = weight;
+            }
+        } else {
+            return false;
+        }
+    };
+
+    /**
+     * Update the node text decoration.
+     * @param {Node} node
+     * @param {string} decoration
+     * @param {boolean} graphic
+     * @returns {boolean}
+     */
+    private updateNodeTextDecoration = (node: Node, decoration: string, graphic: boolean = false) => {
+        if (decoration && typeof decoration !== "string") {
+            Log.error("The text decoration must be a string", "type");
+        }
+
+        if (node.font.decoration !== decoration) {
+            node.getNameDOM().style["text-decoration"] = decoration;
+
+            this.map.draw.updateNodeShapes(node);
+
+            if (graphic === false) {
+                node.font.decoration = decoration;
             }
         } else {
             return false;

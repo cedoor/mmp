@@ -135,4 +135,5 @@ export interface Font {
     size: number;
     style: string;
     weight: string
+    decoration: string
 }

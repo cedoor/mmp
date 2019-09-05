@@ -353,6 +353,7 @@ export default class Draw {
         div.style.setProperty("color", node.colors.name);
         div.style.setProperty("font-style", node.font.style);
         div.style.setProperty("font-weight", node.font.weight);
+        div.style.setProperty("text-decoration", node.font.decoration);
 
         div.style.setProperty("display", "inline-block");
         div.style.setProperty("white-space", "pre");
