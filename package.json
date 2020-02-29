@@ -1,48 +1,48 @@
 {
-    "name": "mmp",
-    "version": "0.2.18",
-    "description": "JavaScript library to draw mind maps.",
-    "keywords": [
-        "mmp",
-        "mindmap",
-        "node",
-        "branch",
-        "map",
-        "mind",
-        "infovis"
-    ],
-    "homepage": "https://github.com/Mindmapp/mmp",
-    "license": "MIT",
-    "author": {
-        "name": "Omar Desogus",
-        "email": "omardesogus9@gmail.com",
-        "url": "https://cedoor.github.io"
-    },
-    "main": "build/mmp.min.js",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Mindmapp/mmp.git"
-    },
-    "scripts": {
-        "start": "rollup -c -w",
-        "docs": "typedoc ./src --out ./docs --module umd",
-        "build": "rollup -c --environment BUILD:production && uglifyjs build/mmp.js --comments -c -m -o build/mmp.min.js",
-        "prepare": "npm run build"
-    },
-    "dependencies": {
-        "d3": "5.5.0"
-    },
-    "devDependencies": {
-        "chai": "4.1.2",
-        "mocha": "5.2.0",
-        "rollup": "0.64.1",
-        "rollup-plugin-json": "3.0.0",
-        "rollup-plugin-livereload": "0.6.0",
-        "rollup-plugin-serve": "0.4.2",
-        "rollup-plugin-typescript2": "0.16.1",
-        "typedoc": "0.11.1",
-        "typescript": "3.0.1",
-        "@types/d3": "5.0.0",
-        "uglify-js": "3.4.7"
-    }
+  "name": "mmp",
+  "version": "0.2.18",
+  "description": "JavaScript library to draw mind maps.",
+  "keywords": [
+    "mmp",
+    "mindmap",
+    "node",
+    "branch",
+    "map",
+    "mind",
+    "infovis"
+  ],
+  "homepage": "https://github.com/Mindmapp/mmp",
+  "license": "MIT",
+  "author": {
+    "name": "Omar Desogus",
+    "email": "me@cedoor.dev",
+    "url": "https://cedoor.dev"
+  },
+  "main": "build/mmp.min.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mindmapp/mmp.git"
+  },
+  "scripts": {
+    "start": "rollup -c -w",
+    "docs": "typedoc ./src --out ./docs --module umd",
+    "build": "rollup -c --environment BUILD:production && uglifyjs build/mmp.js --comments -c -m -o build/mmp.min.js",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "d3": "5.5.0"
+  },
+  "devDependencies": {
+    "chai": "4.1.2",
+    "mocha": "5.2.0",
+    "rollup": "0.64.1",
+    "rollup-plugin-json": "3.0.0",
+    "rollup-plugin-livereload": "0.6.0",
+    "rollup-plugin-serve": "0.4.2",
+    "rollup-plugin-typescript2": "0.16.1",
+    "typedoc": "0.11.1",
+    "typescript": "3.0.1",
+    "@types/d3": "5.0.0",
+    "uglify-js": "3.4.7"
+  }
 }
