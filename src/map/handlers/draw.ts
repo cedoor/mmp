@@ -314,8 +314,8 @@ export default class Draw {
         };
 
         name.onblur = () => {
-            if (name.innerHTML !== node.name) {
-                this.map.nodes.updateNode("name", name.innerHTML);
+            if (name.textContent !== node.name) {
+                this.map.nodes.updateNode("name", name.textContent);
             }
 
             name.ondblclick = name.onmousedown = name.onblur =
@@ -335,10 +335,12 @@ export default class Draw {
         let name = node.getNameDOM(),
             foreignObject: SVGForeignObjectElement = <SVGForeignObjectElement>name.parentNode;
 
-        foreignObject.setAttribute("x", (-name.clientWidth / 2).toString());
-        foreignObject.setAttribute("y", (-name.clientHeight / 2).toString());
-        foreignObject.setAttribute("width", name.clientWidth.toString());
-        foreignObject.setAttribute("height", name.clientHeight.toString());
+        if (name.offsetWidth !== 0) {
+            foreignObject.setAttribute("x", (-name.clientWidth / 2).toString());
+            foreignObject.setAttribute("y", (-name.clientHeight / 2).toString());
+            foreignObject.setAttribute("width", name.clientWidth.toString());
+            foreignObject.setAttribute("height", name.clientHeight.toString());
+        }
     }
 
     /**
@@ -361,7 +363,6 @@ export default class Draw {
         div.style.setProperty("text-align", "center");
 
         div.setAttribute("contenteditable", "true");
-        div.setAttribute("spellcheck", "false");
 
         div.innerHTML = node.name;
 
