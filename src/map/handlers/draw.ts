@@ -314,8 +314,10 @@ export default class Draw {
         };
 
         name.onblur = () => {
-            if (name.textContent !== node.name) {
-                this.map.nodes.updateNode("name", name.textContent);
+            name.innerHTML = name.innerHTML === "<br>" ? "" : name.innerHTML
+
+            if (name.innerHTML !== node.name) {
+                this.map.nodes.updateNode("name", name.innerHTML);
             }
 
             name.ondblclick = name.onmousedown = name.onblur =
