@@ -72,7 +72,7 @@ export default class Nodes {
      * @param {UserNodeProperties} userProperties
      * @param {string} id
      */
-    public addNode = (userProperties?: UserNodeProperties, id?: string) => {
+    public addNode = (userProperties?: UserNodeProperties, id?: string, customId?: string) => {
         if (id && typeof id !== "string") {
             Log.error("The node id must be a string", "type");
         }
@@ -84,8 +84,18 @@ export default class Nodes {
         }
 
         let properties: NodeProperties = Utils.mergeObjects(this.map.options.defaultNode, userProperties, true) as NodeProperties;
-
-        properties.id = this.map.id + "_node_" + this.counter;
+        
+        if (customId) {
+            let checkCustomIdNode = this.getNode(customId);
+            if (checkCustomIdNode === undefined) {
+                properties.id = customId;
+            } else {
+                Log.error("There is already a node with that id")
+                properties.id = this.map.id + "_node_" + this.counter;
+            }
+        } else {
+            properties.id = this.map.id + "_node_" + this.counter;   
+        }
         properties.parent = parentNode;
 
         let node: Node = new Node(properties);
