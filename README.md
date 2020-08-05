@@ -1,3 +1,10 @@
+<p align="center">
+    <h1 align="center">
+         :broken_heart: Project no longer supported
+    </h1>
+    <p align="center">Fork it to continue development!</p>
+</p>
+
 # ![](https://raw.githubusercontent.com/Mindmapp/mindmapp/master/resources/icons/32x32.png) Mmp<sup>beta</sup>
 
 [![](https://img.shields.io/badge/project-Mindmapp-blue.svg?style=flat-square)](https://github.com/Mindmapp)
